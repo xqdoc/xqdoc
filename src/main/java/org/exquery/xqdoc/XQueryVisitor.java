@@ -21,14 +21,15 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     {
         if (xqDocCommentContext != null)
         {
-            stream.println("<xqdoc:comment>");
-            stream.println("<xqdoc:body>");
             int a = xqDocCommentContext.start.getStartIndex();
             int b = xqDocCommentContext.stop.getStopIndex();
             Interval interval = new Interval(a,b);
-            stream.print(xqDocCommentContext.start.getInputStream().getText(interval));
-            stream.println("</xqdoc:body>");
-            stream.println("</xqdoc:comment>");
+            String xqDocBody = xqDocCommentContext.start.getInputStream().getText(interval);
+            XQDocComment xqDocComment = new XQDocComment();
+            xqDocComment.clear();
+            xqDocComment.setComment(xqDocBody);
+            String comment = xqDocComment.getXML().toString();
+            stream.println(comment);
             xqDocCommentContext = null;
         }
     }

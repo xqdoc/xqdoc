@@ -6,7 +6,7 @@
 
   <groupId>org.exquery</groupId>
   <artifactId>xqdoc</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.9</version>
     <packaging>jar</packaging>
 
   <name>xqdoc</name>
