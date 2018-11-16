@@ -85,7 +85,7 @@ functionReturn: 'as' type=sequenceType ;
 
 optionDecl: 'declare' 'option' name=qName value=stringLiteral ;
 
-xqDocComment: XQDOC_COMMENT_START ContentChar XQDOC_COMMENT_END ;
+xqDocComment: XQDOC_COMMENT_START .*? XQDOC_COMMENT_END ;
 
 
 // EXPRESSIONS /////////////////////////////////////////////////////////////////
