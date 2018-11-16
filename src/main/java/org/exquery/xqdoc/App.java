@@ -8,15 +8,17 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.apache.commons.cli.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * Hello world!
@@ -38,30 +40,23 @@ public class App
         return result;
     }
 
-    public static void main( String[] args ) throws ParserConfigurationException, IOException, SAXException {
-        ANTLRInputStream inputStream = new ANTLRInputStream("\n" +
-                "module namespace  functx = \"http://www.functx.com\" ;\n" +
-                "(:~\n" +
-                " : Whether a value is all whitespace or a zero-length string \n" +
-                " :\n" +
-                " : @author  Priscilla Walmsley, Datypic \n" +
-                " : @version 1.0 \n" +
-                " : @see     http://www.xqueryfunctions.com/xq/functx_all-whitespace.html \n" +
-                " : @param   $arg the string (or node) to test \n" +
-                " :) \n" +
-                "declare variable $functx:foo as xs:string := \"foo\";\n\n" +
-                "declare function functx:all-whitespace \n" +
-                "  ( $arg as xs:string? )  as xs:boolean {\n" +
-                "       \n" +
-                "   fn:normalize-space($arg) = ''\n" +
-                " } ;\n");
-        XQueryLexer markupLexer = new XQueryLexer(inputStream);
-        CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
-        XQueryParser markupParser = new XQueryParser(commonTokenStream);
+    public static void main( String[] args ) throws ParserConfigurationException, IOException, SAXException, ParseException {
+        Options options = new Options();
 
-        XQueryParser.ModuleContext fileContext = markupParser.module();
-        StringBuffer buffer = new StringBuffer();
+        Option propertyOption   = Option.builder()
+                .longOpt("D")
+                .argName("property=value" )
+                .hasArgs()
+                .valueSeparator()
+                .numberOfArgs(2)
+                .desc("use value for given properties" )
+                .build();
 
+        options.addOption(propertyOption);
+        options.addOption("f", true, "file name");
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse( options, args);
         HashMap uriMap = new HashMap();
         uriMap.put("fn", "http://www.w3.org/2003/05/xpath-functions");
         uriMap.put("cts", "http://marklogic.com/cts"); // MarkLogic Server search functions (Core Text Services)
@@ -86,15 +81,37 @@ public class App
         uriMap.put("xqterr", "http://www.w3.org/2005/xqt-errors"); // XQuery test suite errors (same as err)
         uriMap.put("xs", "http://www.w3.org/2001/XMLSchema"); // XML Schema namespace
 
-        XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);
-        visitor.visit(fileContext);
-        DocumentBuilderFactory dbf =
-                DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        InputSource isOut = new InputSource();
-        isOut.setCharacterStream(new StringReader(buffer.toString()));
+        if(cmd.hasOption("D")) {
+            Properties properties = cmd.getOptionProperties("D");
+            Enumeration<String> prefixes = (Enumeration<String>) properties.propertyNames();
+            while (prefixes.hasMoreElements()) {
+                String prefix = prefixes.nextElement();
+                uriMap.put(prefix, properties.getProperty(prefix));
+            }
+        }
 
-        Document doc = db.parse(isOut);
-        System.out.println(App.getStringFromDoc(doc));
+        if (cmd.hasOption("f")) {
+            InputStream is = Files.newInputStream(Paths.get(cmd.getOptionValue("f")));
+            ANTLRInputStream inputStream = new ANTLRInputStream(is);
+            XQueryLexer markupLexer = new XQueryLexer(inputStream);
+            CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
+            XQueryParser markupParser = new XQueryParser(commonTokenStream);
+
+            XQueryParser.ModuleContext fileContext = markupParser.module();
+            StringBuffer buffer = new StringBuffer();
+
+
+            XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);
+            visitor.visit(fileContext);
+            DocumentBuilderFactory dbf =
+                    DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            InputSource isOut = new InputSource();
+            isOut.setCharacterStream(new StringReader(buffer.toString()));
+
+            Document doc = db.parse(isOut);
+            System.out.println(App.getStringFromDoc(doc));
+        }
+
     }
 }

@@ -1,33 +1,40 @@
-# xqdoc
-An Antlr4 implementation of xqDoc for XQuery
+package org.exquery.xqdoc;
 
-## Building
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-Run the command: ```mvn clean install assembly:single```
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
 
-### Dependencies
+public class MarkLogicProcessor {
 
-* antlr
-* commons-cli
+    public static String getStringFromDoc(Document doc)    {
+        DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+        LSSerializer lsSerializer = domImplementation.createLSSerializer();
+        lsSerializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
+        LSOutput lsOutput =  domImplementation.createLSOutput();
+        lsOutput.setEncoding("UTF-8");
+        Writer stringWriter = new StringWriter();
+        lsOutput.setCharacterStream(stringWriter);
+        lsSerializer.write(doc, lsOutput);
+        String result = stringWriter.toString();
 
-### Results
+        return result;
+    }
 
-* target/xqdoc-1.9-jar-with-dependencies.jar
-* target/xqdoc-1.9.jar
-
-## Command Line Call
-
-```java -jar xqdoc-1.9-jar-with-dependencies.jar -Dprefix=uri -Dprefix=uri -f filepath```
-
-The prefix/uri combination is for the prefixes that are not needed in an import module namespace for the implementation.
-
-e.g.  ```-Dfn=http://www.w3.org/2003/05/xpath-functions``` 
-is for the default XPath function library.  This prefix/namespace is included by default.
-
-The *filepath* is the path name to the file with the XQuery source.
-
-## Calling from java
-
+    public String process(String txt) throws XQDocException, ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();
         uriMap.put("fn", "http://www.w3.org/2003/05/xpath-functions");
         uriMap.put("cts", "http://marklogic.com/cts"); // MarkLogic Server search functions (Core Text Services)
@@ -69,3 +76,6 @@ The *filepath* is the path name to the file with the XQuery source.
         isOut.setCharacterStream(new StringReader(buffer.toString()));
 
         Document doc = db.parse(isOut);
+        return MarkLogicProcessor.getStringFromDoc(doc);
+    }
+}

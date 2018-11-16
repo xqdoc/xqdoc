@@ -104,7 +104,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         stream.append("</xqdoc:date>").append("\n");
         stream.append("<xqdoc:version>1.1</xqdoc:version>").append("\n");
         stream.append("</xqdoc:control>").append("\n");
-        if (context.libraryModule().moduleDecl() != null)
+        if (context.libraryModule() != null && context.libraryModule().moduleDecl() != null)
         {
             XQueryParser.ModuleDeclContext moduleDeclContext = context.libraryModule().moduleDecl();
             String prefixText = moduleDeclContext.prefix.getText();
