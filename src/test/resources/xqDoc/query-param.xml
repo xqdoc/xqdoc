@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xqdoc:xqdoc xmlns:xqdoc="http://www.xqdoc.org/1.0">
+    <xqdoc:control>
+        <xqdoc:date>2018-11-16T17:23:56.895-05:00</xqdoc:date>
+        <xqdoc:version>1.1</xqdoc:version>
+    </xqdoc:control>
+    <xqdoc:module type="library">
+        <xqdoc:uri>http://test.com</xqdoc:uri>
+        <xqdoc:name>test</xqdoc:name>
+        <xqdoc:body xml:space="preserve">xquery version "3.0";
+
+module namespace test = "http://test.com";
+
+declare namespace rest = "http://exquery.org/ns/restxq";
+
+(: with default params :)
+declare
+    %rest:GET
+    %rest:path("/test")
+    %rest:query-param("hello", "{$hello}", "hello", "again")
+function test:hello($hello) {
+    <hello>{$hello}</hello>
+};
+
+declare
+    %rest:GET
+    %rest:path("/test1")
+    %rest:query-param("hello", "{$hello}", "")
+function test:hello1($hello as xs:string+) {
+    <hello>{$hello}</hello>
+};
+
+declare
+    %rest:GET
+    %rest:path("/test2")
+    %rest:query-param("hello", "{$hello}", "")
+function test:hello2($hello as xs:string*) {
+    <hello>{$hello}</hello>
+};
+
+(: must  fail :)
+(:
+declare
+    %rest:GET
+    %rest:path("/test3")
+    %rest:query-param("hello", "{$hello}", "")
+function test:hello3($hello as xs:string?) {
+    <hello>{$hello}</hello>
+};
+:)
+(:
+declare
+    %rest:GET
+    %rest:path("/test4")
+    %rest:query-param("hello", "{$hello}", "")
+function test:hello4($hello as xs:string) {
+    <hello>{$hello}</hello>
+};
+:)
+(: fail - has additional parameter which does not allow ZERO cardinality! :)
+(:
+declare
+    %rest:GET
+    %rest:path("/test5")
+    %rest:query-param("hello", "{$hello}", "hello", "again")
+function test:hello5($hello, $other as xs:string+) {
+    <hello>{$hello}</hello>
+};
+:)
+
+(: fail - has two mapped parameters of the same name in different annotations:)
+(:
+declare
+    %rest:GET
+    %rest:path("/test6")
+    %rest:query-param("hello", "{$hello}", "hello", "again")
+    %rest:query-param("hello", "{$hello}")
+function test:hello6($hello) {
+    <hello>{$hello}</hello>
+};
+:)
+
+
+
+(: without default params :)
+declare
+    %rest:GET
+    %rest:path("/test7")
+    %rest:query-param("hello", "{$hello}")
+function test:hello7($hello as xs:string*) {
+    <hello>{$hello}</hello>
+};
+
+declare
+    %rest:GET
+    %rest:path("/test8")
+    %rest:query-param("hello", "{$hello}")
+function test:hello8($hello) {
+    <hello>{$hello}</hello>
+};</xqdoc:body>
+    </xqdoc:module>
+    <xqdoc:namespaces>
+        <xqdoc:namespace prefix="rest" uri="http://exquery.org/ns/restxq"/>
+    </xqdoc:namespaces>
+    <xqdoc:functions>
+        <xqdoc:function>
+            <xqdoc:name>hello</xqdoc:name>
+            <xqdoc:annotations>
+                <xqdoc:annotation name="rest:GET"/>
+                <xqdoc:annotation name="rest:path">
+                    <xqdoc:literal>"/test"</xqdoc:literal>
+                </xqdoc:annotation>
+                <xqdoc:annotation name="rest:query-param">
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"again"</xqdoc:literal>
+                </xqdoc:annotation>
+            </xqdoc:annotations>
+            <xqdoc:signature>declare function hello($hello)</xqdoc:signature>
+            <xqdoc:parameters>
+                <xqdoc:parameter>
+                    <xqdoc:name>hello</xqdoc:name>
+                </xqdoc:parameter>
+            </xqdoc:parameters>
+            <xqdoc:body xml:space="preserve">declare
+    %rest:GET
+    %rest:path("/test")
+    %rest:query-param("hello", "{$hello}", "hello", "again")
+function test:hello($hello) {
+    <hello>{$hello}</hello>
+}</xqdoc:body>
+        </xqdoc:function>
+        <xqdoc:function>
+            <xqdoc:name>hello1</xqdoc:name>
+            <xqdoc:annotations>
+                <xqdoc:annotation name="rest:GET"/>
+                <xqdoc:annotation name="rest:path">
+                    <xqdoc:literal>"/test1"</xqdoc:literal>
+                </xqdoc:annotation>
+                <xqdoc:annotation name="rest:query-param">
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                    <xqdoc:literal>""</xqdoc:literal>
+                </xqdoc:annotation>
+            </xqdoc:annotations>
+            <xqdoc:signature>declare function hello1($hello as xs:string+)</xqdoc:signature>
+            <xqdoc:parameters>
+                <xqdoc:parameter>
+                    <xqdoc:name>hello</xqdoc:name>
+                    <xqdoc:type occurrence="+">xs:string</xqdoc:type>
+                </xqdoc:parameter>
+            </xqdoc:parameters>
+            <xqdoc:body xml:space="preserve">declare
+    %rest:GET
+    %rest:path("/test1")
+    %rest:query-param("hello", "{$hello}", "")
+function test:hello1($hello as xs:string+) {
+    <hello>{$hello}</hello>
+}</xqdoc:body>
+        </xqdoc:function>
+        <xqdoc:function>
+            <xqdoc:name>hello2</xqdoc:name>
+            <xqdoc:annotations>
+                <xqdoc:annotation name="rest:GET"/>
+                <xqdoc:annotation name="rest:path">
+                    <xqdoc:literal>"/test2"</xqdoc:literal>
+                </xqdoc:annotation>
+                <xqdoc:annotation name="rest:query-param">
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                    <xqdoc:literal>""</xqdoc:literal>
+                </xqdoc:annotation>
+            </xqdoc:annotations>
+            <xqdoc:signature>declare function hello2($hello as xs:string*)</xqdoc:signature>
+            <xqdoc:parameters>
+                <xqdoc:parameter>
+                    <xqdoc:name>hello</xqdoc:name>
+                    <xqdoc:type occurrence="*">xs:string</xqdoc:type>
+                </xqdoc:parameter>
+            </xqdoc:parameters>
+            <xqdoc:body xml:space="preserve">declare
+    %rest:GET
+    %rest:path("/test2")
+    %rest:query-param("hello", "{$hello}", "")
+function test:hello2($hello as xs:string*) {
+    <hello>{$hello}</hello>
+}</xqdoc:body>
+        </xqdoc:function>
+        <xqdoc:function>
+            <xqdoc:name>hello7</xqdoc:name>
+            <xqdoc:annotations>
+                <xqdoc:annotation name="rest:GET"/>
+                <xqdoc:annotation name="rest:path">
+                    <xqdoc:literal>"/test7"</xqdoc:literal>
+                </xqdoc:annotation>
+                <xqdoc:annotation name="rest:query-param">
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                </xqdoc:annotation>
+            </xqdoc:annotations>
+            <xqdoc:signature>declare function hello7($hello as xs:string*)</xqdoc:signature>
+            <xqdoc:parameters>
+                <xqdoc:parameter>
+                    <xqdoc:name>hello</xqdoc:name>
+                    <xqdoc:type occurrence="*">xs:string</xqdoc:type>
+                </xqdoc:parameter>
+            </xqdoc:parameters>
+            <xqdoc:body xml:space="preserve">declare
+    %rest:GET
+    %rest:path("/test7")
+    %rest:query-param("hello", "{$hello}")
+function test:hello7($hello as xs:string*) {
+    <hello>{$hello}</hello>
+}</xqdoc:body>
+        </xqdoc:function>
+        <xqdoc:function>
+            <xqdoc:name>hello8</xqdoc:name>
+            <xqdoc:annotations>
+                <xqdoc:annotation name="rest:GET"/>
+                <xqdoc:annotation name="rest:path">
+                    <xqdoc:literal>"/test8"</xqdoc:literal>
+                </xqdoc:annotation>
+                <xqdoc:annotation name="rest:query-param">
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                </xqdoc:annotation>
+            </xqdoc:annotations>
+            <xqdoc:signature>declare function hello8($hello)</xqdoc:signature>
+            <xqdoc:parameters>
+                <xqdoc:parameter>
+                    <xqdoc:name>hello</xqdoc:name>
+                </xqdoc:parameter>
+            </xqdoc:parameters>
+            <xqdoc:body xml:space="preserve">declare
+    %rest:GET
+    %rest:path("/test8")
+    %rest:query-param("hello", "{$hello}")
+function test:hello8($hello) {
+    <hello>{$hello}</hello>
+}</xqdoc:body>
+        </xqdoc:function>
+    </xqdoc:functions>
+</xqdoc:xqdoc>
+

@@ -227,6 +227,10 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         String prefix = context.prefix.getText();
         String uri = context.uri.getText();
 
+        if (uri.startsWith("\"")) {
+            uri = uri.substring(1).substring(0, uri.length() - 2);
+        }
+
         if (!declaredNamespaces.containsKey(prefix))
         {
             declaredNamespaces.put(prefix, uri);
@@ -262,16 +266,18 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     private StringBuffer processTypeDeclaration(XQueryParser.TypeDeclarationContext context)
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("<xqdoc:type");
-        if (context.sequenceType().occurrence != null)
-        {
-            buffer.append(" occurrence=\"");
-            buffer.append(context.sequenceType().occurrence.getText());
-            buffer.append("\"");
+        if (context != null) {
+            buffer.append("<xqdoc:type");
+            if (context.sequenceType() != null && context.sequenceType().occurrence != null)
+            {
+                buffer.append(" occurrence=\"");
+                buffer.append(context.sequenceType().occurrence.getText());
+                buffer.append("\"");
+            }
+            buffer.append(">");
+            buffer.append(context.sequenceType().itemType().getText());
+            buffer.append("</xqdoc:type>").append("\n");
         }
-        buffer.append(">");
-        buffer.append(context.sequenceType().itemType().getText());
-        buffer.append("</xqdoc:type>").append("\n");
         return buffer;
     }
 
