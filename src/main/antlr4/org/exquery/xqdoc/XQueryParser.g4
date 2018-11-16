@@ -62,7 +62,7 @@ moduleImport: 'import' 'module'
               nsURI=stringLiteral
               ('at' locations+=stringLiteral (',' locations+=stringLiteral)*)? ;
 
-varDecl: 'declare' 'variable' '$' name=qName type=typeDeclaration?
+varDecl: 'declare' annotations? 'variable' '$' name=qName type=typeDeclaration?
          (':=' value=exprSingle | 'external') ;
 
 functionDecl: 'declare' annotations? 'function' name=qName '(' functionParams? ')'

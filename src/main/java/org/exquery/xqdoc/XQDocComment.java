@@ -157,26 +157,26 @@ public class XQDocComment {
 			int i;
 			if ((i = line.indexOf(BEGIN_XQDOC_COMMENT)) > -1) {
 				xqDocCommentBlock[xqDocCommentState].append(line.substring(i
-						+ BEGIN_XQDOC_COMMENT.length(), last));
+						+ BEGIN_XQDOC_COMMENT.length(), last).trim());
 // 			} else if ((i = line.indexOf(":")) > -1) {
  			} else if (line.matches("^\\s*:.*")) {
  				i = line.indexOf(":");
 				if (i < last) {
 					xqDocCommentBlock[xqDocCommentState].append(line.substring(
-							i + 1, last));
+							i + 1, last).trim());
 				}
 				// Get up to the closing comment
 				else if (last != line.length()) {
 					xqDocCommentBlock[xqDocCommentState].append(line.substring(
-							0, last));
+							0, last).trim());
 				}
 			} else {
 				xqDocCommentBlock[xqDocCommentState].append(line.substring(0,
-						last));
+						last).trim());
 			}
 		} else {
 			xqDocCommentBlock[xqDocCommentState].append(line.substring(index,
-					last));
+					last).trim());
 		}
 	}
 
