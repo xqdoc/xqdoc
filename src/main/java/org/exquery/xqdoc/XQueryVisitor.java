@@ -438,12 +438,12 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
 
     private StringBuffer printBody(ParserRuleContext context) {
         StringBuffer bodyBuffer = new StringBuffer();
-        bodyBuffer.append("<xqdoc:body xml:space=\"preserve\">");
+        bodyBuffer.append("<xqdoc:body xml:space=\"preserve\"><![CDATA[");
         int a = context.start.getStartIndex();
         int b = context.stop.getStopIndex();
         Interval interval = new Interval(a,b);
         bodyBuffer.append(context.start.getInputStream().getText(interval));
-        bodyBuffer.append("</xqdoc:body>").append("\n");
+        bodyBuffer.append("]]></xqdoc:body>").append("\n");
         return bodyBuffer;
     }
 
