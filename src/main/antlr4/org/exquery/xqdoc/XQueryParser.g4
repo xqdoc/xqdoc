@@ -48,7 +48,8 @@ setter: 'declare' 'boundary-space' type=('preserve' | 'strip')          # bounda
                   preserve=('preserve' | 'no-preserve')
                   ','
                   inherit=('inherit' | 'no-inherit')                    # copyNamespacesDecl
-      | 'declare' (('decimal-format' eqName) | ('default' 'decimal-format')) (DFPropertyName '=' StringLiteral)* # decFormatDecl
+      | 'declare' (('decimal-format' eqName) | ('default' 'decimal-format'))
+                  (DFPropertyName '=' stringLiteral)* # decFormatDecl
       ;
 
 
@@ -71,10 +72,10 @@ moduleImport: 'import' 'module'
               nsURI=stringLiteral
               ('at' locations+=stringLiteral (',' locations+=stringLiteral)*)? ;
 
-varDecl: 'declare' annotations? 'variable' '$' name=qName type=typeDeclaration?
-         (':=' value=exprSingle | 'external') ;
+varDecl: 'declare' annotations? 'variable' '$' name=eqName type=typeDeclaration?
+         ((':=' value=exprSingle) | ('external'(':=' exprSingle)?)) ;
 
-functionDecl: 'declare' annotations? 'function' name=qName '(' functionParams? ')'
+functionDecl: 'declare' annotations? 'function' name=eqName '(' functionParams? ')'
               functionReturn?
               ('{' body=expr '}' | 'external') ;
 
@@ -105,6 +106,7 @@ exprSingle: flworExpr
           | quantifiedExpr
           | switchExpr
           | typeswitchExpr
+          | existUpdateExpr
           | ifExpr
           | tryCatchExpr
           | orExpr ;
@@ -123,7 +125,7 @@ forVar: '$' name=qName type=typeDeclaration? allowingEmpty? positionalVar?
 
 allowingEmpty: 'allowing' 'empty';
 
-positionalVar: 'at' '$' pvar=qName ;
+positionalVar: 'at' '$' pvar=eqName ;
 
 letClause: 'let'  vars+=letVar (',' vars+=letVar)* ;
 
@@ -161,9 +163,9 @@ switchExpr: 'switch' '(' switchE=expr ')'
 
 typeswitchExpr: 'typeswitch' '(' switchE=expr ')'
                 clauses=caseClause+
-                'default' ('$' var=qName)? 'return' returnExpr=exprSingle ;
+                'default' ('$' var=eqName)? 'return' returnExpr=exprSingle ;
 
-caseClause: 'case' ('$' var=qName 'as')? type=sequenceUnionType 'return'
+caseClause: 'case' ('$' var=eqName 'as')? type=sequenceUnionType 'return'
             returnExpr=exprSingle ;
 
 sequenceUnionType: sequenceType ('|' sequenceType)* ;
@@ -179,10 +181,18 @@ enclosedExpression: '{' exprSingle '}' ;
 
 catchErrorList: nameTest ('|' nameTest)* ;
 
+existUpdateExpr: 'update' ( existReplaceExpr | existValueExpr | existInsertExpr | existDeleteExpr | existRenameExpr ) ;
+
+existReplaceExpr: 'replace' expr 'with' exprSingle ;
+existValueExpr: 'value' expr 'with' exprSingle ;
+existInsertExpr: 'insert' exprSingle ('into' | 'preceding' | 'following') exprSingle;
+existDeleteExpr: 'delete' exprSingle;
+existRenameExpr: 'rename' exprSingle 'as' exprSingle;
+
 // Here we use a bit of ANTLR4's new capabilities to simplify the grammar
 orExpr:
         ('-'|'+') orExpr                                    # unary
-      | orExpr op='cast' 'as' singleType                    # cast
+      | orExpr op=castExpr                                  # cast
       | l=orExpr op='castable' 'as' r=singleType            # castable
       | l=orExpr op='treat' 'as' r=sequenceType             # treat
       | l=orExpr op='instance' 'of' r=sequenceType          # instanceOf
@@ -196,6 +206,7 @@ orExpr:
                | 'is' | '<' '<' | '>' '>') r=orExpr         # comparison
       | l=orExpr op='and' r=orExpr                          # and
       | l=orExpr op='or' r=orExpr                           # or
+      | stringConcatExpr                                    # stringConcatenation
       | 'validate' vMode=('lax' | 'strict')? '{' expr '}'   # validate
       | PRAGMA+ '{' expr? '}'                               # extension
       | '/' relativePathExpr?                               # rootedPath
@@ -208,13 +219,25 @@ primaryExpr: IntegerLiteral           # integer
            | DoubleLiteral            # double
            | stringLiteral            # string
            | variableReference        # var
-           | '(' expr? ')'            # paren
+           | parenthesizedExpr        # paren
            | '.'                      # current
            | functionCall             # funcall
            | 'ordered' '{' expr '}'   # ordered
            | 'unordered' '{' expr '}' # unordered
            | constructor              # ctor
            ;
+
+stringConcatExpr: rangeExpr (CONCATENATION rangeExpr)* ;
+rangeExpr: additiveExpr ('to' additiveExpr)? ;
+additiveExpr: multiplicativeExpr ( ('+' | '-') multiplicativeExpr )* ;
+multiplicativeExpr: unionExpr ( ('*' | 'div' | 'idiv' | 'mod') unionExpr )* ;
+unionExpr: intersectExceptExpr ( (KW_UNION | '|') intersectExceptExpr)* ;
+intersectExceptExpr: instanceOfExpr ( ('intersect' | 'except') instanceOfExpr)* ;
+instanceOfExpr: treatExpr ( 'instance' 'of' sequenceType)? ;
+treatExpr: castableExpr ( 'treat' 'as' sequenceType)? ;
+castableExpr: castExpr ('castable' 'as' singleType)?;
+
+castExpr: arrowExpr ('cast' 'as' singleType)? ;
 
 arrowExpr: unaryExpression (ARROW arrowFunctionSpecifier argumentList)* ;
 arrowFunctionSpecifier: eqName | varRef | parenthesizedExpr ;
@@ -225,7 +248,7 @@ argument: exprSingle | '?' ;
 
 unaryExpression: ('-' | '+')* valueExpr ;
 valueExpr: validateExpr | extensionExpr | simpleMapExpr ;
-validateExpr: 'validate' (validationMode | ('type' typeName=eqName))? enclosedExpression ;
+validateExpr: 'validate' (validationMode | ('type' typeName))? enclosedExpression ;
 validationMode: 'lax' | 'strict' ;
 extensionExpr: PRAGMA+ enclosedExpression ;
 simpleMapExpr: pathExpr ('!' pathExpr)* ;
@@ -327,16 +350,19 @@ commonContent: (PredefinedEntityRef | CharRef) | '{' '{' | '}' '}' | '{' expr '}
 
 computedConstructor: 'document' '{' expr '}'   # docConstructor
                    | 'element'
-                     (elementName=qName | '{' elementExpr=expr '}')
+                     (elementName | '{' elementExpr=expr '}')
                      '{' contentExpr=expr? '}' # elementConstructor
                    | 'attribute'
-                     (attrName=qName | ('{' attrExpr=expr '}'))
+                     (attributeName | ('{' attrExpr=expr '}'))
                      '{' contentExpr=expr? '}' # attrConstructor
                    | 'text' '{' expr '}'       # textConstructor 
                    | 'comment' '{' expr '}'    # commentConstructor
                    | 'processing-instruction'
                      (piName=ncName | '{' piExpr=expr '}')
                      '{' contentExpr=expr? '}' # piConstructor
+                   | 'map' '{' (mapConstructorEntry (COMMA mapConstructorEntry)*)? '}' #mapConstructor
+                   | LBRACKET (exprSingle (COMMA exprSingle)*)? RBRACKET #squareArrayConstructor
+                   | 'array' enclosedExpression #curlyArrayConstructor
                    | 'array-node' '{' expr '}' #arrayNodeConstructor
                    | 'object-node' '{' exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)* '}' #objectNodeConstructor
                    | 'number-node' '{' exprSingle '}' #numberNodeConstructor
@@ -344,42 +370,67 @@ computedConstructor: 'document' '{' expr '}'   # docConstructor
                    | 'null-node' '{' '}' #nullNodeConstructor
                    ;
 
+mapConstructorEntry: mapKey=exprSingle COLON mapValue=exprSingle ;
+
+// stringConstructor: '`' '`' '[' stringConstructorContent ']' '`' '`' ;
+
+// stringConstructorContent: StringConstructorChars (stringConstructorInterpolation StringConstructorChars)* ;
+// stringConstructorInterpolation: '`' '{' expr? '}' '`' ;
 
 // TYPES AND TYPE TESTS ////////////////////////////////////////////////////////
 
-singleType: qName '?'? ;
+singleType: eqName '?'? ;
 
 typeDeclaration: 'as' sequenceType ;
 
 sequenceType: 'empty-sequence' '(' ')' | itemType occurrence=('?'|'*'|'+')? ;
 
-itemType: kindTest | 'item' '(' ')' | qName ;
+itemType: kindTest | 'item' '(' ')' | functionTest | mapTest | arrayTest | qName | parenthesizedItemTest ;
 
 kindTest: documentTest | elementTest | attributeTest | schemaElementTest
-        | schemaAttributeTest | piTest | commentTest | textTest
+        | schemaAttributeTest | piTest | commentTest | textTest | namespaceNodeTest
         | arrayNodeTest | objectNodeTest | numberNodeTest | booleanNodeTest | nullNodeTest
         | anyKindTest
         ;
 
 documentTest: 'document-node' '(' (elementTest | schemaElementTest)? ')' ;
 
-elementTest: 'element' '(' (
-                (name=qName | wildcard='*')
-                (',' type=qName optional='?'?)?
-             )? ')' ;
+elementTest: 'element' '(' (elementNameOrWildcard (',' typeName optional='?'?)?)? ')' ;
 
-attributeTest: 'attribute' '(' (
-                (name=qName | wildcard='*')
-                (',' type=qName)?
-               )? ')' ;
 
-schemaElementTest: 'schema-element' '(' qName ')' ;
+attributeTest: 'attribute' '(' (attributeNameOrWildcard (',' type=qName)?)? ')' ;
 
-schemaAttributeTest: 'schema-attribute' '(' qName ')' ;
+
+schemaElementTest: 'schema-element' '(' elementDeclaration ')' ;
+elementDeclaration: elementName ;
+
+schemaAttributeTest: 'schema-attribute' '(' attributeDeclaration ')' ;
+
+elementNameOrWildcard: elementName | '*' ;
+elementName: eqName ;
+attributeDeclaration: attributeName ;
+attributeNameOrWildcard: attributeName | '*' ;
+attributeName: eqName ;
+typeName: eqName;
 
 piTest: 'processing-instruction' '(' (ncName | stringLiteral)? ')' ;
 
 commentTest: 'comment' '(' ')' ;
+
+namespaceNodeTest: 'namespace-node' '(' ')' ;
+
+functionTest: annotation* (anyFunctionTest | typedFunctionTest) ;
+anyFunctionTest: 'function' '(' '*' ')' ;
+typedFunctionTest: 'function' '(' (sequenceType (COMMA sequenceType)*)? ')' 'as' sequenceType ;
+
+parenthesizedItemTest: '(' itemType ')' ;
+mapTest: anyMapTest | typedMapTest ;
+anyMapTest: 'map' '(' '*' ')' ;
+typedMapTest: 'map' '(' eqName COMMA sequenceType ')' ;
+
+arrayTest: anyArrayTest | typedArrayTest ;
+anyArrayTest: 'array' '(' '*' ')' ;
+typedArrayTest: 'array' '(' sequenceType ')' ;
 
 textTest: 'text' '(' ')' ;
 
@@ -405,7 +456,7 @@ qName: FullQName | ncName ;
 
 ncName: NCName | keyword ;
 
-functionName: FullQName | NCName | keywordOKForFunction ;
+functionName: FullQName | NCName | URIQualifiedName | keywordOKForFunction ;
 
 keyword: keywordOKForFunction | keywordNotOKForFunction ;
 

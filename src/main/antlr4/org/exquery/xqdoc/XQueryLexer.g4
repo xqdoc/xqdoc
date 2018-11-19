@@ -87,6 +87,8 @@ MOD: '%' ;
 BANG: '!';
 
 ARROW: '=>';
+GRAVE: '`';
+CONCATENATION: '||';
 
 // KEYWORDS
 
@@ -94,13 +96,12 @@ KW_ALLOWING:           'allowing';
 KW_ANCESTOR:           'ancestor';
 KW_ANCESTOR_OR_SELF:   'ancestor-or-self';
 KW_AND:                'and';
-KW_ARRAY_NODE:         'array-node';
+KW_ARRAY:              'array';
 KW_AS:                 'as';
 KW_ASCENDING:          'ascending';
 KW_AT:                 'at';
 KW_ATTRIBUTE:          'attribute';
 KW_BASE_URI:           'base-uri';
-KW_BOOLEAN_NODE:       'boolean-node';
 KW_BOUNDARY_SPACE:     'boundary-space';
 KW_BY:                 'by';
 KW_CASE:               'case';
@@ -155,17 +156,16 @@ KW_LE:                 'le';
 KW_LEAST:              'least';
 KW_LET:                'let';
 KW_LT:                 'lt';
+KW_MAP:                'map';
 KW_MOD:                'mod';
 KW_MODULE:             'module';
 KW_NAMESPACE:          'namespace';
 KW_NE:                 'ne';
 KW_NEXT:               'next';
+KW_NAMESPACE_NODE:     'namespace-node';
 KW_NO_INHERIT:         'no-inherit';
 KW_NO_PRESERVE:        'no-preserve';
 KW_NODE:               'node';
-KW_NULL_NODE:          'null-node';
-KW_NUMBER_NODE:        'number-node';
-KW_OBJECT_NODE:        'object-node';
 KW_OF:                 'of';
 KW_ONLY:               'only';
 KW_OPTION:             'option';
@@ -202,6 +202,7 @@ KW_TYPE:               'type';
 KW_TYPESWITCH:         'typeswitch';
 KW_UNION:              'union';
 KW_UNORDERED:          'unordered';
+KW_UPDATE:             'update';
 KW_VALIDATE:           'validate';
 KW_VARIABLE:           'variable';
 KW_VERSION:            'version';
@@ -209,6 +210,25 @@ KW_WHEN:               'when';
 KW_WHERE:              'where';
 KW_WINDOW:             'window';
 KW_XQUERY:             'xquery';
+
+// MarkLogic JSON computed constructor
+
+KW_ARRAY_NODE:         'array-node';
+KW_BOOLEAN_NODE:       'boolean-node';
+KW_NULL_NODE:          'null-node';
+KW_NUMBER_NODE:        'number-node';
+KW_OBJECT_NODE:        'object-node';
+
+
+// eXist-db update keywords
+
+KW_REPLACE:            'replace';
+KW_WITH:               'with';
+KW_VALUE:              'value';
+KW_INSERT:             'insert';
+KW_INTO:               'into';
+KW_DELETE:             'delete';
+KW_RENAME:             'rename';
 
 // NAMES
 
@@ -272,5 +292,7 @@ XQComment: '(' ':' ~'~' (XQComment | '(' ~[:] | ':' ~[)] | ~[:(])* ':'+ ')' -> c
 // AposAttrContentChar ::= ContentChar | ["]
 //
 // This rule needs to be the very last one, so it has the lowest priority.
+
+//StringConstructorChars: (ContentChar* ~ (ContentChar* (('`' '{') | (']' '`' '`')) ContentChar*));
 
 ContentChar:  ~["'{}<&]  ;
