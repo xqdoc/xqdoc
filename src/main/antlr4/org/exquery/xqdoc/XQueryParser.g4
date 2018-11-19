@@ -31,12 +31,12 @@ moduleDecl: 'module' 'namespace' prefix=ncName '=' uri=stringLiteral ';' ;
 // MODULE PROLOG ///////////////////////////////////////////////////////////////
 
 prolog: ((defaultNamespaceDecl | setter | namespaceDecl | schemaImport | moduleImport) ';')*
-        ( xqDocComment? (varDecl | functionDecl | optionDecl) ';')* ;
+        ( xqDocComment? (varDecl | functionDecl | contextItemDecl | annotatedDecl | optionDecl) ';')* ;
 
 defaultNamespaceDecl: 'declare' 'default'
                       type=('element' | 'function')
                       'namespace'
-                      uri=stringLiteral;
+                      uri=stringLiteral ;
 
 setter: 'declare' 'boundary-space' type=('preserve' | 'strip')          # boundaryDecl
       | 'declare' 'default' 'collation' stringLiteral                   # defaultCollationDecl
@@ -48,9 +48,18 @@ setter: 'declare' 'boundary-space' type=('preserve' | 'strip')          # bounda
                   preserve=('preserve' | 'no-preserve')
                   ','
                   inherit=('inherit' | 'no-inherit')                    # copyNamespacesDecl
+      | 'declare' (('decimal-format' eqName) | ('default' 'decimal-format')) (DFPropertyName '=' StringLiteral)* # decFormatDecl
       ;
 
+
 namespaceDecl: 'declare' 'namespace' prefix=ncName '=' uri=stringLiteral ;
+
+annotatedDecl: 'declare' annotation* (varDecl | functionDecl) ;
+
+contextItemDecl: 'declare' 'context' 'item'
+                 ('as' itemType)?
+                 ((COLON_EQ value=exprSingle)
+                 | ('external' (COLON_EQ defaultValue=exprSingle)?)) ;
 
 schemaImport: 'import' 'schema'
               ('namespace' prefix=ncName '=' | 'default' 'element' 'namespace')?
@@ -92,21 +101,40 @@ xqDocComment: XQDOC_COMMENT_START .*? XQDOC_COMMENT_END ;
 
 expr: exprSingle (',' exprSingle)* ;
 
-exprSingle: flworExpr | quantifiedExpr | typeswitchExpr | ifExpr | orExpr ;
+exprSingle: flworExpr
+          | quantifiedExpr
+          | switchExpr
+          | typeswitchExpr
+          | ifExpr
+          | tryCatchExpr
+          | orExpr ;
 
-flworExpr: (forClause | letClause)+
+flworExpr: (forClause | letClause | windowClause)+
            ('where' whereExpr=exprSingle)?
            orderByClause?
+           groupByClause?
+           countClause?
            'return' returnExpr=exprSingle ;
 
 forClause: 'for' vars+=forVar (',' vars+=forVar)* ;
 
-forVar: '$' name=qName type=typeDeclaration? ('at' '$' pvar=qName)?
+forVar: '$' name=qName type=typeDeclaration? allowingEmpty? positionalVar?
         'in' in=exprSingle ;
+
+allowingEmpty: 'allowing' 'empty';
+
+positionalVar: 'at' '$' pvar=qName ;
 
 letClause: 'let'  vars+=letVar (',' vars+=letVar)* ;
 
 letVar: '$' name=qName type=typeDeclaration? ':=' value=exprSingle ;
+
+windowClause: 'for' (tumblingWindowClause | slidingWindowClause) ;
+tumblingWindowClause: 'tumbling' 'window' '$' name=qName type=typeDeclaration? 'in' exprSingle windowStartCondition windowEndCondition? ;
+slidingWindowClause: 'sliding' 'window' '$' name=qName type=typeDeclaration? 'in' exprSingle windowStartCondition windowEndCondition ;
+windowStartCondition: 'start' windowVars 'when' exprSingle ;
+windowEndCondition: 'only'? 'end' windowVars 'when' exprSingle ;
+windowVars: ('$' currentItem=qName)? positionalVar? ('previous' '$' previousItem=qName)? ('next' '$' nextItem=qName)?;
 
 orderByClause: 'stable'? 'order' 'by' specs+=orderSpec (',' specs+=orderSpec)* ;
 
@@ -116,21 +144,40 @@ orderSpec: value=exprSingle
            ('collation' collation=stringLiteral)?
          ;
 
+groupByClause: 'group' 'by' groupingSpecList ;
+groupingSpecList: groupingSpec (COMMA groupingSpec)* ;
+groupingSpec: '$' name=qName (type=typeDeclaration? COLON_EQ exprSingle)? ('collation' uri=stringLiteral)? ;
+
+countClause: 'count' '$' name=qName ;
+
 quantifiedExpr: quantifier=('some' | 'every') vars+=quantifiedVar (',' vars+=quantifiedVar)*
                 'satisfies' value=exprSingle ;
 
 quantifiedVar: '$' name=qName type=typeDeclaration? 'in' exprSingle ;
 
-typeswitchExpr: 'typeswitch' '(' switchExpr=expr ')'
+switchExpr: 'switch' '(' switchE=expr ')'
+                clauses=caseClause+
+                'default' 'return' returnExpr=exprSingle ;
+
+typeswitchExpr: 'typeswitch' '(' switchE=expr ')'
                 clauses=caseClause+
                 'default' ('$' var=qName)? 'return' returnExpr=exprSingle ;
 
-caseClause: 'case' ('$' var=qName 'as')? type=sequenceType 'return'
+caseClause: 'case' ('$' var=qName 'as')? type=sequenceUnionType 'return'
             returnExpr=exprSingle ;
+
+sequenceUnionType: sequenceType ('|' sequenceType)* ;
 
 ifExpr: 'if' '(' conditionExpr=expr ')'
         'then' thenExpr=exprSingle
         'else' elseExpr=exprSingle ;
+
+tryCatchExpr: tryClause caseClause+ ;
+tryClause: 'try' enclosedExpression ;
+catchClause: 'catch' catchErrorList enclosedExpression ;
+enclosedExpression: '{' exprSingle '}' ;
+
+catchErrorList: nameTest ('|' nameTest)* ;
 
 // Here we use a bit of ANTLR4's new capabilities to simplify the grammar
 orExpr:
@@ -169,10 +216,26 @@ primaryExpr: IntegerLiteral           # integer
            | constructor              # ctor
            ;
 
+arrowExpr: unaryExpression (ARROW arrowFunctionSpecifier argumentList)* ;
+arrowFunctionSpecifier: eqName | varRef | parenthesizedExpr ;
+varRef: '$' eqName;
+parenthesizedExpr: '(' expr? ')' ;
+argumentList: '(' (argument (COMMA argument)*)? ')' ;
+argument: exprSingle | '?' ;
+
+unaryExpression: ('-' | '+')* valueExpr ;
+valueExpr: validateExpr | extensionExpr | simpleMapExpr ;
+validateExpr: 'validate' (validationMode | ('type' typeName=eqName))? enclosedExpression ;
+validationMode: 'lax' | 'strict' ;
+extensionExpr: PRAGMA+ enclosedExpression ;
+simpleMapExpr: pathExpr ('!' pathExpr)* ;
+
 functionCall: functionName '(' (args+=exprSingle (',' args+=exprSingle)*)? ')' ;
 variableReference: '$' qName ;
 
 // PATHS ///////////////////////////////////////////////////////////////////////
+
+pathExpr: ('/' relativePathExpr?) | ('//' relativePathExpr) | relativePathExpr ;
 
 relativePathExpr: stepExpr (sep=('/'|'//') stepExpr)* ;
 
@@ -274,7 +337,13 @@ computedConstructor: 'document' '{' expr '}'   # docConstructor
                    | 'processing-instruction'
                      (piName=ncName | '{' piExpr=expr '}')
                      '{' contentExpr=expr? '}' # piConstructor
+                   | 'array-node' '{' expr '}' #arrayNodeConstructor
+                   | 'object-node' '{' exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)* '}' #objectNodeConstructor
+                   | 'number-node' '{' exprSingle '}' #numberNodeConstructor
+                   | 'boolean-node' '{' exprSingle '}' # booleanNodeConstructor
+                   | 'null-node' '{' '}' #nullNodeConstructor
                    ;
+
 
 // TYPES AND TYPE TESTS ////////////////////////////////////////////////////////
 
@@ -288,6 +357,7 @@ itemType: kindTest | 'item' '(' ')' | qName ;
 
 kindTest: documentTest | elementTest | attributeTest | schemaElementTest
         | schemaAttributeTest | piTest | commentTest | textTest
+        | arrayNodeTest | objectNodeTest | numberNodeTest | booleanNodeTest | nullNodeTest
         | anyKindTest
         ;
 
@@ -315,10 +385,23 @@ textTest: 'text' '(' ')' ;
 
 anyKindTest: 'node' '(' ')' ;
 
+arrayNodeTest: 'array-node' '(' ')' ;
+
+objectNodeTest: 'object-node' '(' ')' ;
+
+numberNodeTest: 'number-node' '(' ')' ;
+
+booleanNodeTest: 'boolean-node' '(' ')' ;
+
+nullNodeTest: 'null-node' '(' ')' ;
+
 // NAMES ///////////////////////////////////////////////////////////////////////
 
 // walkers need to split into prefix+localpart by the ':'
+eqName: qName | URIQualifiedName ;
+
 qName: FullQName | ncName ;
+
 
 ncName: NCName | keyword ;
 

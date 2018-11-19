@@ -9,6 +9,21 @@ IntegerLiteral: Digits ;
 DecimalLiteral: '.' Digits | Digits '.' [0-9]* ;
 DoubleLiteral: ('.' Digits | Digits ('.' [0-9]*)?) [eE] [+-]? Digits ;
 
+DFPropertyName: 'decimal-separator'
+              | 'grouping-separator'
+              | 'infinity'
+              | 'minus-sign'
+              | 'NaN'
+              | 'percent'
+              | 'per-mille'
+              | 'zero-digit'
+              | 'digit'
+              | 'pattern-separator'
+              | 'exponent-separator'
+              ;
+
+URIQualifiedName: 'Q' '{' (PredefinedEntityRef | CharRef | [^&{}])* '}' ;
+
 fragment
 Digits: [0-9]+ ;
 
@@ -69,32 +84,42 @@ QUESTION: '?' ;
 AT: '@' ;
 DOLLAR: '$' ;
 MOD: '%' ;
+BANG: '!';
+
+ARROW: '=>';
 
 // KEYWORDS
 
+KW_ALLOWING:           'allowing';
 KW_ANCESTOR:           'ancestor';
 KW_ANCESTOR_OR_SELF:   'ancestor-or-self';
 KW_AND:                'and';
+KW_ARRAY_NODE:         'array-node';
 KW_AS:                 'as';
 KW_ASCENDING:          'ascending';
 KW_AT:                 'at';
 KW_ATTRIBUTE:          'attribute';
 KW_BASE_URI:           'base-uri';
+KW_BOOLEAN_NODE:       'boolean-node';
 KW_BOUNDARY_SPACE:     'boundary-space';
 KW_BY:                 'by';
 KW_CASE:               'case';
 KW_CAST:               'cast';
 KW_CASTABLE:           'castable';
+KW_CATCH:              'catch';
 KW_CHILD:              'child';
 KW_COLLATION:          'collation';
 KW_COMMENT:            'comment';
 KW_CONSTRUCTION:       'construction';
+KW_CONTEXT:            'context';
 KW_COPY_NS:            'copy-namespaces';
+KW_COUNT:              'count';
 KW_DECLARE:            'declare';
 KW_DEFAULT:            'default';
 KW_DESCENDANT:         'descendant';
 KW_DESCENDANT_OR_SELF: 'descendant-or-self';
 KW_DESCENDING:         'descending';
+KW_DECIMAL_FORMAT:     'decimal-format' ;
 KW_DIV:                'div';
 KW_DOCUMENT:           'document';
 KW_DOCUMENT_NODE:      'document-node';
@@ -103,6 +128,7 @@ KW_ELSE:               'else';
 KW_EMPTY:              'empty';
 KW_EMPTY_SEQUENCE:     'empty-sequence';
 KW_ENCODING:           'encoding';
+KW_END:                'end';
 KW_EQ:                 'eq';
 KW_EVERY:              'every';
 KW_EXCEPT:             'except';
@@ -113,6 +139,7 @@ KW_FOR:                'for';
 KW_FUNCTION:           'function';
 KW_GE:                 'ge';
 KW_GREATEST:           'greatest';
+KW_GROUP:              'group';
 KW_GT:                 'gt';
 KW_IDIV:               'idiv';
 KW_IF:                 'if';
@@ -132,10 +159,15 @@ KW_MOD:                'mod';
 KW_MODULE:             'module';
 KW_NAMESPACE:          'namespace';
 KW_NE:                 'ne';
+KW_NEXT:               'next';
 KW_NO_INHERIT:         'no-inherit';
 KW_NO_PRESERVE:        'no-preserve';
 KW_NODE:               'node';
+KW_NULL_NODE:          'null-node';
+KW_NUMBER_NODE:        'number-node';
+KW_OBJECT_NODE:        'object-node';
 KW_OF:                 'of';
+KW_ONLY:               'only';
 KW_OPTION:             'option';
 KW_OR:                 'or';
 KW_ORDER:              'order';
@@ -145,6 +177,7 @@ KW_PARENT:             'parent';
 KW_PRECEDING:          'preceding';
 KW_PRECEDING_SIBLING:  'preceding-sibling';
 KW_PRESERVE:           'preserve';
+KW_PREVIOUS:           'previous';
 KW_PI:                 'processing-instruction';
 KW_RETURN:             'return';
 KW_SATISFIES:          'satisfies';
@@ -152,21 +185,29 @@ KW_SCHEMA:             'schema';
 KW_SCHEMA_ATTR:        'schema-attribute';
 KW_SCHEMA_ELEM:        'schema-element';
 KW_SELF:               'self';
+KW_SLIDING:            'sliding';
 KW_SOME:               'some';
 KW_STABLE:             'stable';
+KW_START:              'start';
 KW_STRICT:             'strict';
 KW_STRIP:              'strip';
+KW_SWITCH:             'switch';
 KW_TEXT:               'text';
 KW_THEN:               'then';
 KW_TO:                 'to';
 KW_TREAT:              'treat';
+KW_TRY:                'try';
+KW_TUMBLING:           'tumbling';
+KW_TYPE:               'type';
 KW_TYPESWITCH:         'typeswitch';
 KW_UNION:              'union';
 KW_UNORDERED:          'unordered';
 KW_VALIDATE:           'validate';
 KW_VARIABLE:           'variable';
 KW_VERSION:            'version';
+KW_WHEN:               'when';
 KW_WHERE:              'where';
+KW_WINDOW:             'window';
 KW_XQUERY:             'xquery';
 
 // NAMES
