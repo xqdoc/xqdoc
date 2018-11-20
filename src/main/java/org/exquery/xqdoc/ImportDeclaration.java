@@ -19,15 +19,15 @@ public class ImportDeclaration {
 
         buffer.append("<xqdoc:import type=\"");
         buffer.append(this.importType);
-        buffer.append("\">\n");
+        buffer.append("\">").append("\n");
         buffer.append("<xqdoc:uri>");
         buffer.append(this.uri);
-        buffer.append("/<xqdoc:uri>\n");
+        buffer.append("</xqdoc:uri>\n");
         if (this.comment != null)
         {
             buffer.append(this.comment);
         }
-        buffer.append("/<xqdoc:import>\n");
+        buffer.append("</xqdoc:import>\n");
         return buffer.toString();
     }
 }

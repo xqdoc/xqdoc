@@ -18,6 +18,8 @@ options {
 
 module: xqDocComment? versionDecl? xqDocComment? (libraryModule | mainModule) ;
 
+xqDocComment: XQDocComment ;
+
 versionDecl: 'xquery' 'version' version=stringLiteral
              ('encoding' encoding=stringLiteral)?
              ';' ;
@@ -26,58 +28,73 @@ mainModule: prolog expr;
 
 libraryModule: moduleDecl prolog;
 
-moduleDecl: 'module' 'namespace' prefix=ncName '=' uri=stringLiteral ';' ;
+moduleDecl: 'module' 'namespace' ncName '=' uri=stringLiteral ';' ;
 
 // MODULE PROLOG ///////////////////////////////////////////////////////////////
 
 prolog: ((defaultNamespaceDecl | setter | namespaceDecl | schemaImport | moduleImport) ';')*
-        ( xqDocComment? (varDecl | functionDecl | contextItemDecl | annotatedDecl | optionDecl) ';')* ;
+        ( xqDocComment? (varDecl | functionDecl | contextItemDecl | optionDecl) ';')* ;
 
 defaultNamespaceDecl: 'declare' 'default'
                       type=('element' | 'function')
                       'namespace'
                       uri=stringLiteral ;
 
-setter: 'declare' 'boundary-space' type=('preserve' | 'strip')          # boundaryDecl
-      | 'declare' 'default' 'collation' stringLiteral                   # defaultCollationDecl
-      | 'declare' 'base-uri' stringLiteral                              # baseURIDecl
-      | 'declare' 'construction' type=('strip' | 'preserve')            # constructionDecl
-      | 'declare' 'ordering' type=('ordered' | 'unordered')             # orderingModeDecl
-      | 'declare' 'default' 'order' 'empty' type=('greatest' | 'least') # emptyOrderDecl
-      | 'declare' 'copy-namespaces'                                     
-                  preserve=('preserve' | 'no-preserve')
-                  ','
-                  inherit=('inherit' | 'no-inherit')                    # copyNamespacesDecl
-      | 'declare' (('decimal-format' eqName) | ('default' 'decimal-format'))
-                  (DFPropertyName '=' stringLiteral)* # decFormatDecl
-      ;
+setter: boundarySpaceDecl
+      | defaultCollationDecl
+      | baseURIDecl
+      | constructionDecl
+      | orderingModeDecl
+      | emptyOrderDecl
+      | copyNamespacesDecl |
+      decimalFormatDecl ;
+
+boundarySpaceDecl: 'declare' 'boundary-space' type=('preserve' | 'strip') ;
+defaultCollationDecl: 'declare' 'default' 'collation' uriLiteral ;
+baseURIDecl: 'declare' 'base-uri' uriLiteral ;
+constructionDecl: 'declare' 'construction' type=('strip' | 'preserve') ;
+orderingModeDecl: 'declare' 'ordering' type=('ordered' | 'unordered') ;
+emptyOrderDecl: 'declare' 'default' 'order' 'empty' type=('greatest' | 'least') ;
+copyNamespacesDecl: 'declare' 'copy-namespaces' preserveMode COMMA inheritMode ;
+preserveMode: 'preserve' | 'no-preserve' ;
+inheritMode: 'inherit' | 'no-inherit' ;
+decimalFormatDecl: 'declare' (
+                      ('decimal-format' eqName)
+                    | ('default' 'decimal-format')
+                   )
+                   (DFPropertyName '=' stringLiteral)*;
 
 
-namespaceDecl: 'declare' 'namespace' prefix=ncName '=' uri=stringLiteral ;
+schemaImport: 'import' 'schema'
+              schemaPrefix?
+              nsURI=uriLiteral
+              ('at' locations+=uriLiteral (',' locations+=uriLiteral)*)? ;
 
-annotatedDecl: 'declare' annotation* (varDecl | functionDecl) ;
+schemaPrefix: ('namespace' ncName '=' | 'default' 'element' 'namespace') ;
+
+moduleImport: 'import' 'module'
+              ('namespace' ncName '=')?
+              nsURI=uriLiteral
+              ('at' locations+=uriLiteral (',' locations+=uriLiteral)*)? ;
+
+
+namespaceDecl: 'declare' 'namespace' ncName '=' uriLiteral ;
+
+varDecl: 'declare' annotations 'variable' '$' varName typeDeclaration?
+         ((':=' varValue) | ('external'(':=' varDefaultValue)?)) ;
+
+varValue: exprSingle ;
+
+varDefaultValue: exprSingle ;
 
 contextItemDecl: 'declare' 'context' 'item'
                  ('as' itemType)?
                  ((COLON_EQ value=exprSingle)
                  | ('external' (COLON_EQ defaultValue=exprSingle)?)) ;
 
-schemaImport: 'import' 'schema'
-              ('namespace' prefix=ncName '=' | 'default' 'element' 'namespace')?
-              nsURI=stringLiteral
-              ('at' locations+=stringLiteral (',' locations+=stringLiteral)*)? ;
-
-moduleImport: 'import' 'module'
-              ('namespace' prefix=ncName '=')?
-              nsURI=stringLiteral
-              ('at' locations+=stringLiteral (',' locations+=stringLiteral)*)? ;
-
-varDecl: 'declare' annotations? 'variable' '$' name=eqName type=typeDeclaration?
-         ((':=' value=exprSingle) | ('external'(':=' exprSingle)?)) ;
-
-functionDecl: 'declare' annotations? 'function' name=eqName '(' functionParams? ')'
+functionDecl: 'declare' annotations 'function' name=eqName '(' functionParams? ')'
               functionReturn?
-              ('{' body=expr '}' | 'external') ;
+              ( functionBody | 'external') ;
 
 functionParams: functionParam (COMMA functionParam)* ;
 
@@ -95,8 +112,6 @@ functionReturn: 'as' type=sequenceType ;
 
 optionDecl: 'declare' 'option' name=qName value=stringLiteral ;
 
-xqDocComment: XQDOC_COMMENT_START .*? XQDOC_COMMENT_END ;
-
 
 // EXPRESSIONS /////////////////////////////////////////////////////////////////
 
@@ -111,61 +126,87 @@ exprSingle: flworExpr
           | tryCatchExpr
           | orExpr ;
 
-flworExpr: (forClause | letClause | windowClause)+
-           ('where' whereExpr=exprSingle)?
-           orderByClause?
-           groupByClause?
-           countClause?
-           'return' returnExpr=exprSingle ;
+flworExpr: initialClause intermediateClause returnClause ;
 
-forClause: 'for' vars+=forVar (',' vars+=forVar)* ;
+initialClause: forClause | letClause | windowClause ;
+intermediateClause: initialClause
+                  | whereClause
+                  | groupByClause
+                  | orderByClause
+//                  | countClause
+                  ;
 
-forVar: '$' name=qName type=typeDeclaration? allowingEmpty? positionalVar?
+forClause: 'for' vars+=forBinding (',' vars+=forBinding)* ;
+
+forBinding: '$' name=varName type=typeDeclaration? allowingEmpty? positionalVar?
         'in' in=exprSingle ;
 
 allowingEmpty: 'allowing' 'empty';
 
-positionalVar: 'at' '$' pvar=eqName ;
+positionalVar: 'at' '$' pvar=varName ;
 
-letClause: 'let'  vars+=letVar (',' vars+=letVar)* ;
+letClause: 'let'  vars+=letBinding (',' vars+=letBinding)* ;
 
-letVar: '$' name=qName type=typeDeclaration? ':=' value=exprSingle ;
+letBinding: '$' name=varName type=typeDeclaration? ':=' value=exprSingle ;
 
 windowClause: 'for' (tumblingWindowClause | slidingWindowClause) ;
-tumblingWindowClause: 'tumbling' 'window' '$' name=qName type=typeDeclaration? 'in' exprSingle windowStartCondition windowEndCondition? ;
-slidingWindowClause: 'sliding' 'window' '$' name=qName type=typeDeclaration? 'in' exprSingle windowStartCondition windowEndCondition ;
+
+tumblingWindowClause: 'tumbling' 'window' '$' name=qName
+                          type=typeDeclaration? 'in' exprSingle
+                          windowStartCondition windowEndCondition? ;
+
+slidingWindowClause: 'sliding' 'window' '$' name=qName
+                          type=typeDeclaration? 'in' exprSingle
+                          windowStartCondition windowEndCondition ;
+
 windowStartCondition: 'start' windowVars 'when' exprSingle ;
+
 windowEndCondition: 'only'? 'end' windowVars 'when' exprSingle ;
-windowVars: ('$' currentItem=qName)? positionalVar? ('previous' '$' previousItem=qName)? ('next' '$' nextItem=qName)?;
+
+windowVars: ('$' currentItem=eqName)? positionalVar?
+                          ('previous' '$' previousItem=eqName)?
+                          ('next' '$' nextItem=eqName)?;
+
+// countClause: 'count' '$' varName ;
+
+whereClause: 'where' whereExpr=exprSingle ;
+
+groupByClause: 'group' 'by' groupingSpecList ;
+
+groupingSpecList: groupingSpec (COMMA groupingSpec)* ;
+
+groupingSpec: '$' name=varName
+                    (type=typeDeclaration? COLON_EQ exprSingle)?
+                    ('collation' uri=uriLiteral)? ;
 
 orderByClause: 'stable'? 'order' 'by' specs+=orderSpec (',' specs+=orderSpec)* ;
 
 orderSpec: value=exprSingle
            order=('ascending' | 'descending')?
            ('empty' empty=('greatest'|'least'))?
-           ('collation' collation=stringLiteral)?
+           ('collation' collation=uriLiteral)?
          ;
 
-groupByClause: 'group' 'by' groupingSpecList ;
-groupingSpecList: groupingSpec (COMMA groupingSpec)* ;
-groupingSpec: '$' name=qName (type=typeDeclaration? COLON_EQ exprSingle)? ('collation' uri=stringLiteral)? ;
+returnClause: 'return' exprSingle ;
 
-countClause: 'count' '$' name=qName ;
-
-quantifiedExpr: quantifier=('some' | 'every') vars+=quantifiedVar (',' vars+=quantifiedVar)*
+quantifiedExpr: quantifier=('some' | 'every') quantifiedVar (',' quantifiedVar)*
                 'satisfies' value=exprSingle ;
 
-quantifiedVar: '$' name=qName type=typeDeclaration? 'in' exprSingle ;
+quantifiedVar: '$' varName typeDeclaration? 'in' exprSingle ;
 
-switchExpr: 'switch' '(' switchE=expr ')'
-                clauses=caseClause+
+switchExpr: 'switch' '(' expr ')'
+                switchCaseClause+
                 'default' 'return' returnExpr=exprSingle ;
 
-typeswitchExpr: 'typeswitch' '(' switchE=expr ')'
-                clauses=caseClause+
-                'default' ('$' var=eqName)? 'return' returnExpr=exprSingle ;
+switchCaseClause: ('case' switchCaseOperand)+ 'return' exprSingle ;
 
-caseClause: 'case' ('$' var=eqName 'as')? type=sequenceUnionType 'return'
+switchCaseOperand: exprSingle ;
+
+typeswitchExpr: 'typeswitch' '(' expr ')'
+                clauses=caseClause+
+                'default' ('$' var=varName)? 'return' returnExpr=exprSingle ;
+
+caseClause: 'case' ('$' var=varName 'as')? type=sequenceUnionType 'return'
             returnExpr=exprSingle ;
 
 sequenceUnionType: sequenceType ('|' sequenceType)* ;
@@ -175,11 +216,13 @@ ifExpr: 'if' '(' conditionExpr=expr ')'
         'else' elseExpr=exprSingle ;
 
 tryCatchExpr: tryClause caseClause+ ;
-tryClause: 'try' enclosedExpression ;
+tryClause: 'try' enclosedTryTargetExpression ;
+enclosedTryTargetExpression: enclosedExpression ;
 catchClause: 'catch' catchErrorList enclosedExpression ;
 enclosedExpression: '{' exprSingle '}' ;
 
 catchErrorList: nameTest ('|' nameTest)* ;
+
 
 existUpdateExpr: 'update' ( existReplaceExpr | existValueExpr | existInsertExpr | existDeleteExpr | existRenameExpr ) ;
 
@@ -189,72 +232,52 @@ existInsertExpr: 'insert' exprSingle ('into' | 'preceding' | 'following') exprSi
 existDeleteExpr: 'delete' exprSingle;
 existRenameExpr: 'rename' exprSingle 'as' exprSingle;
 
-// Here we use a bit of ANTLR4's new capabilities to simplify the grammar
-orExpr:
-        ('-'|'+') orExpr                                    # unary
-      | orExpr op=castExpr                                  # cast
-      | l=orExpr op='castable' 'as' r=singleType            # castable
-      | l=orExpr op='treat' 'as' r=sequenceType             # treat
-      | l=orExpr op='instance' 'of' r=sequenceType          # instanceOf
-      | l=orExpr op=('intersect' | 'except') r=orExpr       # intersect
-      | l=orExpr op=(KW_UNION | '|') r=orExpr               # union
-      | l=orExpr op=('*' | 'div' | 'idiv' | 'mod') r=orExpr # mult
-      | l=orExpr op=('+' | '-') r=orExpr                    # add
-      | l=orExpr op='to' r=orExpr                           # range
-      | l=orExpr ('eq' | 'ne' | 'lt' | 'le' | 'gt' | 'ge'
-               | '=' | '!=' | '<' | '<' '=' | '>' | '>' '='
-               | 'is' | '<' '<' | '>' '>') r=orExpr         # comparison
-      | l=orExpr op='and' r=orExpr                          # and
-      | l=orExpr op='or' r=orExpr                           # or
-      | stringConcatExpr                                    # stringConcatenation
-      | 'validate' vMode=('lax' | 'strict')? '{' expr '}'   # validate
-      | PRAGMA+ '{' expr? '}'                               # extension
-      | '/' relativePathExpr?                               # rootedPath
-      | '//' relativePathExpr                               # allDescPath
-      | relativePathExpr                                    # relative
-      ;
 
-primaryExpr: IntegerLiteral           # integer
-           | DecimalLiteral           # decimal
-           | DoubleLiteral            # double
-           | stringLiteral            # string
-           | variableReference        # var
-           | parenthesizedExpr        # paren
-           | '.'                      # current
-           | functionCall             # funcall
-           | 'ordered' '{' expr '}'   # ordered
-           | 'unordered' '{' expr '}' # unordered
-           | constructor              # ctor
-           ;
+orExpr: andExpr ('or' andExpr)* ;
+
+andExpr: comparisonExpr ('and' comparisonExpr)* ;
+
+comparisonExpr: stringConcatExpr ( (valueComp | generalComp | nodeComp) stringConcatExpr )? ;
 
 stringConcatExpr: rangeExpr (CONCATENATION rangeExpr)* ;
+
 rangeExpr: additiveExpr ('to' additiveExpr)? ;
+
 additiveExpr: multiplicativeExpr ( ('+' | '-') multiplicativeExpr )* ;
+
 multiplicativeExpr: unionExpr ( ('*' | 'div' | 'idiv' | 'mod') unionExpr )* ;
+
 unionExpr: intersectExceptExpr ( (KW_UNION | '|') intersectExceptExpr)* ;
+
 intersectExceptExpr: instanceOfExpr ( ('intersect' | 'except') instanceOfExpr)* ;
+
 instanceOfExpr: treatExpr ( 'instance' 'of' sequenceType)? ;
+
 treatExpr: castableExpr ( 'treat' 'as' sequenceType)? ;
+
 castableExpr: castExpr ('castable' 'as' singleType)?;
 
 castExpr: arrowExpr ('cast' 'as' singleType)? ;
 
 arrowExpr: unaryExpression (ARROW arrowFunctionSpecifier argumentList)* ;
-arrowFunctionSpecifier: eqName | varRef | parenthesizedExpr ;
-varRef: '$' eqName;
-parenthesizedExpr: '(' expr? ')' ;
-argumentList: '(' (argument (COMMA argument)*)? ')' ;
-argument: exprSingle | '?' ;
 
 unaryExpression: ('-' | '+')* valueExpr ;
-valueExpr: validateExpr | extensionExpr | simpleMapExpr ;
-validateExpr: 'validate' (validationMode | ('type' typeName))? enclosedExpression ;
-validationMode: 'lax' | 'strict' ;
-extensionExpr: PRAGMA+ enclosedExpression ;
-simpleMapExpr: pathExpr ('!' pathExpr)* ;
 
-functionCall: functionName '(' (args+=exprSingle (',' args+=exprSingle)*)? ')' ;
-variableReference: '$' qName ;
+valueExpr: validateExpr | extensionExpr | simpleMapExpr ;
+
+generalComp: '=' | '!=' | '<' | ('<' '=') | '>' | ('>' '=') ;
+
+valueComp: 'eq' | 'ne' | 'lt' | 'le' | 'gt' | 'ge' ;
+
+nodeComp: 'is' | ('<' '<') | ('>' '>') ;
+
+validateExpr: 'validate' (validationMode | ('type' typeName))? enclosedExpression ;
+
+validationMode: 'lax' | 'strict' ;
+
+extensionExpr: PRAGMA+ '{' expr '}' ;
+
+simpleMapExpr: pathExpr ('!' pathExpr)* ;
 
 // PATHS ///////////////////////////////////////////////////////////////////////
 
@@ -262,7 +285,7 @@ pathExpr: ('/' relativePathExpr?) | ('//' relativePathExpr) | relativePathExpr ;
 
 relativePathExpr: stepExpr (sep=('/'|'//') stepExpr)* ;
 
-stepExpr: axisStep | filterExpr ;
+stepExpr: axisStep | postfixExpr ;
 
 axisStep: (reverseStep | forwardStep) predicateList ;
 
@@ -290,19 +313,66 @@ abbrevReverseStep: '..' ;
 
 nodeTest: nameTest | kindTest ;
 
-nameTest: qName          # exactMatch
-        | '*'            # allNames
+nameTest: eqName | wildcard ;
+
+wildcard: '*'            # allNames
         | NCNameWithLocalWildcard  # allWithNS    // walkers must strip out the trailing :*
         | NCNameWithPrefixWildcard # allWithLocal // walkers must strip out the leading *:
         ;
 
-filterExpr: primaryExpr predicateList ;
 
-predicateList: ('[' predicates+=expr ']')*;
+postfixExpr: primaryExpr (predicate | argumentList | lookup)* ;
+
+argumentList: '(' (argument (COMMA argument)*)? ')' ;
+
+predicateList: predicate*;
+
+predicate: '[' expr ']' ;
+
+lookup: '?' keySpecifier ;
+
+keySpecifier: ncName | IntegerLiteral | parenthesizedExpr | '*' ;
+
+arrowFunctionSpecifier: eqName | varRef | parenthesizedExpr ;
+
+primaryExpr: literal
+           | varRef
+           | parenthesizedExpr
+           | contextItemExpr
+           | functionCall
+           | orderedExpr
+           | unorderedExpr
+           | nodeConstructor
+           | functionItemExpr
+           | mapConstructor
+           | arrayConstructor
+//           | stringConstructor
+           | unaryLookup
+           ;
+
+literal: numericLiteral | stringLiteral ;
+
+numericLiteral: IntegerLiteral | DecimalLiteral | DoubleLiteral ;
+
+varRef: '$' eqName;
+
+varName: eqName ;
+
+parenthesizedExpr: '(' expr? ')' ;
+
+contextItemExpr: '.' ;
+
+orderedExpr: 'ordered' enclosedExpression ;
+
+unorderedExpr: 'unordered' enclosedExpression ;
+
+functionCall: functionName '(' (args+=argument (',' args+=argument)*)? ')' ;
+
+argument: exprSingle | '?' ;
 
 // CONSTRUCTORS ////////////////////////////////////////////////////////////////
 
-constructor: directConstructor | computedConstructor ;
+nodeConstructor: directConstructor | computedConstructor ;
 
 directConstructor: dirElemConstructorOpenClose
                  | dirElemConstructorSingleTag
@@ -348,103 +418,188 @@ dirElemContent: directConstructor
 
 commonContent: (PredefinedEntityRef | CharRef) | '{' '{' | '}' '}' | '{' expr '}' ;
 
-computedConstructor: 'document' '{' expr '}'   # docConstructor
-                   | 'element'
-                     (elementName | '{' elementExpr=expr '}')
-                     '{' contentExpr=expr? '}' # elementConstructor
-                   | 'attribute'
-                     (attributeName | ('{' attrExpr=expr '}'))
-                     '{' contentExpr=expr? '}' # attrConstructor
-                   | 'text' '{' expr '}'       # textConstructor 
-                   | 'comment' '{' expr '}'    # commentConstructor
-                   | 'processing-instruction'
-                     (piName=ncName | '{' piExpr=expr '}')
-                     '{' contentExpr=expr? '}' # piConstructor
-                   | 'map' '{' (mapConstructorEntry (COMMA mapConstructorEntry)*)? '}' #mapConstructor
-                   | LBRACKET (exprSingle (COMMA exprSingle)*)? RBRACKET #squareArrayConstructor
-                   | 'array' enclosedExpression #curlyArrayConstructor
-                   | 'array-node' '{' expr '}' #arrayNodeConstructor
-                   | 'object-node' '{' exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)* '}' #objectNodeConstructor
-                   | 'number-node' '{' exprSingle '}' #numberNodeConstructor
-                   | 'boolean-node' '{' exprSingle '}' # booleanNodeConstructor
-                   | 'null-node' '{' '}' #nullNodeConstructor
+computedConstructor: compDocConstructor
+                   | compElemConstructor
+                   | compAttrConstructor
+                   | compNamespaceConstructor
+                   | compTextConstructor
+                   | compCommentConstructor
+                   | compPIConstructor
+                   | compMLJSONConstructor
                    ;
+
+compMLJSONConstructor: compMLJSONArrayConstructor
+                     | compMLJSONObjectConstructor
+                     | compMLJSONNumberConstructor
+                     | compMLJSONBooleanConstructor
+                     | compMLJSONNullConstructor
+                     ;
+
+compMLJSONArrayConstructor: 'array-node' '{' expr '}' ;
+compMLJSONObjectConstructor: 'object-node' '{' exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)* '}' ;
+compMLJSONNumberConstructor: 'number-node' '{' exprSingle '}' ;
+compMLJSONBooleanConstructor: 'boolean-node' '{' exprSingle '}' ;
+compMLJSONNullConstructor: 'null-node' '{' '}' ;
+
+
+compDocConstructor: 'document' enclosedExpression ;
+
+compElemConstructor: 'element' ( eqName |('{' expr '}')) enclosedContentExpr ;
+
+enclosedContentExpr: enclosedExpression ;
+
+compAttrConstructor: 'attribute' (eqName | ('{' expr '}')) enclosedExpression ;
+
+compNamespaceConstructor: 'namespace' (prefix | enclosedPrefixExpr) enclosedURIExpr ;
+
+prefix: ncName ;
+
+enclosedPrefixExpr: enclosedExpression ;
+
+enclosedURIExpr: enclosedExpression ;
+
+compTextConstructor: 'text' enclosedExpression ;
+
+compCommentConstructor: 'comment' enclosedExpression ;
+
+compPIConstructor: 'processing-instruction' (ncName | ('{' expr '}')) enclosedExpression ;
+
+functionItemExpr: namedFunctionRef | inlineFunctionRef ;
+
+namedFunctionRef: eqName '#' IntegerLiteral ;
+
+inlineFunctionRef: annotations 'function' '(' functionParams? ')' ('as' sequenceType)? functionBody ;
+
+functionBody: enclosedExpression ;
+
+mapConstructor: 'map' '{' (mapConstructorEntry (',' mapConstructorEntry)*)? '}' ;
 
 mapConstructorEntry: mapKey=exprSingle COLON mapValue=exprSingle ;
 
-// stringConstructor: '`' '`' '[' stringConstructorContent ']' '`' '`' ;
+arrayConstructor: squareArrayConstructor | curlyArrayConstructor ;
 
-// stringConstructorContent: StringConstructorChars (stringConstructorInterpolation StringConstructorChars)* ;
-// stringConstructorInterpolation: '`' '{' expr? '}' '`' ;
+squareArrayConstructor: '[' (exprSingle (',' exprSingle)*)? ']' ;
+
+curlyArrayConstructor: 'array' enclosedExpression ;
+
+/*
+stringConstructor: '`' '`' '[' stringConstructorContent ']' '`' '`' ;
+
+stringConstructorContent: stringConstructorChars (stringConstructorInterpolation stringConstructorChars)* ;
+
+stringConstructorChars: (ContentChar* ~ (ContentChar* ('`' '{' | ']' '`' '`') ContentChar*)) ;
+
+stringConstructorInterpolation: '`' '{' expr '}' '`' ;
+*/
+
+unaryLookup: '?' keySpecifier ;
 
 // TYPES AND TYPE TESTS ////////////////////////////////////////////////////////
 
-singleType: eqName '?'? ;
+singleType: simpleTypeName '?'? ;
 
 typeDeclaration: 'as' sequenceType ;
 
 sequenceType: 'empty-sequence' '(' ')' | itemType occurrence=('?'|'*'|'+')? ;
 
-itemType: kindTest | 'item' '(' ')' | functionTest | mapTest | arrayTest | qName | parenthesizedItemTest ;
+itemType: kindTest
+        | ('item' '(' ')')
+        | functionTest
+        | mapTest
+        | arrayTest
+        | atomicOrUnionType
+        | parenthesizedItemTest ;
 
-kindTest: documentTest | elementTest | attributeTest | schemaElementTest
-        | schemaAttributeTest | piTest | commentTest | textTest | namespaceNodeTest
-        | arrayNodeTest | objectNodeTest | numberNodeTest | booleanNodeTest | nullNodeTest
+atomicOrUnionType: eqName ;
+
+kindTest: documentTest
+        | elementTest
+        | attributeTest
+        | schemaElementTest
+        | schemaAttributeTest
+        | piTest
+        | commentTest
+        | textTest
+        | namespaceNodeTest
+        | mlNodeTest
         | anyKindTest
         ;
 
+anyKindTest: 'node' '(' ')' ;
+
 documentTest: 'document-node' '(' (elementTest | schemaElementTest)? ')' ;
 
-elementTest: 'element' '(' (elementNameOrWildcard (',' typeName optional='?'?)?)? ')' ;
-
-
-attributeTest: 'attribute' '(' (attributeNameOrWildcard (',' type=qName)?)? ')' ;
-
-
-schemaElementTest: 'schema-element' '(' elementDeclaration ')' ;
-elementDeclaration: elementName ;
-
-schemaAttributeTest: 'schema-attribute' '(' attributeDeclaration ')' ;
-
-elementNameOrWildcard: elementName | '*' ;
-elementName: eqName ;
-attributeDeclaration: attributeName ;
-attributeNameOrWildcard: attributeName | '*' ;
-attributeName: eqName ;
-typeName: eqName;
-
-piTest: 'processing-instruction' '(' (ncName | stringLiteral)? ')' ;
+textTest: 'text' '(' ')' ;
 
 commentTest: 'comment' '(' ')' ;
 
 namespaceNodeTest: 'namespace-node' '(' ')' ;
 
+piTest: 'processing-instruction' '(' (ncName | stringLiteral)? ')' ;
+
+attributeTest: 'attribute' '(' (attributeNameOrWildcard (',' type=typeName)?)? ')' ;
+
+attributeNameOrWildcard: attributeName | '*' ;
+
+schemaAttributeTest: 'schema-attribute' '(' attributeDeclaration ')' ;
+
+elementTest: 'element' '(' (elementNameOrWildcard (',' typeName optional='?'?)?)? ')' ;
+
+elementNameOrWildcard: elementName | '*' ;
+
+schemaElementTest: 'schema-element' '(' elementDeclaration ')' ;
+
+elementDeclaration: elementName ;
+
+attributeName: eqName ;
+
+elementName: eqName ;
+
+simpleTypeName: typeName ;
+
+typeName: eqName;
+
 functionTest: annotation* (anyFunctionTest | typedFunctionTest) ;
+
 anyFunctionTest: 'function' '(' '*' ')' ;
+
 typedFunctionTest: 'function' '(' (sequenceType (COMMA sequenceType)*)? ')' 'as' sequenceType ;
 
-parenthesizedItemTest: '(' itemType ')' ;
 mapTest: anyMapTest | typedMapTest ;
+
 anyMapTest: 'map' '(' '*' ')' ;
+
 typedMapTest: 'map' '(' eqName COMMA sequenceType ')' ;
 
 arrayTest: anyArrayTest | typedArrayTest ;
+
 anyArrayTest: 'array' '(' '*' ')' ;
+
 typedArrayTest: 'array' '(' sequenceType ')' ;
 
-textTest: 'text' '(' ')' ;
+parenthesizedItemTest: '(' itemType ')' ;
 
-anyKindTest: 'node' '(' ')' ;
+attributeDeclaration: attributeName ;
 
-arrayNodeTest: 'array-node' '(' ')' ;
 
-objectNodeTest: 'object-node' '(' ')' ;
 
-numberNodeTest: 'number-node' '(' ')' ;
 
-booleanNodeTest: 'boolean-node' '(' ')' ;
+mlNodeTest: mlArrayNodeTest
+          | mlObjectNodeTest
+          | mlNumberNodeTest
+          | mlBooleanNodeTest
+          | mlNullNodeTest
+          ;
 
-nullNodeTest: 'null-node' '(' ')' ;
+mlArrayNodeTest: 'array-node' '(' ')' ;
+
+mlObjectNodeTest: 'object-node' '(' ')' ;
+
+mlNumberNodeTest: 'number-node' '(' ')' ;
+
+mlBooleanNodeTest: 'boolean-node' '(' ')' ;
+
+mlNullNodeTest: 'null-node' '(' ')' ;
 
 // NAMES ///////////////////////////////////////////////////////////////////////
 
@@ -474,6 +629,20 @@ keywordNotOKForFunction:
        | KW_SCHEMA_ELEM
        | KW_TEXT
        | KW_TYPESWITCH
+// MarkLogic JSON computed constructor
+       | KW_ARRAY_NODE
+       | KW_BOOLEAN_NODE
+       | KW_NULL_NODE
+       | KW_NUMBER_NODE
+       | KW_OBJECT_NODE
+// eXist-db update keywords
+       | KW_REPLACE
+       | KW_WITH
+       | KW_VALUE
+       | KW_INSERT
+       | KW_INTO
+       | KW_DELETE
+       | KW_RENAME
        ;
 
 keywordOKForFunction: KW_ANCESTOR
@@ -562,6 +731,8 @@ keywordOKForFunction: KW_ANCESTOR
        ;
 
 // STRING LITERALS /////////////////////////////////////////////////////////////
+
+uriLiteral: stringLiteral ;
 
 stringLiteral: '"' ('"' '"'
                    | PredefinedEntityRef

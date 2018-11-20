@@ -107,7 +107,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         if (context.libraryModule() != null && context.libraryModule().moduleDecl() != null)
         {
             XQueryParser.ModuleDeclContext moduleDeclContext = context.libraryModule().moduleDecl();
-            String prefixText = moduleDeclContext.prefix.getText();
+            String prefixText = moduleDeclContext.ncName().getText();
             String uriText = moduleDeclContext.uri.getText();
             String uriTrimText = uriText.substring(1).substring(0, uriText.length() - 2);
             uriModuleMap.put(prefixText, uriTrimText);
@@ -196,7 +196,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     @Override
     public String visitSchemaImport(XQueryParser.SchemaImportContext context)
     {
-        String prefix = context.prefix.getText();
+        String prefix = context.schemaPrefix().ncName().getText();
         String uri = context.nsURI.getText();
         String xqDoc = printXQDocumentation();
 
@@ -210,7 +210,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     @Override
     public String visitModuleImport(XQueryParser.ModuleImportContext context)
     {
-        String prefix = context.prefix.getText();
+        String prefix = context.ncName().getText();
         String uri = context.nsURI.getText();
         String xqDoc = printXQDocumentation();
 
@@ -224,8 +224,8 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     @Override
     public String visitNamespaceDecl(XQueryParser.NamespaceDeclContext context)
     {
-        String prefix = context.prefix.getText();
-        String uri = context.uri.getText();
+        String prefix = context.ncName().getText();
+        String uri = context.uriLiteral().getText();
 
         if (uri.startsWith("\"")) {
             uri = uri.substring(1).substring(0, uri.length() - 2);
@@ -288,7 +288,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         String namespacePrefix = null;
         String namespace = null;
         String localName = null;
-        String[] tmp = context.name.getText().split(":", 2);
+        String[] tmp = context.varName().getText().split(":", 2);
         if (tmp.length > 1) {
             namespacePrefix = tmp[0];
             localName = tmp[1];
@@ -323,7 +323,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         declaredVariables.append("<xqdoc:name>").append(localName).append("</xqdoc:name>").append("\n");
         declaredVariables.append(printXQDocumentation());
         declaredVariables.append(processAnnotations(context.annotations()));
-        declaredVariables.append(processTypeDeclaration(context.type));
+        declaredVariables.append(processTypeDeclaration(context.typeDeclaration()));
         declaredVariables.append("</xqdoc:variable>").append("\n");
         return null;
     }
@@ -500,7 +500,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitVariableReference(XQueryParser.VariableReferenceContext context)
+    public String visitVarRef(XQueryParser.VarRefContext context)
     {
         // Separate the variable name into namspace prefix and localname
         String namespacePrefix = null;

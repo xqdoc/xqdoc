@@ -3,3 +3,4 @@
 /.idea
 /src/main/antlr4/org/exquery/xqdoc/XQueryLexer.tokens
 /xqdoc.iml
+/gen

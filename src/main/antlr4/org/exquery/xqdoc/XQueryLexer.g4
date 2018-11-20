@@ -85,6 +85,7 @@ AT: '@' ;
 DOLLAR: '$' ;
 MOD: '%' ;
 BANG: '!';
+HASH: '#';
 
 ARROW: '=>';
 GRAVE: '`';
@@ -230,6 +231,7 @@ KW_INTO:               'into';
 KW_DELETE:             'delete';
 KW_RENAME:             'rename';
 
+
 // NAMES
 
 // We create these basic variants in order to honor ws:explicit in some basic cases
@@ -276,8 +278,11 @@ NameChar: NameStartChar
 XQDOC_COMMENT_START: '(:~' ;
 XQDOC_COMMENT_END: ':'+ ')' ;
 
+XQDocComment: 	'(' ':' '~' ( CHAR | ( ':' ~( ')' ) ) )* ':' ')' ;
+
 XQComment: '(' ':' ~'~' (XQComment | '(' ~[:] | ':' ~[)] | ~[:(])* ':'+ ')' -> channel(HIDDEN);
 
+CHAR: 	( '\t' | '\n' | '\r' | '\u0020'..'\u0039' | '\u003B'..'\uD7FF' | '\uE000'..'\uFFFD' ) ;
 
 // This is an intersection of:
 //
@@ -292,7 +297,5 @@ XQComment: '(' ':' ~'~' (XQComment | '(' ~[:] | ':' ~[)] | ~[:(])* ':'+ ')' -> c
 // AposAttrContentChar ::= ContentChar | ["]
 //
 // This rule needs to be the very last one, so it has the lowest priority.
-
-//StringConstructorChars: (ContentChar* ~ (ContentChar* (('`' '{') | (']' '`' '`')) ContentChar*));
 
 ContentChar:  ~["'{}<&]  ;
