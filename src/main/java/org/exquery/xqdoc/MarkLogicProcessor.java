@@ -3,9 +3,6 @@ package org.exquery.xqdoc;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.w3c.dom.Document;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -14,25 +11,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.HashMap;
 
 public class MarkLogicProcessor {
-
-    public static String getStringFromDoc(Document doc)    {
-        DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
-        LSSerializer lsSerializer = domImplementation.createLSSerializer();
-        lsSerializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
-        LSOutput lsOutput =  domImplementation.createLSOutput();
-        lsOutput.setEncoding("UTF-8");
-        Writer stringWriter = new StringWriter();
-        lsOutput.setCharacterStream(stringWriter);
-        lsSerializer.write(doc, lsOutput);
-        String result = stringWriter.toString();
-
-        return result;
-    }
 
     public String process(String txt) throws XQDocException, ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();
@@ -76,6 +57,6 @@ public class MarkLogicProcessor {
         isOut.setCharacterStream(new StringReader(buffer.toString()));
 
         Document doc = db.parse(isOut);
-        return MarkLogicProcessor.getStringFromDoc(doc);
+        return DocumentUtility.getStringFromDoc(doc);
     }
 }
