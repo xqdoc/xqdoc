@@ -2,15 +2,10 @@ package org.exquery.xqdoc;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.HashMap;
 
 public class MarkLogicProcessor {
@@ -50,13 +45,6 @@ public class MarkLogicProcessor {
 
         XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);
         visitor.visit(fileContext);
-        DocumentBuilderFactory dbf =
-                DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        InputSource isOut = new InputSource();
-        isOut.setCharacterStream(new StringReader(buffer.toString()));
-
-        Document doc = db.parse(isOut);
-        return DocumentUtility.getStringFromDoc(doc);
+        return DocumentUtility.getStringFromDoc(DocumentUtility.getDocumentFromBuffer(buffer));
     }
 }
