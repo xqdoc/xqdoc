@@ -24,7 +24,9 @@ versionDecl: 'xquery' 'version' version=stringLiteral
              ('encoding' encoding=stringLiteral)?
              ';' ;
 
-mainModule: prolog expr;
+mainModule: prolog queryBody;
+
+queryBody: expr ;
 
 libraryModule: moduleDecl prolog;
 
@@ -46,8 +48,8 @@ setter: boundarySpaceDecl
       | constructionDecl
       | orderingModeDecl
       | emptyOrderDecl
-      | copyNamespacesDecl |
-      decimalFormatDecl ;
+      | copyNamespacesDecl
+      | decimalFormatDecl ;
 
 boundarySpaceDecl: 'declare' 'boundary-space' type=('preserve' | 'strip') ;
 defaultCollationDecl: 'declare' 'default' 'collation' uriLiteral ;
@@ -126,7 +128,7 @@ exprSingle: flworExpr
           | tryCatchExpr
           | orExpr ;
 
-flworExpr: initialClause intermediateClause returnClause ;
+flworExpr: initialClause intermediateClause* returnClause ;
 
 initialClause: forClause | letClause | windowClause ;
 intermediateClause: initialClause
@@ -147,7 +149,7 @@ positionalVar: 'at' '$' pvar=varName ;
 
 letClause: 'let'  vars+=letBinding (',' vars+=letBinding)* ;
 
-letBinding: '$' name=varName type=typeDeclaration? ':=' value=exprSingle ;
+letBinding: '$' varName typeDeclaration? ':=' exprSingle ;
 
 windowClause: 'for' (tumblingWindowClause | slidingWindowClause) ;
 
@@ -215,11 +217,11 @@ ifExpr: 'if' '(' conditionExpr=expr ')'
         'then' thenExpr=exprSingle
         'else' elseExpr=exprSingle ;
 
-tryCatchExpr: tryClause caseClause+ ;
+tryCatchExpr: tryClause catchClause+ ;
 tryClause: 'try' enclosedTryTargetExpression ;
 enclosedTryTargetExpression: enclosedExpression ;
-catchClause: 'catch' catchErrorList enclosedExpression ;
-enclosedExpression: '{' exprSingle '}' ;
+catchClause: 'catch' (catchErrorList | ('(' '$' varName ')'))  enclosedExpression ;
+enclosedExpression: '{' expr? '}' ;
 
 catchErrorList: nameTest ('|' nameTest)* ;
 
@@ -366,7 +368,7 @@ orderedExpr: 'ordered' enclosedExpression ;
 
 unorderedExpr: 'unordered' enclosedExpression ;
 
-functionCall: functionName '(' (args+=argument (',' args+=argument)*)? ')' ;
+functionCall: eqName argumentList  ;
 
 argument: exprSingle | '?' ;
 
@@ -623,6 +625,7 @@ keywordNotOKForFunction:
        | KW_EMPTY_SEQUENCE
        | KW_IF
        | KW_ITEM
+       | KW_CONTEXT
        | KW_NODE
        | KW_PI
        | KW_SCHEMA_ATTR
@@ -636,6 +639,7 @@ keywordNotOKForFunction:
        | KW_NUMBER_NODE
        | KW_OBJECT_NODE
 // eXist-db update keywords
+       | KW_UPDATE
        | KW_REPLACE
        | KW_WITH
        | KW_VALUE
@@ -681,6 +685,7 @@ keywordOKForFunction: KW_ANCESTOR
        | KW_FUNCTION
        | KW_GE
        | KW_GREATEST
+       | KW_GROUP
        | KW_GT
        | KW_IDIV
        | KW_IMPORT
@@ -716,6 +721,7 @@ keywordOKForFunction: KW_ANCESTOR
        | KW_SELF
        | KW_SOME
        | KW_STABLE
+       | KW_START
        | KW_STRICT
        | KW_STRIP
        | KW_THEN
@@ -789,6 +795,7 @@ noQuotesNoBracesNoAmpNoLAng:
                      | QUESTION
                      | AT
                      | DOLLAR
+                     | BANG
                      | FullQName
                      | NCNameWithLocalWildcard
                      | NCNameWithPrefixWildcard
