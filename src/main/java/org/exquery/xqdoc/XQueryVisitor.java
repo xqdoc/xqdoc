@@ -390,7 +390,10 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
                 declaredFunctions.append("\"");
             }
             declaredFunctions.append(">");
-            declaredFunctions.append(functionReturnContext.sequenceType().itemType().getText());
+            if (functionReturnContext.sequenceType().itemType() != null)
+            {
+                declaredFunctions.append(functionReturnContext.sequenceType().itemType().getText());
+            }
             declaredFunctions.append("</xqdoc:type>").append("\n");
             declaredFunctions.append("</xqdoc:return>").append("\n");
         }

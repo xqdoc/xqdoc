@@ -92,6 +92,8 @@ CARAT: '^';
 ARROW: '=>';
 GRAVE: '`';
 CONCATENATION: '||';
+TILDE: '~';
+
 
 // KEYWORDS
 
@@ -106,6 +108,7 @@ KW_AT:                 'at';
 KW_ATTRIBUTE:          'attribute';
 KW_BASE_URI:           'base-uri';
 KW_BOUNDARY_SPACE:     'boundary-space';
+KW_BINARY:             'binary';
 KW_BY:                 'by';
 KW_CASE:               'case';
 KW_CAST:               'cast';

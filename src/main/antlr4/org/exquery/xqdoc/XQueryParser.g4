@@ -110,7 +110,7 @@ annotList: annotationParam ( COMMA annotationParam )* ;
 
 annotationParam: stringLiteral ;
 
-functionReturn: 'as' type=sequenceType ;
+functionReturn: 'as' sequenceType ;
 
 optionDecl: 'declare' 'option' name=qName value=stringLiteral ;
 
@@ -502,7 +502,7 @@ singleType: simpleTypeName '?'? ;
 
 typeDeclaration: 'as' sequenceType ;
 
-sequenceType: 'empty-sequence' '(' ')' | itemType occurrence=('?'|'*'|'+')? ;
+sequenceType: ('empty-sequence' '(' ')') | (itemType occurrence=('?'|'*'|'+')? );
 
 itemType: kindTest
         | ('item' '(' ')')
@@ -524,10 +524,13 @@ kindTest: documentTest
         | textTest
         | namespaceNodeTest
         | mlNodeTest
+        | binaryNodeTest
         | anyKindTest
         ;
 
 anyKindTest: 'node' '(' ')' ;
+
+binaryNodeTest: 'binary' '(' ')' ;
 
 documentTest: 'document-node' '(' (elementTest | schemaElementTest)? ')' ;
 
@@ -630,11 +633,14 @@ keywordNotOKForFunction:
        | KW_PI
        | KW_SCHEMA_ATTR
        | KW_SCHEMA_ELEM
+       | KW_BINARY
        | KW_TEXT
        | KW_TYPESWITCH
        | KW_TYPE
        | KW_COUNT
        | KW_MAP
+       | KW_END
+       | DFPropertyName
 // MarkLogic JSON computed constructor
        | KW_ARRAY_NODE
        | KW_BOOLEAN_NODE
@@ -786,6 +792,7 @@ noQuotesNoBracesNoAmpNoLAng:
                      | STAR
                      | PLUS
                      | MINUS
+                     | TILDE
                      | COMMA
                      | DOT
                      | DDOT
