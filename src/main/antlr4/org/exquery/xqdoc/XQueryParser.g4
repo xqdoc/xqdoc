@@ -135,7 +135,7 @@ intermediateClause: initialClause
                   | whereClause
                   | groupByClause
                   | orderByClause
-//                  | countClause
+                  | countClause
                   ;
 
 forClause: 'for' vars+=forBinding (',' vars+=forBinding)* ;
@@ -169,7 +169,7 @@ windowVars: ('$' currentItem=eqName)? positionalVar?
                           ('previous' '$' previousItem=eqName)?
                           ('next' '$' nextItem=eqName)?;
 
-// countClause: 'count' '$' varName ;
+countClause: 'count' '$' varName ;
 
 whereClause: 'where' whereExpr=exprSingle ;
 
@@ -632,6 +632,9 @@ keywordNotOKForFunction:
        | KW_SCHEMA_ELEM
        | KW_TEXT
        | KW_TYPESWITCH
+       | KW_TYPE
+       | KW_COUNT
+       | KW_MAP
 // MarkLogic JSON computed constructor
        | KW_ARRAY_NODE
        | KW_BOOLEAN_NODE
@@ -774,6 +777,7 @@ noQuotesNoBracesNoAmpNoLAng:
                      | DoubleLiteral
                      | PRAGMA
                      | EQUAL
+                     | HASH
                      | NOT_EQUAL
                      | LPAREN
                      | RPAREN
@@ -786,10 +790,12 @@ noQuotesNoBracesNoAmpNoLAng:
                      | DOT
                      | DDOT
                      | COLON
+                     | CARAT
                      | COLON_EQ
                      | SEMICOLON
                      | SLASH
                      | DSLASH
+                     | BACKSLASH
                      | VBAR
                      | RANGLE
                      | QUESTION

@@ -75,6 +75,7 @@ SEMICOLON: ';' ;
 
 SLASH:  '/'  ;
 DSLASH: '//' ;
+BACKSLASH: '\\';
 VBAR:   '|'  ;
 
 LANGLE:    '<'  ;
@@ -86,6 +87,7 @@ DOLLAR: '$' ;
 MOD: '%' ;
 BANG: '!';
 HASH: '#';
+CARAT: '^';
 
 ARROW: '=>';
 GRAVE: '`';
@@ -280,7 +282,7 @@ XQDOC_COMMENT_END: ':'+ ')' ;
 
 XQDocComment: 	'(' ':' '~' ( CHAR | ( ':' ~( ')' ) ) )* ':' ')' ;
 
-XQComment: '(' ':' ~'~' (XQComment | '(' ~[:] | ':' ~[)] | ~[:(])* ':'+ ')' -> channel(HIDDEN);
+XQComment: '(' ':' ~'~' (XQComment | '(' ~[:] | ':' ~[)] | ~[:(])* ':'* ':'+ ')' -> channel(HIDDEN);
 
 CHAR: 	( '\t' | '\n' | '\r' | '\u0020'..'\u0039' | '\u003B'..'\uD7FF' | '\uE000'..'\uFFFD' ) ;
 
