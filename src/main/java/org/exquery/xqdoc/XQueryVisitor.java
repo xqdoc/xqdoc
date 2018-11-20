@@ -461,7 +461,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         String namespacePrefix = null;
         String namespace = null;
         String localName = null;
-        String[] tmp = context.functionName().getText().split(":", 2);
+        String[] tmp = context.eqName().getText().split(":", 2);
         if (tmp.length > 1) {
             namespacePrefix = tmp[0];
             localName = tmp[1];
