@@ -3,7 +3,7 @@ An Antlr4 implementation of xqDoc for XQuery
 
 ## Building
 
-Run the command: ```mvn clean install assembly:single```
+Run the command: ```mvn package```
 
 ### Dependencies
 
