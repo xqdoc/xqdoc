@@ -104,6 +104,7 @@ public class XQDocComment {
 	 */
 	public void clear() {
 		xqDocComment = null;
+        xqDocDescriptionLeadingSpaces = 0;
 		xqDocCommentState = -1;
 		for (int i = 0; i < xqDocCommentBlock.length; i++) {
 			xqDocCommentBlock[i] = new StringBuffer(512);
@@ -120,6 +121,7 @@ public class XQDocComment {
 	 */
 	public void setComment(String comment) {
 		xqDocComment = comment;
+		xqDocDescriptionLeadingSpaces = 0;
 	}
 
 	/**
@@ -174,11 +176,13 @@ public class XQDocComment {
 			if ((i = line.indexOf(BEGIN_XQDOC_COMMENT)) > -1) {
 			    String trimmedLine = trimmedString(line.substring(i
                         + BEGIN_XQDOC_COMMENT.length(), last));
-                if (xqDocCommentBlock[xqDocCommentState].length() <= 19) {
-                    xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
-                    trimmedLine = trimmedLine.substring(xqDocDescriptionLeadingSpaces);
+			    if (trimmedLine.length() > 0) {
+                    if (xqDocCommentBlock[xqDocCommentState].length() <= 19) {
+                        xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
+                        trimmedLine = trimmedLine.substring(xqDocDescriptionLeadingSpaces);
+                    }
+                    xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
                 }
-				xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
  			} else if (line.matches("^\\s*:.*")) {
  				i = line.indexOf(":");
 				if (i < last) {
@@ -197,10 +201,20 @@ public class XQDocComment {
 				}
 				// Get up to the closing comment
 				else if (last != line.length()) {
+                    if (xqDocCommentState == 0) {
+                        if (xqDocCommentBlock[xqDocCommentState].length() > 19) {
+                            xqDocCommentBlock[xqDocCommentState].append("\n");
+                        }
+                    }
 					xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(
 							0, last)));
 				}
 			} else {
+                if (xqDocCommentState == 0) {
+                    if (xqDocCommentBlock[xqDocCommentState].length() > 19) {
+                        xqDocCommentBlock[xqDocCommentState].append("\n");
+                    }
+                }
 				xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(0,
 						last)));
 			}
