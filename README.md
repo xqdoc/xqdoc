@@ -126,9 +126,6 @@ task generateXQDocs(type: Copy) {
   filter XQDocFilter
 }
 
-/**
- * Seed original Glossary Manager sample data
- */
  task importXQDoc(type: com.marklogic.gradle.task.MlcpTask) {
   classpath = configurations.mlcp
   command = "IMPORT"
