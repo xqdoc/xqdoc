@@ -139,6 +139,14 @@ public class XQDocComment {
 		return sb;
 	}
 
+	private String trimmedString(String text) {
+	    if (xqDocCommentState == 0) {
+	        return text;
+        } else {
+	        return text.trim();
+        }
+    }
+
 	/**
 	 * Append the current comment line to the comment buffer associated with the
 	 * current xqDoc comment state.
@@ -156,27 +164,33 @@ public class XQDocComment {
 		if (index == -1) {
 			int i;
 			if ((i = line.indexOf(BEGIN_XQDOC_COMMENT)) > -1) {
-				xqDocCommentBlock[xqDocCommentState].append(line.substring(i
-						+ BEGIN_XQDOC_COMMENT.length(), last).trim());
+				xqDocCommentBlock[xqDocCommentState].append(
+				        trimmedString(line.substring(i
+						+ BEGIN_XQDOC_COMMENT.length(), last)));
 // 			} else if ((i = line.indexOf(":")) > -1) {
  			} else if (line.matches("^\\s*:.*")) {
  				i = line.indexOf(":");
 				if (i < last) {
-					xqDocCommentBlock[xqDocCommentState].append(line.substring(
-							i + 1, last).trim());
+				    String trimmedLine = trimmedString(line.substring(i + 1, last));
+				    if (trimmedLine.length() > 0) {
+                        if (xqDocCommentState == 0 && xqDocCommentBlock[xqDocCommentState].length() > 19) {
+                            xqDocCommentBlock[xqDocCommentState].append("\n");
+                        }
+                        xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
+                    }
 				}
 				// Get up to the closing comment
 				else if (last != line.length()) {
-					xqDocCommentBlock[xqDocCommentState].append(line.substring(
-							0, last).trim());
+					xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(
+							0, last)));
 				}
 			} else {
-				xqDocCommentBlock[xqDocCommentState].append(line.substring(0,
-						last).trim());
+				xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(0,
+						last)));
 			}
 		} else {
-			xqDocCommentBlock[xqDocCommentState].append(line.substring(index,
-					last).trim());
+			xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(index,
+					last)));
 		}
 	}
 
