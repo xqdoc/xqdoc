@@ -636,10 +636,22 @@ keywordNotOKForFunction:
        | KW_BINARY
        | KW_TEXT
        | KW_TYPESWITCH
+       | KW_SWITCH
+       | KW_NAMESPACE_NODE
        | KW_TYPE
+       | KW_TUMBLING
+       | KW_TRY
+       | KW_CATCH
+       | KW_ONLY
+       | KW_WHEN
+       | KW_SLIDING
+       | KW_DECIMAL_FORMAT
+       | KW_WINDOW
        | KW_COUNT
        | KW_MAP
        | KW_END
+       | KW_ALLOWING
+       | KW_ARRAY
        | DFPropertyName
 // MarkLogic JSON computed constructor
        | KW_ARRAY_NODE
@@ -794,8 +806,14 @@ noQuotesNoBracesNoAmpNoLAng:
                      | MINUS
                      | TILDE
                      | COMMA
+                     | ARROW
+                     | KW_NEXT
+                     | KW_PREVIOUS
+                     | MOD
                      | DOT
+                     | GRAVE
                      | DDOT
+                     | XQDOC_COMMENT_START
                      | COLON
                      | CARAT
                      | COLON_EQ
