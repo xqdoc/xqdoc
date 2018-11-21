@@ -97,6 +97,12 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     @Override
     public String visitModule(XQueryParser.ModuleContext context)
     {
+        StringBuffer moduleXQDoc = new StringBuffer();
+        for (XQueryParser.XqDocCommentContext comment : context.xqDocComment() )
+        {
+            xqDocCommentContext = comment;
+            moduleXQDoc.append(printXQDocumentation());
+        }
         stream.append("<xqdoc:xqdoc xmlns:xqdoc=\"http://www.xqdoc.org/1.0\">").append("\n");
         stream.append("<xqdoc:control>").append("\n");
         stream.append("<xqdoc:date>");
@@ -114,7 +120,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
             stream.append("<xqdoc:module type=\"library\">").append("\n");
             stream.append("<xqdoc:uri>").append(uriTrimText).append("</xqdoc:uri>").append("\n");
             stream.append("<xqdoc:name>").append(prefixText).append("</xqdoc:name>").append("\n");
-            stream.append(printXQDocumentation());
+            stream.append(moduleXQDoc);
             stream.append(printBody(context));
 
             stream.append("</xqdoc:module>").append("\n");
@@ -123,7 +129,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         if (context.mainModule() != null)
         {
             stream.append("<xqdoc:module type=\"main\">").append("\n");
-            stream.append(printXQDocumentation());
+            stream.append(moduleXQDoc);
             stream.append(printBody(context));
             stream.append("</xqdoc:module>").append("\n");
             visitChildren(context.mainModule());

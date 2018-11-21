@@ -85,7 +85,11 @@ public class XQDocComment {
 
 	private static final String XQDOC_COMMENT_SINCE = "@since";
 
-	private static final int XQDOC_STATE_LAST = 9;
+	private static final int XQDOC_STATE_CUSTOM = 9;
+
+	private static final String XQDOC_COMMENT_CUSTOM = "@custom";
+
+	private static final int XQDOC_STATE_LAST = 10;
 
 	private static final String BEGIN_XQDOC_COMMENT = "(:~";
 
@@ -94,7 +98,7 @@ public class XQDocComment {
 	// The order of the following tags must match the order of the values
 	// assigned to the various xqDoc comment states.
 	private static final String[] XQDOC_STATE_TAG = { "description", "author",
-			"version", "param", "return", "error", "deprecated", "see", "since" };
+			"version", "param", "return", "error", "deprecated", "see", "since", "custom" };
 
 	/**
 	 * Initailize the XQDocComment object for processing of a xqDoc comment
@@ -318,6 +322,11 @@ public class XQDocComment {
 			xqDocCommentState = XQDOC_STATE_SINCE;
 			xqDocCommentStateBegin();
 			xqDocCommentStateConcat(line, index + XQDOC_COMMENT_SINCE.length());
+		} else if ((index = line.indexOf(XQDOC_COMMENT_CUSTOM)) > -1) {
+			xqDocCommentStateClose();
+			xqDocCommentState = XQDOC_STATE_CUSTOM;
+			xqDocCommentStateBegin();
+			xqDocCommentStateConcat(line, index + XQDOC_COMMENT_CUSTOM.length());
 		} else if ((index = line.indexOf(XQDOC_COMMENT_AUTHOR)) > -1) {
 			xqDocCommentStateClose();
 			xqDocCommentState = XQDOC_STATE_AUTHOR;
