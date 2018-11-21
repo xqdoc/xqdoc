@@ -69,3 +69,79 @@ The *filepath* is the path name to the file with the XQuery source.
         isOut.setCharacterStream(new StringReader(buffer.toString()));
 
         Document doc = db.parse(isOut);
+
+## Running from MarkLogic's ml-gradle
+
+Here is the entry for ```build.gradle``` to add the tasks for the generation of the xqDoc from within an ml-gradle project.
+
+```
+import org.apache.tools.ant.filters.BaseFilterReader
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath files('lib/xqdoc-1.9-jar-with-dependencies.jar')
+    }
+}
+
+plugins {
+  id "net.saliman.properties" version "1.4.6"
+  id "com.marklogic.ml-gradle" version "3.6.0"
+}
+
+repositories {
+  jcenter()
+  maven { url "http://developer.marklogic.com/maven2/" }
+  maven { url "http://repository.cloudera.com/artifactory/cloudera-repos/" }
+}
+
+configurations {
+  mlcp {
+    resolutionStrategy {
+      force "xml-apis:xml-apis:1.4.01"
+    }
+  }
+}
+
+dependencies {
+    mlcp "com.marklogic:mlcp:9.0.6"
+    mlcp files("marklogic/lib")
+}
+
+class XQDocFilter extends BaseFilterReader {
+    XQDocFilter(Reader input) {
+        super(new StringReader(new org.exquery.xqdoc.MarkLogicProcessor().process(input.text)))
+    }
+}
+
+task generateXQDocs(type: Copy) {
+  into 'xqDoc'
+  from 'src/main/ml-modules/root'
+  include '**/*.xqy'
+  rename { it - '.xqy' + '.xml' } 
+  includeEmptyDirs = false
+  filter XQDocFilter
+}
+
+/**
+ * Seed original Glossary Manager sample data
+ */
+ task importXQDoc(type: com.marklogic.gradle.task.MlcpTask) {
+  classpath = configurations.mlcp
+  command = "IMPORT"
+  database = "emh-accelerator-content"
+  input_file_path = "xqDoc"
+  output_collections = "xqdoc"
+  output_uri_replace = ".*xqDoc,'/xqDoc'"
+  document_type = "mixed"
+}
+
+
+```
+
+## Display of xqDoc in a MarkLogic application
+
+There is a GitHub project to display the xqDoc within a MarkLogic project.  It is available at [marklogic-xqdoc-display](https://github.com/lcahlander/marklogic-xqdoc-display)
