@@ -42,6 +42,8 @@ public class XQDocComment {
 	// Current xqDoc Comment State ... valid values are -1 to 9
 	private int xqDocCommentState = -1;
 
+	private int xqDocDescriptionLeadingSpaces = 0;
+
 	// String of current xqDoc comment
 	private String xqDocComment;
 
@@ -147,6 +149,12 @@ public class XQDocComment {
         }
     }
 
+    private int leadingSpacesCount(String text) {
+        String regex = "^\\s+";
+        String trimmedString1 = text.replaceAll(regex, "");
+        return text.length() - trimmedString1.length();
+    }
+
 	/**
 	 * Append the current comment line to the comment buffer associated with the
 	 * current xqDoc comment state.
@@ -164,17 +172,25 @@ public class XQDocComment {
 		if (index == -1) {
 			int i;
 			if ((i = line.indexOf(BEGIN_XQDOC_COMMENT)) > -1) {
-				xqDocCommentBlock[xqDocCommentState].append(
-				        trimmedString(line.substring(i
-						+ BEGIN_XQDOC_COMMENT.length(), last)));
-// 			} else if ((i = line.indexOf(":")) > -1) {
+			    String trimmedLine = trimmedString(line.substring(i
+                        + BEGIN_XQDOC_COMMENT.length(), last));
+                if (xqDocCommentBlock[xqDocCommentState].length() <= 19) {
+                    xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
+                    trimmedLine = trimmedLine.substring(xqDocDescriptionLeadingSpaces);
+                }
+				xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
  			} else if (line.matches("^\\s*:.*")) {
  				i = line.indexOf(":");
 				if (i < last) {
 				    String trimmedLine = trimmedString(line.substring(i + 1, last));
 				    if (trimmedLine.length() > 0) {
-                        if (xqDocCommentState == 0 && xqDocCommentBlock[xqDocCommentState].length() > 19) {
-                            xqDocCommentBlock[xqDocCommentState].append("\n");
+				        if (xqDocCommentState == 0) {
+                            if (xqDocCommentBlock[xqDocCommentState].length() > 19) {
+                                xqDocCommentBlock[xqDocCommentState].append("\n");
+                            } else {
+                                xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
+                            }
+                            trimmedLine = trimmedLine.substring(xqDocDescriptionLeadingSpaces);
                         }
                         xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
                     }
