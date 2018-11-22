@@ -147,14 +147,6 @@ public class XQDocComment {
 		return sb;
 	}
 
-	private String trimmedString(String text) {
-	    if (xqDocCommentState == 0) {
-	        return text;
-        } else {
-	        return text.trim();
-        }
-    }
-
     private int leadingSpacesCount(String text) {
         String regex = "^\\s+";
         String trimmedString1 = text.replaceAll(regex, "");
@@ -178,53 +170,45 @@ public class XQDocComment {
 		if (index == -1) {
 			int i;
 			if ((i = line.indexOf(BEGIN_XQDOC_COMMENT)) > -1) {
-			    String trimmedLine = trimmedString(line.substring(i
-                        + BEGIN_XQDOC_COMMENT.length(), last));
-			    if (trimmedLine.length() > 0) {
-                    if (xqDocCommentBlock[xqDocCommentState].length() <= 19) {
+			    String trimmedLine = line.substring(i + BEGIN_XQDOC_COMMENT.length(), last);
+				int compareSize = XQDOC_STATE_TAG[xqDocCommentState].length() + 8;
+				if (xqDocCommentBlock[xqDocCommentState].length() > compareSize) {
                         xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
                         trimmedLine = trimmedLine.substring(xqDocDescriptionLeadingSpaces);
                     }
                     xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
-                }
  			} else if (line.matches("^\\s*:.*")) {
  				i = line.indexOf(":");
 				if (i < last) {
-				    String trimmedLine = trimmedString(line.substring(i + 1, last));
-				    if (trimmedLine.length() > 0) {
-				        if (xqDocCommentState == 0) {
-                            if (xqDocCommentBlock[xqDocCommentState].length() > 19) {
-                                xqDocCommentBlock[xqDocCommentState].append("\n");
-                            } else {
-                                xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
-                            }
-                            trimmedLine = trimmedLine.substring(xqDocDescriptionLeadingSpaces);
-                        }
-                        xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
-                    }
+				    String trimmedLine = line.substring(i + 1, last);
+				    int compareSize = XQDOC_STATE_TAG[xqDocCommentState].length() + 8;
+					if (xqDocCommentBlock[xqDocCommentState].length() > compareSize) {
+						xqDocCommentBlock[xqDocCommentState].append("\n");
+					} else {
+						xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
+					}
+					trimmedLine = trimmedLine.length() >= xqDocDescriptionLeadingSpaces ? trimmedLine.substring(xqDocDescriptionLeadingSpaces) : trimmedLine;
+					xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
 				}
 				// Get up to the closing comment
 				else if (last != line.length()) {
-                    if (xqDocCommentState == 0) {
-                        if (xqDocCommentBlock[xqDocCommentState].length() > 19) {
-                            xqDocCommentBlock[xqDocCommentState].append("\n");
-                        }
-                    }
-					xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(
-							0, last)));
+					int compareSize = XQDOC_STATE_TAG[xqDocCommentState].length() + 8;
+					if (xqDocCommentBlock[xqDocCommentState].length() > compareSize) {
+						xqDocCommentBlock[xqDocCommentState].append("\n");
+					}
+					xqDocCommentBlock[xqDocCommentState].append(line.substring(0, last));
 				}
 			} else {
-                if (xqDocCommentState == 0) {
-                    if (xqDocCommentBlock[xqDocCommentState].length() > 19) {
-                        xqDocCommentBlock[xqDocCommentState].append("\n");
-                    }
-                }
-				xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(0,
-						last)));
+				int compareSize = XQDOC_STATE_TAG[xqDocCommentState].length() + 8;
+				if (xqDocCommentBlock[xqDocCommentState].length() > compareSize) {
+					xqDocCommentBlock[xqDocCommentState].append("\n");
+				}
+				xqDocCommentBlock[xqDocCommentState].append(line.substring(0, last));
 			}
 		} else {
-			xqDocCommentBlock[xqDocCommentState].append(trimmedString(line.substring(index,
-					last)));
+			String trimmedLine = line.substring(index, last);
+			xqDocDescriptionLeadingSpaces = leadingSpacesCount(trimmedLine);
+			xqDocCommentBlock[xqDocCommentState].append(trimmedLine.trim());
 		}
 	}
 
@@ -245,6 +229,9 @@ public class XQDocComment {
 	 *  
 	 */
 	private void xqDocCommentStateClose() {
+		String line = xqDocCommentBlock[xqDocCommentState].toString().replaceFirst("\\s++$", "");
+		xqDocCommentBlock[xqDocCommentState] = new StringBuffer();
+		xqDocCommentBlock[xqDocCommentState].append(line);
 		xqDocCommentBlock[xqDocCommentState].append(XQDocXML
 				.buildEndTag(XQDOC_STATE_TAG[xqDocCommentState]));
 	}
