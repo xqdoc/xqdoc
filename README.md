@@ -1,4 +1,4 @@
-# xqdoc
+# xqDoc
 An Antlr4 implementation of xqDoc for XQuery
 
 ## Comments
