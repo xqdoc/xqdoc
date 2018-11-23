@@ -211,7 +211,7 @@ typeswitchExpr: 'typeswitch' '(' expr ')'
 caseClause: 'case' ('$' var=varName 'as')? type=sequenceUnionType 'return'
             returnExpr=exprSingle ;
 
-sequenceUnionType: sequenceType ('|' sequenceType)* ;
+sequenceUnionType: sequenceType ( '|' sequenceType )* ;
 
 ifExpr: 'if' '(' conditionExpr=expr ')'
         'then' thenExpr=exprSingle
@@ -273,7 +273,7 @@ valueComp: 'eq' | 'ne' | 'lt' | 'le' | 'gt' | 'ge' ;
 
 nodeComp: 'is' | ('<' '<') | ('>' '>') ;
 
-validateExpr: 'validate' (validationMode | ('type' typeName))? enclosedExpression ;
+validateExpr: 'validate' ( validationMode | ( ( 'type' | 'as' ) typeName) )? enclosedExpression ;
 
 validationMode: 'lax' | 'strict' ;
 
@@ -443,6 +443,8 @@ compMLJSONNumberConstructor: 'number-node' '{' exprSingle '}' ;
 compMLJSONBooleanConstructor: 'boolean-node' '{' exprSingle '}' ;
 compMLJSONNullConstructor: 'null-node' '{' '}' ;
 
+compBinaryConstructor: 'binary' enclosedContentExpr ;
+
 
 compDocConstructor: 'document' enclosedExpression ;
 
@@ -596,15 +598,15 @@ mlNodeTest: mlArrayNodeTest
           | mlNullNodeTest
           ;
 
-mlArrayNodeTest: 'array-node' '(' ')' ;
+mlArrayNodeTest: 'array-node' '(' stringLiteral? ')' ;
 
-mlObjectNodeTest: 'object-node' '(' ')' ;
+mlObjectNodeTest: 'object-node' '(' stringLiteral? ')' ;
 
-mlNumberNodeTest: 'number-node' '(' ')' ;
+mlNumberNodeTest: 'number-node' '(' stringLiteral? ')' ;
 
-mlBooleanNodeTest: 'boolean-node' '(' ')' ;
+mlBooleanNodeTest: 'boolean-node' '(' stringLiteral? ')' ;
 
-mlNullNodeTest: 'null-node' '(' ')' ;
+mlNullNodeTest: 'null-node' '(' stringLiteral? ')' ;
 
 // NAMES ///////////////////////////////////////////////////////////////////////
 

@@ -504,13 +504,24 @@ public class XQDocXML {
 
 	/**
 	 * Helper method to build a begin XML tag name for the specified name.
-	 * 
+	 *
 	 * @param name
 	 *            XML Element name
 	 * @return Begin XML tag for the specified element name
 	 */
 	public static String buildBeginTag(String name) {
 		return "<" + XQDOC_PREFIX + name + ">";
+	}
+
+	/**
+	 * Helper method to build a begin XML tag name for the specified name.
+	 *
+	 * @param name
+	 *            XML Element name
+	 * @return Begin XML tag for the specified element name
+	 */
+	public static String buildBeginTagWithTagAttribute(String name, String tag) {
+		return "<" + XQDOC_PREFIX + name + " tag='" + tag + "'>";
 	}
 
 	/**
