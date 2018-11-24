@@ -258,7 +258,11 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
                     for (XQueryParser.AnnotationParamContext annotationParam: annotation.annotList().annotationParam())
                     {
                         buffer.append("<xqdoc:literal>");
-                        buffer.append(annotationParam.stringLiteral().getText());
+                        int a = annotationParam.start.getStartIndex();
+                        int b = annotationParam.stop.getStopIndex();
+                        Interval interval = new Interval(a,b);
+                        buffer.append(annotationParam.start.getInputStream().getText(interval));
+                        //buffer.append(annotationParam.literal().getText());
                         buffer.append("</xqdoc:literal>").append("\n");
                     }
                 }

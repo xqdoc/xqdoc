@@ -108,7 +108,7 @@ annotation: MOD qName (LPAREN annotList RPAREN)? ;
 
 annotList: annotationParam ( COMMA annotationParam )* ;
 
-annotationParam: stringLiteral ;
+annotationParam: literal ;
 
 functionReturn: 'as' sequenceType ;
 
@@ -287,7 +287,7 @@ pathExpr: ('/' relativePathExpr?) | ('//' relativePathExpr) | relativePathExpr ;
 
 relativePathExpr: stepExpr (sep=('/'|'//') stepExpr)* ;
 
-stepExpr: axisStep | postfixExpr ;
+stepExpr: postfixExpr | axisStep ;
 
 axisStep: (reverseStep | forwardStep) predicateList ;
 
@@ -478,7 +478,7 @@ functionBody: enclosedExpression ;
 
 mapConstructor: 'map' '{' (mapConstructorEntry (',' mapConstructorEntry)*)? '}' ;
 
-mapConstructorEntry: mapKey=exprSingle COLON mapValue=exprSingle ;
+mapConstructorEntry: mapKey=exprSingle (COLON | COLON_EQ) mapValue=exprSingle ;
 
 arrayConstructor: squareArrayConstructor | curlyArrayConstructor ;
 
@@ -530,7 +530,7 @@ kindTest: documentTest
         | anyKindTest
         ;
 
-anyKindTest: 'node' '(' ')' ;
+anyKindTest: 'node' '(' '*'? ')' ;
 
 binaryNodeTest: 'binary' '(' ')' ;
 
@@ -669,6 +669,7 @@ keywordNotOKForFunction:
        | KW_INSERT
        | KW_INTO
        | KW_DELETE
+       | KW_NEXT
        | KW_RENAME
        ;
 
@@ -823,6 +824,7 @@ noQuotesNoBracesNoAmpNoLAng:
                      | SLASH
                      | DSLASH
                      | BACKSLASH
+                     | COMMENT
                      | VBAR
                      | RANGLE
                      | QUESTION

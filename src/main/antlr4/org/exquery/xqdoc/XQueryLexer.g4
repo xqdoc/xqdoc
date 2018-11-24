@@ -268,10 +268,11 @@ NameChar: NameStartChar
         | '-'
         | '.'
         | [0-9]
-        | '\u00B7'
+        | '\u00A1'..'\u00BF'
         | '\u0300'..'\u036F'
         | '\u203F'..'\u2040'
         ;
+
 
 // XQuery comments
 //
@@ -287,7 +288,9 @@ XQDocComment: 	'(' ':' '~' ( CHAR | ( ':' ~( ')' ) ) )* ':' ')' ;
 
 XQComment: '(' ':' ~'~' (XQComment | '(' ~[:] | ':' ~[)] | ~[:(])* ':'* ':'+ ')' -> channel(HIDDEN);
 
-CHAR: 	( '\t' | '\n' | '\r' | '\u0020'..'\u0039' | '\u003B'..'\uD7FF' | '\uE000'..'\uFFFD' ) ;
+StringConstructorCharsInternal : (CHAR* ('`{' | ']``') CHAR*) ; // Terminal rule
+
+CHAR: 	( '\t' | '\n' | '\r' | '\u00A2' | '\u0020'..'\u0039' | '\u003B'..'\uD7FF' | '\uE000'..'\uFFFD' ) ;
 
 // This is an intersection of:
 //
