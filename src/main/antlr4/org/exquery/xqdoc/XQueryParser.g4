@@ -491,7 +491,7 @@ stringConstructor: '`' '`' '[' stringConstructorContent ']' '`' '`' ;
 
 stringConstructorContent: stringConstructorChars (stringConstructorInterpolation stringConstructorChars)* ;
 
-stringConstructorChars: (ContentChar* ~ (ContentChar* ('`' '{' | ']' '`' '`') ContentChar*)) ;
+stringConstructorChars: (CHAR* ~ (CHAR* ('`' '{' | ']' '`' '`') CHAR*)) ;
 
 stringConstructorInterpolation: '`' '{' expr '}' '`' ;
 */
