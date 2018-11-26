@@ -83,11 +83,16 @@ moduleImport: 'import' 'module'
 namespaceDecl: 'declare' 'namespace' ncName '=' uriLiteral ;
 
 varDecl: 'declare' annotations 'variable' '$' varName typeDeclaration?
-         ((':=' varValue) | ('external'(':=' varDefaultValue)?)) ;
+         (
+            (':=' varValue)
+          | ('external'(':=' varDefaultValue)?)
+          | ('{' varValue '}')
+          | ('external'('{' varDefaultValue '}')?)
+         ) ;
 
-varValue: exprSingle ;
+varValue: expr ;
 
-varDefaultValue: exprSingle ;
+varDefaultValue: expr ;
 
 contextItemDecl: 'declare' 'context' 'item'
                  ('as' itemType)?
