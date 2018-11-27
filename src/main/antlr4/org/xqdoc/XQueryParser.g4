@@ -837,6 +837,7 @@ noQuotesNoBracesNoAmpNoLAng:
                      | DOLLAR
                      | BANG
                      | FullQName
+                     | URIQualifiedName
                      | NCNameWithLocalWildcard
                      | NCNameWithPrefixWildcard
                      | NCName

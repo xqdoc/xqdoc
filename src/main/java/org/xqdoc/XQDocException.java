@@ -17,34 +17,30 @@
  * affiliated with the Apache Software Foundation.
  */
 
-package org.exquery.xqdoc;
+
+package org.xqdoc;
 
 /**
- * The base xqDoc runtime exception that will be used when processing a xqDoc
- * Comment block. By using a runtime exception, this enabled easier integration
- * with antlr and did not require the pollution of signatures with a 'throw'
- * clause just because of xqDoc comment processing problems. This is really
- * meant to be a short-term solution since the longer term plan is to move the
- * xqDoc Comment block processing into the antlr grammar and eliminating the
- * need for the XQDocComment class and this runtime exception.
+ * The base xqDoc exception that will be used by various
+ * xqDoc drivers and the XQDocController.
  * 
  * @author Darin McBeath
  * @version 1.0
  */
-public class XQDocRuntimeException extends RuntimeException {
+public class XQDocException extends Exception {
 
-	public XQDocRuntimeException() {
+	public XQDocException() {
 	}
 
-	public XQDocRuntimeException(String message) {
+	public XQDocException(String message) {
 		super(message);
 	}
 
-	public XQDocRuntimeException(String message, Throwable cause) {
+	public XQDocException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public XQDocRuntimeException(Throwable cause) {
+	public XQDocException(Throwable cause) {
 		super(cause);
 	}
 }

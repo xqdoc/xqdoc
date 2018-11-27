@@ -1,4 +1,4 @@
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.ls.DOMImplementationLS;

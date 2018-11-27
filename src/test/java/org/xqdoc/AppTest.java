@@ -1,4 +1,4 @@
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;

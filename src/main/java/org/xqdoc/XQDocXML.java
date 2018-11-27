@@ -17,7 +17,7 @@
  * affiliated with the Apache Software Foundation.
  */
 
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 import java.util.Date;
 import java.util.HashSet;

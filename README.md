@@ -306,7 +306,7 @@ dependencies {
 
 class XQDocFilter extends BaseFilterReader {
     XQDocFilter(Reader input) {
-        super(new StringReader(new org.exquery.xqdoc.MarkLogicProcessor().process(input.text)))
+        super(new StringReader(new org.xqdoc.MarkLogicProcessor().process(input.text)))
     }
 }
 

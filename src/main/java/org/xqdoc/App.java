@@ -1,4 +1,4 @@
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -21,22 +21,6 @@ import java.util.Properties;
 public class App 
 {
     public static void main( String[] args ) throws ParserConfigurationException, IOException, SAXException, ParseException {
-        Options options = new Options();
-
-        Option propertyOption   = Option.builder()
-                .longOpt("D")
-                .argName("property=value" )
-                .hasArgs()
-                .valueSeparator()
-                .numberOfArgs(2)
-                .desc("use value for given properties" )
-                .build();
-
-        options.addOption(propertyOption);
-        options.addOption("f", true, "file name");
-
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse( options, args);
         HashMap uriMap = new HashMap();
         uriMap.put("fn", "http://www.w3.org/2003/05/xpath-functions");
         uriMap.put("cts", "http://marklogic.com/cts"); // MarkLogic Server search functions (Core Text Services)
@@ -61,6 +45,25 @@ public class App
         uriMap.put("xqterr", "http://www.w3.org/2005/xqt-errors"); // XQuery test suite errors (same as err)
         uriMap.put("xs", "http://www.w3.org/2001/XMLSchema"); // XML Schema namespace
 
+        if (true) {
+
+        Options options = new Options();
+
+        Option propertyOption   = Option.builder()
+                .longOpt("D")
+                .argName("property=value" )
+                .hasArgs()
+                .valueSeparator()
+                .numberOfArgs(2)
+                .desc("use value for given properties" )
+                .build();
+
+        options.addOption(propertyOption);
+        options.addOption("f", true, "file name");
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse( options, args);
+
         if(cmd.hasOption("D")) {
             Properties properties = cmd.getOptionProperties("D");
             Enumeration<String> prefixes = (Enumeration<String>) properties.propertyNames();
@@ -73,11 +76,28 @@ public class App
         if (cmd.hasOption("f")) {
             InputStream is = Files.newInputStream(Paths.get(cmd.getOptionValue("f")));
             ANTLRInputStream inputStream = new ANTLRInputStream(is);
-            XQueryLexer markupLexer = new XQueryLexer(inputStream);
+            org.xqdoc.XQueryLexer markupLexer = new org.xqdoc.XQueryLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
-            XQueryParser markupParser = new XQueryParser(commonTokenStream);
+            org.xqdoc.XQueryParser markupParser = new org.xqdoc.XQueryParser(commonTokenStream);
 
-            XQueryParser.ModuleContext fileContext = markupParser.module();
+            org.xqdoc.XQueryParser.ModuleContext fileContext = markupParser.module();
+            StringBuffer buffer = new StringBuffer();
+
+
+            XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);
+            visitor.visit(fileContext);
+//            System.out.println(buffer);
+            System.out.println(DocumentUtility.getStringFromDoc(DocumentUtility.getDocumentFromBuffer(buffer)));
+        }
+        } else {
+            String filePath = "/Users/lcahlander/IdeaProjects/exist/test/src/xquery/namespaces.xql";
+            InputStream is = Files.newInputStream(Paths.get(filePath));
+            ANTLRInputStream inputStream = new ANTLRInputStream(is);
+            org.xqdoc.XQueryLexer markupLexer = new org.xqdoc.XQueryLexer(inputStream);
+            CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
+            org.xqdoc.XQueryParser markupParser = new org.xqdoc.XQueryParser(commonTokenStream);
+
+            org.xqdoc.XQueryParser.ModuleContext fileContext = markupParser.module();
             StringBuffer buffer = new StringBuffer();
 
 

@@ -1,4 +1,4 @@
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
+public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     private StringBuffer stream;
-    private XQueryParser.XqDocCommentContext xqDocCommentContext = null;
+    private org.xqdoc.XQueryParser.XqDocCommentContext xqDocCommentContext = null;
     DateTimeFormatter isoFormat = ISODateTimeFormat.dateTime();
 
     // HashMap of predefined function namespaces (set by XQDocController via
@@ -95,10 +95,10 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitModule(XQueryParser.ModuleContext context)
+    public String visitModule(org.xqdoc.XQueryParser.ModuleContext context)
     {
         StringBuffer moduleXQDoc = new StringBuffer();
-        for (XQueryParser.XqDocCommentContext comment : context.xqDocComment() )
+        for (org.xqdoc.XQueryParser.XqDocCommentContext comment : context.xqDocComment() )
         {
             xqDocCommentContext = comment;
             moduleXQDoc.append(printXQDocumentation());
@@ -112,7 +112,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         stream.append("</xqdoc:control>").append("\n");
         if (context.libraryModule() != null && context.libraryModule().moduleDecl() != null)
         {
-            XQueryParser.ModuleDeclContext moduleDeclContext = context.libraryModule().moduleDecl();
+            org.xqdoc.XQueryParser.ModuleDeclContext moduleDeclContext = context.libraryModule().moduleDecl();
             String prefixText = moduleDeclContext.ncName().getText();
             String uriText = moduleDeclContext.uri.getText();
             String uriTrimText = uriText.substring(1).substring(0, uriText.length() - 2);
@@ -143,7 +143,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitProlog(XQueryParser.PrologContext context)
+    public String visitProlog(org.xqdoc.XQueryParser.PrologContext context)
     {
         xqDocCommentContext = null;
         return null;
@@ -200,7 +200,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitSchemaImport(XQueryParser.SchemaImportContext context)
+    public String visitSchemaImport(org.xqdoc.XQueryParser.SchemaImportContext context)
     {
         String prefix = context.schemaPrefix().ncName().getText();
         String uri = context.nsURI.getText();
@@ -214,7 +214,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitModuleImport(XQueryParser.ModuleImportContext context)
+    public String visitModuleImport(org.xqdoc.XQueryParser.ModuleImportContext context)
     {
         String prefix = context.ncName().getText();
         String uri = context.nsURI.getText();
@@ -228,7 +228,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitNamespaceDecl(XQueryParser.NamespaceDeclContext context)
+    public String visitNamespaceDecl(org.xqdoc.XQueryParser.NamespaceDeclContext context)
     {
         String prefix = context.ncName().getText();
         String uri = context.uriLiteral().getText();
@@ -244,18 +244,18 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         return null;
     }
 
-    private StringBuffer processAnnotations(XQueryParser.AnnotationsContext annotations)
+    private StringBuffer processAnnotations(org.xqdoc.XQueryParser.AnnotationsContext annotations)
     {
         StringBuffer buffer = new StringBuffer();
         if (annotations != null && annotations.children != null) {
             buffer.append("<xqdoc:annotations>").append("\n");
-            for (XQueryParser.AnnotationContext annotation: annotations.annotation())
+            for (org.xqdoc.XQueryParser.AnnotationContext annotation: annotations.annotation())
             {
                 buffer.append("<xqdoc:annotation name=\"");
                 buffer.append(annotation.qName().getText());
                 buffer.append("\">").append("\n");
                 if (annotation.annotList() != null) {
-                    for (XQueryParser.AnnotationParamContext annotationParam: annotation.annotList().annotationParam())
+                    for (org.xqdoc.XQueryParser.AnnotationParamContext annotationParam: annotation.annotList().annotationParam())
                     {
                         buffer.append("<xqdoc:literal>");
                         int a = annotationParam.start.getStartIndex();
@@ -273,7 +273,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         return buffer;
     }
 
-    private StringBuffer processTypeDeclaration(XQueryParser.TypeDeclarationContext context)
+    private StringBuffer processTypeDeclaration(org.xqdoc.XQueryParser.TypeDeclarationContext context)
     {
         StringBuffer buffer = new StringBuffer();
         if (context != null) {
@@ -292,7 +292,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitVarDecl(XQueryParser.VarDeclContext context)
+    public String visitVarDecl(org.xqdoc.XQueryParser.VarDeclContext context)
     {
         // Separate the variable name into namspace prefix and localname
         String namespacePrefix = null;
@@ -339,10 +339,10 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitFunctionDecl(XQueryParser.FunctionDeclContext context)
+    public String visitFunctionDecl(org.xqdoc.XQueryParser.FunctionDeclContext context)
     {
-        XQueryParser.FunctionParamsContext functionParamsContext = context.functionParams();
-        XQueryParser.FunctionReturnContext functionReturnContext = context.functionReturn();
+        org.xqdoc.XQueryParser.FunctionParamsContext functionParamsContext = context.functionParams();
+        org.xqdoc.XQueryParser.FunctionReturnContext functionReturnContext = context.functionReturn();
         String functionName = context.name.getText();
         String[] nameParts = functionName.split(":");
         String localName = nameParts[nameParts.length - 1];
@@ -378,7 +378,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
         if (functionParamsContext != null)
         {
             declaredFunctions.append("<xqdoc:parameters>").append("\n");
-            for (XQueryParser.FunctionParamContext functionParam: functionParamsContext.functionParam())
+            for (org.xqdoc.XQueryParser.FunctionParamContext functionParam: functionParamsContext.functionParam())
             {
                 declaredFunctions.append("<xqdoc:parameter>").append("\n");
                 declaredFunctions.append("<xqdoc:name>");
@@ -461,14 +461,14 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitXqDocComment(XQueryParser.XqDocCommentContext context)
+    public String visitXqDocComment(org.xqdoc.XQueryParser.XqDocCommentContext context)
     {
         xqDocCommentContext = context;
         return null;
     }
 
     @Override
-    public String visitFunctionCall(XQueryParser.FunctionCallContext context)
+    public String visitFunctionCall(org.xqdoc.XQueryParser.FunctionCallContext context)
     {
         // Separate the function name into namspace prefix and localname
         String namespacePrefix = null;
@@ -513,7 +513,7 @@ public class XQueryVisitor extends XQueryParserBaseVisitor<String> {
     }
 
     @Override
-    public String visitVarRef(XQueryParser.VarRefContext context)
+    public String visitVarRef(org.xqdoc.XQueryParser.VarRefContext context)
     {
         // Separate the variable name into namspace prefix and localname
         String namespacePrefix = null;

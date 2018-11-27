@@ -1,4 +1,4 @@
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 public class ImportDeclaration {
 

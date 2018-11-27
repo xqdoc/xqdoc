@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.exquery</groupId>
+  <groupId>org.xqdoc</groupId>
   <artifactId>xqdoc</artifactId>
   <version>1.9</version>
     <packaging>jar</packaging>
@@ -91,7 +91,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.exquery.xqdoc.App</mainClass>
+              <mainClass>org.xqdoc.App</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -117,7 +117,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>org.exquery.xqdoc.App</mainClass>
+              <mainClass>org.xqdoc.App</mainClass>
             </manifest>
           </archive>
         </configuration>

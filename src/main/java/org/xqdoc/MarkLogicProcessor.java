@@ -1,4 +1,4 @@
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -35,11 +35,11 @@ public class MarkLogicProcessor {
         uriMap.put("xqterr", "http://www.w3.org/2005/xqt-errors"); // XQuery test suite errors (same as err)
         uriMap.put("xs", "http://www.w3.org/2001/XMLSchema"); // XML Schema namespace
         ANTLRInputStream inputStream = new ANTLRInputStream(txt);
-        XQueryLexer markupLexer = new XQueryLexer(inputStream);
+        org.xqdoc.XQueryLexer markupLexer = new org.xqdoc.XQueryLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
-        XQueryParser markupParser = new XQueryParser(commonTokenStream);
+        org.xqdoc.XQueryParser markupParser = new org.xqdoc.XQueryParser(commonTokenStream);
 
-        XQueryParser.ModuleContext fileContext = markupParser.module();
+        org.xqdoc.XQueryParser.ModuleContext fileContext = markupParser.module();
         StringBuffer buffer = new StringBuffer();
 
 

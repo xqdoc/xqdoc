@@ -17,7 +17,7 @@
  * affiliated with the Apache Software Foundation.
  */
 
-package org.exquery.xqdoc;
+package org.xqdoc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
