@@ -9,7 +9,22 @@
     <packaging>jar</packaging>
 
   <name>xqdoc</name>
+  <description>An Antlr4 implementation of xqDoc for XQuery</description>
   <url>http://xqdoc.org</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Loren Cahlander</name>
+      <email>loren.cahlander@gmail.com</email>
+      <organization>xqDoc</organization>
+      <organizationUrl>http://xqdoc.org</organizationUrl>
+    </developer>
+  </developers>
   <scm>
     <connection>scm:git:https://github.com/lcahlander/xqdoc</connection>
     <developerConnection>scm:git:https://lcahlander@github.com/lcahlander/xqdoc</developerConnection>
@@ -69,6 +84,21 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
