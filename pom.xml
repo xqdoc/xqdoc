@@ -6,7 +6,7 @@
 
   <groupId>org.xqdoc</groupId>
   <artifactId>xqdoc</artifactId>
-  <version>1.9.1</version>
+  <version>1.9.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
   <name>xqdoc</name>
@@ -16,7 +16,7 @@
     <developerConnection>scm:git:https://lcahlander@github.com/lcahlander/xqdoc</developerConnection>
     <url>https://github.com/lcahlander/xqdoc</url>
   </scm>
-  
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr4.visitor>true</antlr4.visitor>
