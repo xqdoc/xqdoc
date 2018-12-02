@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xqdoc:xqdoc xmlns:xqdoc="http://www.xqdoc.org/1.0">
     <xqdoc:control>
-        <xqdoc:date>2018-11-19T14:49:44.851-05:00</xqdoc:date>
+        <xqdoc:date>2018-12-02T07:53:03.047-05:00</xqdoc:date>
         <xqdoc:version>1.1</xqdoc:version>
     </xqdoc:control>
     <xqdoc:module type="library">
@@ -34,7 +34,9 @@ declare
     %rest:GET
     %rest:path("/test2")
     %rest:query-param("hello", "{$hello}", "")
-function test:hello2($hello as xs:string*) {
+function test:hello2($hello as xs:string*) 
+as node() 
+{
     <hello>{$hello}</hello>
 };
 
@@ -172,18 +174,23 @@ function test:hello1($hello as xs:string+) {
                     <xqdoc:literal>""</xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
-            <xqdoc:signature>declare function hello2($hello as xs:string*)</xqdoc:signature>
+            <xqdoc:signature>declare function hello2($hello as xs:string*) as node()</xqdoc:signature>
             <xqdoc:parameters>
                 <xqdoc:parameter>
                     <xqdoc:name>hello</xqdoc:name>
                     <xqdoc:type occurrence="*">xs:string</xqdoc:type>
                 </xqdoc:parameter>
             </xqdoc:parameters>
+            <xqdoc:return>
+                <xqdoc:type>node()</xqdoc:type>
+            </xqdoc:return>
             <xqdoc:body xml:space="preserve"><![CDATA[declare
     %rest:GET
     %rest:path("/test2")
     %rest:query-param("hello", "{$hello}", "")
-function test:hello2($hello as xs:string*) {
+function test:hello2($hello as xs:string*) 
+as node() 
+{
     <hello>{$hello}</hello>
 }]]></xqdoc:body>
         </xqdoc:function>

@@ -128,11 +128,44 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         }
         if (context.mainModule() != null)
         {
+            visitChildren(context.mainModule());
             stream.append("<xqdoc:module type=\"main\">").append("\n");
             stream.append(moduleXQDoc);
+            for (String entry : invokedFunctions)
+            {
+                String namespace = null;
+                String refLocalName = null;
+                String[] tmp = entry.split(" ", 2);
+                namespace = tmp[0];
+                refLocalName = tmp[1];
+                stream.append("<xqdoc:invoked>").append("\n");
+                stream.append("<xqdoc:uri>");
+                stream.append(namespace);
+                stream.append("</xqdoc:uri>").append("\n");
+                stream.append("<xqdoc:name>");
+                stream.append(refLocalName);
+                stream.append("</xqdoc:name>").append("\n");
+                stream.append("</xqdoc:invoked>").append("\n");
+            }
+
+            for (String entry : referencedVariables)
+            {
+                String namespace = null;
+                String refLocalName = null;
+                String[] tmp = entry.split(" ", 2);
+                namespace = tmp[0];
+                refLocalName = tmp[1];
+                stream.append("<xqdoc:ref-variable>").append("\n");
+                stream.append("<xqdoc:uri>");
+                stream.append(namespace);
+                stream.append("</xqdoc:uri>").append("\n");
+                stream.append("<xqdoc:name>");
+                stream.append(refLocalName);
+                stream.append("</xqdoc:name>").append("\n");
+                stream.append("</xqdoc:ref-variable").append("\n");
+            }
             stream.append(printBody(context));
             stream.append("</xqdoc:module>").append("\n");
-            visitChildren(context.mainModule());
         }
         buildImports();
         buildNamespaces();
@@ -146,6 +179,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     public String visitProlog(org.xqdoc.XQueryParser.PrologContext context)
     {
         xqDocCommentContext = null;
+        visitChildren(context);
         return null;
     }
 
@@ -449,6 +483,20 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    @Override
+    public String visitFunctionBody(org.xqdoc.XQueryParser.FunctionBodyContext context) {
+        visitChildren(context);
+        return null;
+    }
+
+    @Override
+    public String visitQueryBody(org.xqdoc.XQueryParser.QueryBodyContext context) {
+        invokedFunctions = new HashSet<String>();
+        referencedVariables = new HashSet<String>();
+        visitChildren(context);
+        return null;
+    }
+
     private StringBuffer printBody(ParserRuleContext context) {
         StringBuffer bodyBuffer = new StringBuffer();
         bodyBuffer.append("<xqdoc:body xml:space=\"preserve\"><![CDATA[");
@@ -509,6 +557,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         if (!invokedFunctions.contains(namespace + " " + localName)) {
             invokedFunctions.add(namespace + " " + localName);
         }
+        visitChildren(context);
         return null;
     }
 

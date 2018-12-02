@@ -25,7 +25,9 @@ declare
     %rest:GET
     %rest:path("/test2")
     %rest:query-param("hello", "{$hello}", "")
-function test:hello2($hello as xs:string*) {
+function test:hello2($hello as xs:string*) 
+as node() 
+{
     <hello>{$hello}</hello>
 };
 
