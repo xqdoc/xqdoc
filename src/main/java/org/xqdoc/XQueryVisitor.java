@@ -35,6 +35,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     // Hash for holding the declared namespaces
     private HashMap<String,String> declaredNamespaces = new HashMap<String,String>();
 
+    private HashMap<String,String> importedModuleNamespaces = new HashMap<String,String>();
+
     private StringBuffer declaredVariables = new StringBuffer();
 
     private StringBuffer declaredFunctions = new StringBuffer();
@@ -257,6 +259,10 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         if (!imports.containsKey(prefix))
         {
             imports.put(prefix, new ImportDeclaration(uri, "library", xqDoc));
+        }
+        if (!importedModuleNamespaces.containsKey(prefix))
+        {
+            importedModuleNamespaces.put(prefix, uri);
         }
         return null;
     }
@@ -540,6 +546,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         } else {
             namespace = (String) (uriModuleMap.get(namespacePrefix));
             if (namespace == null) {
+                namespace = importedModuleNamespaces.get(namespacePrefix);
+            }
+            if (namespace == null) {
                 namespace = (String) (predefinedFunctionNamespaces
                         .get(namespacePrefix));
             }
@@ -576,10 +585,22 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             return null;
         }
 
-        namespace = (String) (uriModuleMap.get(namespacePrefix));
-        if (namespace == null) {
-            namespace = (String) (predefinedFunctionNamespaces
-                    .get(namespacePrefix));
+        // Get the actual namespace
+        if (namespacePrefix == null) {
+            if (defaultModuleFunctionNamespace != null) {
+                namespace = defaultModuleFunctionNamespace;
+            } else if (defaultFunctionNamespace != null) {
+                namespace = defaultFunctionNamespace;
+            }
+        } else {
+            namespace = (String) (uriModuleMap.get(namespacePrefix));
+            if (namespace == null) {
+                namespace = importedModuleNamespaces.get(namespacePrefix);
+            }
+            if (namespace == null) {
+                namespace = (String) (predefinedFunctionNamespaces
+                        .get(namespacePrefix));
+            }
         }
 
         // References a namespace we don't know about
