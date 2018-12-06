@@ -130,7 +130,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         }
         if (context.mainModule() != null)
         {
-            visitChildren(context.mainModule());
+            for (org.xqdoc.XQueryParser.MainModuleContext mctx : context.mainModule()) {
+                visitChildren(mctx);
+            }
             stream.append("<xqdoc:module type=\"main\">").append("\n");
             stream.append(moduleXQDoc);
             for (String entry : invokedFunctions)
@@ -164,7 +166,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                 stream.append("<xqdoc:name>");
                 stream.append(refLocalName);
                 stream.append("</xqdoc:name>").append("\n");
-                stream.append("</xqdoc:ref-variable").append("\n");
+                stream.append("</xqdoc:ref-variable>").append("\n");
             }
             stream.append(printBody(context));
             stream.append("</xqdoc:module>").append("\n");
@@ -480,7 +482,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             declaredFunctions.append("<xqdoc:name>");
             declaredFunctions.append(refLocalName);
             declaredFunctions.append("</xqdoc:name>").append("\n");
-            declaredFunctions.append("</xqdoc:ref-variable").append("\n");
+            declaredFunctions.append("</xqdoc:ref-variable>").append("\n");
         }
 
         declaredFunctions.append(printBody(context));
@@ -579,7 +581,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         String localName = null;
         String[] tmp = context.getText().split(":", 2);
         if (tmp.length > 1) {
-            namespacePrefix = tmp[0];
+            namespacePrefix = tmp[0].substring(1);
             localName = tmp[1];
         } else {
             return null;

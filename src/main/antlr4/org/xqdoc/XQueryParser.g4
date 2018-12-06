@@ -16,7 +16,7 @@ options {
 
 // MODULE HEADER ///////////////////////////////////////////////////////////////
 
-module: xqDocComment? versionDecl? xqDocComment? (libraryModule | mainModule) ;
+module: xqDocComment? versionDecl? xqDocComment? (libraryModule | (mainModule (SEMICOLON versionDecl? mainModule)* )) ;
 
 xqDocComment: XQDocComment ;
 
