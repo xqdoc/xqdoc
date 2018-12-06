@@ -156,5 +156,6 @@ public class AppTest
                 .checkForSimilar()
                 .ignoreWhitespace()
                 .build();
-        assertFalse("XML similar " + myDiff.toString(), myDiff.hasDifferences());    }
+        assertFalse("XML similar " + myDiff.toString(), myDiff.hasDifferences());
+    }
 }

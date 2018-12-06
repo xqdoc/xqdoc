@@ -128,7 +128,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             stream.append("</xqdoc:module>").append("\n");
             visitChildren(context.libraryModule().prolog());
         }
-        if (context.mainModule() != null)
+        else if (context.mainModule() != null)
         {
             for (org.xqdoc.XQueryParser.MainModuleContext mctx : context.mainModule()) {
                 visitChildren(mctx);
