@@ -440,6 +440,7 @@ compMLJSONConstructor: compMLJSONArrayConstructor
                      | compMLJSONNumberConstructor
                      | compMLJSONBooleanConstructor
                      | compMLJSONNullConstructor
+                     | compBinaryConstructor
                      ;
 
 compMLJSONArrayConstructor: 'array-node' '{' expr '}' ;
