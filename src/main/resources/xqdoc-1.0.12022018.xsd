@@ -148,7 +148,7 @@
         <xs:annotation>
             <xs:documentation>Complex type used for defining a custom comment type.
                 The type attribute allows the differentiation of the custom
-                comment types. If the custom comment is @example, then the
+                comment types. If the custom comment is @custom:example, then the
                 value in the 'tag' attribute would be 'example'.</xs:documentation>
         </xs:annotation>
         <xs:complexContent>
