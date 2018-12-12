@@ -443,9 +443,9 @@ compMLJSONConstructor: compMLJSONArrayConstructor
                      | compBinaryConstructor
                      ;
 
-compMLJSONArrayConstructor: 'array-node' '{' expr '}' ;
-compMLJSONObjectConstructor: 'object-node' '{' exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)* '}' ;
-compMLJSONNumberConstructor: 'number-node' '{' exprSingle '}' ;
+compMLJSONArrayConstructor: 'array-node' enclosedContentExpr ;
+compMLJSONObjectConstructor: 'object-node' '{' (exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)*)? '}' ;
+compMLJSONNumberConstructor: 'number-node' enclosedContentExpr ;
 compMLJSONBooleanConstructor: 'boolean-node' '{' exprSingle '}' ;
 compMLJSONNullConstructor: 'null-node' '{' '}' ;
 
