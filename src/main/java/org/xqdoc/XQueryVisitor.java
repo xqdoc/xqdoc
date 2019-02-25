@@ -142,9 +142,16 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                 String[] tmp = entry.split(" ", 2);
                 namespace = tmp[0];
                 refLocalName = tmp[1];
+
+                String uriTrimText;
+                if (namespace.startsWith("\"")) {
+                    uriTrimText = namespace.substring(1).substring(0, namespace.length() - 2);
+                } else {
+                    uriTrimText = namespace;
+                }
                 stream.append("<xqdoc:invoked>").append("\n");
                 stream.append("<xqdoc:uri>");
-                stream.append(namespace);
+                stream.append(uriTrimText);
                 stream.append("</xqdoc:uri>").append("\n");
                 stream.append("<xqdoc:name>");
                 stream.append(refLocalName);
@@ -159,9 +166,15 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                 String[] tmp = entry.split(" ", 2);
                 namespace = tmp[0];
                 refLocalName = tmp[1];
+                String uriTrimText;
+                if (namespace.startsWith("\"")) {
+                    uriTrimText = namespace.substring(1).substring(0, namespace.length() - 2);
+                } else {
+                    uriTrimText = namespace;
+                }
                 stream.append("<xqdoc:ref-variable>").append("\n");
                 stream.append("<xqdoc:uri>");
-                stream.append(namespace);
+                stream.append(uriTrimText);
                 stream.append("</xqdoc:uri>").append("\n");
                 stream.append("<xqdoc:name>");
                 stream.append(refLocalName);
@@ -242,11 +255,17 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     {
         String prefix = context.schemaPrefix().ncName().getText();
         String uri = context.nsURI.getText();
+        String uriTrimText;
+        if (uri.startsWith("\"")) {
+            uriTrimText = uri.substring(1).substring(0, uri.length() - 2);
+        } else {
+            uriTrimText = uri;
+        }
         String xqDoc = printXQDocumentation();
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uri, "schema", xqDoc));
+            imports.put(prefix, new ImportDeclaration(uriTrimText, "schema", xqDoc));
         }
         return null;
     }
@@ -256,11 +275,17 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     {
         String prefix = context.ncName().getText();
         String uri = context.nsURI.getText();
+        String uriTrimText;
+        if (uri.startsWith("\"")) {
+            uriTrimText = uri.substring(1).substring(0, uri.length() - 2);
+        } else {
+            uriTrimText = uri;
+        }
         String xqDoc = printXQDocumentation();
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uri, "library", xqDoc));
+            imports.put(prefix, new ImportDeclaration(uriTrimText, "library", xqDoc));
         }
         if (!importedModuleNamespaces.containsKey(prefix))
         {
