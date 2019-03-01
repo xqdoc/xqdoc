@@ -5,7 +5,7 @@
 
   <groupId>org.xqdoc</groupId>
   <artifactId>xqdoc</artifactId>
-  <version>1.9.7-SNAPSHOT</version>
+  <version>1.9.7</version>
     <packaging>jar</packaging>
 
   <name>xqdoc</name>
@@ -29,7 +29,7 @@
     <connection>scm:git:https://github.com/lcahlander/xqdoc</connection>
     <developerConnection>scm:git:https://lcahlander@github.com/lcahlander/xqdoc</developerConnection>
     <url>https://github.com/lcahlander/xqdoc</url>
-    <tag>HEAD</tag>
+    <tag>1.9.7</tag>
   </scm>
 
     <properties>
