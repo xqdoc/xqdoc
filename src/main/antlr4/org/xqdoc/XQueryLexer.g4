@@ -22,8 +22,6 @@ DFPropertyName: 'decimal-separator'
               | 'exponent-separator'
               ;
 
-URIQualifiedName: 'Q' '{' (PredefinedEntityRef | CharRef | [^&{}])* '}' ;
-
 fragment
 Digits: [0-9]+ ;
 
@@ -40,11 +38,11 @@ Apos: '\'' ;
 
 // XML-SPECIFIC
 
-COMMENT: '<!--' ('-' ~[-] | ~[-])* '-->' ;
-XMLDECL: '<?' [Xx] [Mm] [Ll] ([ \t\r\n] .*?)? '?>' ;
-PI:      '<?' NCName ([ \t\r\n] .*?)? '?>' ;
-CDATA:   '<![CDATA[' .*? ']]>' ;
-PRAGMA:  '(#' WS? (NCName ':')? NCName (WS .*?)? '#)' ;
+COMMENT : '<!--' ('-' ~[-] | ~[-])* '-->' ;
+XMLDECL : '<?' [Xx] [Mm] [Ll] ([ \t\r\n] .*?)? '?>' ;
+PI      :      '<?' NCName ([ \t\r\n] .*?)? '?>' ;
+CDATA   :   '<![CDATA[' .*? ']]>' ;
+PRAGMA  :  '(#' WS? (NCName ':')? NCName (WS .*?)? '#)' ;
 
 // WHITESPACE
 
@@ -53,46 +51,46 @@ WS: [ \t\r\n]+ -> channel(HIDDEN);
 
 // OPERATORS
 
-EQUAL:     '='  ;
-NOT_EQUAL: '!=' ;
-LPAREN:    '(' ;
-RPAREN:    ')' ;
-LBRACKET:  '[' ;
-RBRACKET:  ']' ;
-LBRACE:    '{' ;
-RBRACE:    '}' ;
+EQUAL           : '='  ;
+NOT_EQUAL       : '!=' ;
+LPAREN          : '(' ;
+RPAREN          : ')' ;
+LBRACKET        : '[' ;
+RBRACKET        : ']' ;
+LBRACE          : '{' ;
+RBRACE          :  '}' ;
 
-STAR:  '*' ;
-PLUS:  '+' ;
-MINUS: '-' ;
+STAR            : '*' ;
+PLUS            : '+' ;
+MINUS           : '-' ;
 
-COMMA:     ',' ;
-DOT:       '.' ;
-DDOT:      '..' ;
-COLON:     ':' ;
-COLON_EQ:  ':=' ;
-SEMICOLON: ';' ;
+COMMA           : ',' ;
+DOT             : '.' ;
+DDOT            : '..' ;
+COLON           : ':' ;
+COLON_EQ        : ':=' ;
+SEMICOLON       : ';' ;
 
-SLASH:  '/'  ;
-DSLASH: '//' ;
-BACKSLASH: '\\';
-VBAR:   '|'  ;
+SLASH           : '/'  ;
+DSLASH          : '//' ;
+BACKSLASH       : '\\';
+VBAR            : '|'  ;
 
-LANGLE:    '<'  ;
-RANGLE:    '>'  ;
+LANGLE          : '<' ;
+RANGLE          : '>' ;
 
-QUESTION: '?' ;
-AT: '@' ;
-DOLLAR: '$' ;
-MOD: '%' ;
-BANG: '!';
-HASH: '#';
-CARAT: '^';
+QUESTION        : '?' ;
+AT              : '@' ;
+DOLLAR          : '$' ;
+MOD             : '%' ;
+BANG            : '!' ;
+HASH            : '#' ;
+CARAT           : '^' ;
 
-ARROW: '=>';
-GRAVE: '`';
-CONCATENATION: '||';
-TILDE: '~';
+ARROW           : '=>' ;
+GRAVE           : '`' ;
+CONCATENATION   : '||' ;
+TILDE           : '~' ;
 
 
 // KEYWORDS
@@ -239,6 +237,9 @@ KW_RENAME:             'rename';
 
 // NAMES
 
+// Moved URIQualifiedName here to gather all names
+URIQualifiedName: 'Q' '{' (PredefinedEntityRef | CharRef | ~[&{}])* '}' NCName ;
+
 // We create these basic variants in order to honor ws:explicit in some basic cases
 FullQName: NCName ':' NCName ;
 NCNameWithLocalWildcard:  NCName ':' '*' ;
@@ -288,9 +289,11 @@ XQDocComment: 	'(' ':' '~' ( CHAR | ( ':' ~( ')' ) ) )* ':' ')' ;
 
 XQComment: '(' ':' ~'~' (XQComment | '(' ~[:] | ':' ~[)] | ~[:(])* ':'* ':'+ ')' -> channel(HIDDEN);
 
-StringConstructorCharsInternal : (CHAR* ('`{' | ']``') CHAR*) ; // Terminal rule
+CHAR: ( '\t' | '\n' | '\r' | '\u0020'..'\u0039' | '\u003B'..'\uD7FF' | '\uE000'..'\uFFFD' ) ;
 
-CHAR: 	( '\t' | '\n' | '\r' | '\u00A2' | '\u0020'..'\u0039' | '\u003B'..'\uD7FF' | '\uE000'..'\uFFFD' ) ;
+// These rules have been added to enter and exit the String mode
+ENTER_STRING        : GRAVE GRAVE LBRACKET -> pushMode(STRING_MODE);
+EXIT_INTERPOLATION  : RBRACE GRAVE -> popMode;
 
 // This is an intersection of:
 //
@@ -306,4 +309,19 @@ CHAR: 	( '\t' | '\n' | '\r' | '\u00A2' | '\u0020'..'\u0039' | '\u003B'..'\uD7FF'
 //
 // This rule needs to be the very last one, so it has the lowest priority.
 
-ContentChar:  ~["'{}<&]  ;
+ContentChar:  ~["'{}<&] ;
+
+
+// Lexical mode to parse Strings
+mode STRING_MODE;
+
+BASIC_CHAR          : ( '\t' | '\n' | '\r' 
+                        | '\u0020'..'\u0039'
+                        | '\u003B'..'\u005C'
+                        | '\u005E'..'\u005F'
+                        | '\u0061'..'\u007A'
+                        | '\u007C'..'\uD7FF'
+                        | '\uE000'..'\uFFFD' ) ;
+
+ENTER_INTERPOLATION : GRAVE LBRACE -> pushMode(DEFAULT_MODE);
+EXIT_STRING         : RBRACKET GRAVE GRAVE -> popMode;

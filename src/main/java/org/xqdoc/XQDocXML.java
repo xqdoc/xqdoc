@@ -489,16 +489,16 @@ public class XQDocXML {
 	/**
 	 * Helper method to build a begin XML tag name for the specified name and
 	 * namespace.
-	 * 
+	 *
 	 * @param name
 	 *            XML Element name
 	 * @param namespace
 	 *            The namespace for this element and it's descendants
-	 * 
+	 *
 	 * @return Begin XML tag for the specified element name
 	 */
 	public static String buildBeginTagWithNamespace(String name,
-			String namespace) {
+													String namespace) {
 		return "<" + XQDOC_PREFIX + name + " xmlns:xqdoc='" + namespace + "'>";
 	}
 

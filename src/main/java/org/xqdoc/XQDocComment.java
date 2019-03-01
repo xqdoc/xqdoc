@@ -226,6 +226,7 @@ public class XQDocComment {
             xqDocCommentBlock[xqDocCommentState].append(XQDocXML
                     .buildBeginTag(XQDOC_STATE_TAG[xqDocCommentState]));
         }
+        xqDocCommentBlock[xqDocCommentState].append("<![CDATA[");
     }
 
     /**
@@ -237,6 +238,7 @@ public class XQDocComment {
         String line = xqDocCommentBlock[xqDocCommentState].toString().replaceFirst("\\s++$", "");
         xqDocCommentBlock[xqDocCommentState] = new StringBuffer();
         xqDocCommentBlock[xqDocCommentState].append(line);
+        xqDocCommentBlock[xqDocCommentState].append("]]>");
         xqDocCommentBlock[xqDocCommentState].append(XQDocXML
                 .buildEndTag(XQDOC_STATE_TAG[xqDocCommentState]));
     }

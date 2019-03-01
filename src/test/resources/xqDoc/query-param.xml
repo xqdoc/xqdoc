@@ -110,13 +110,13 @@ function test:hello8($hello) {
             <xqdoc:annotations>
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
-                    <xqdoc:literal>/test</xqdoc:literal>
+                    <xqdoc:literal>"/test"</xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
-                    <xqdoc:literal>hello</xqdoc:literal>
-                    <xqdoc:literal>{$hello}</xqdoc:literal>
-                    <xqdoc:literal>hello</xqdoc:literal>
-                    <xqdoc:literal>again</xqdoc:literal>
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"again"</xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
             <xqdoc:signature>declare function hello($hello)</xqdoc:signature>
@@ -138,12 +138,12 @@ function test:hello($hello) {
             <xqdoc:annotations>
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
-                    <xqdoc:literal>/test1</xqdoc:literal>
+                    <xqdoc:literal>"/test1"</xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
-                    <xqdoc:literal>hello</xqdoc:literal>
-                    <xqdoc:literal>{$hello}</xqdoc:literal>
-                    <xqdoc:literal></xqdoc:literal>
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                    <xqdoc:literal>""</xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
             <xqdoc:signature>declare function hello1($hello as xs:string+)</xqdoc:signature>
@@ -166,12 +166,12 @@ function test:hello1($hello as xs:string+) {
             <xqdoc:annotations>
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
-                    <xqdoc:literal>/test2</xqdoc:literal>
+                    <xqdoc:literal>"/test2"</xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
-                    <xqdoc:literal>hello</xqdoc:literal>
-                    <xqdoc:literal>{$hello}</xqdoc:literal>
-                    <xqdoc:literal></xqdoc:literal>
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
+                    <xqdoc:literal>""</xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
             <xqdoc:signature>declare function hello2($hello as xs:string*) as node()</xqdoc:signature>
@@ -199,11 +199,11 @@ as node()
             <xqdoc:annotations>
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
-                    <xqdoc:literal>/test7</xqdoc:literal>
+                    <xqdoc:literal>"/test7"</xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
-                    <xqdoc:literal>hello</xqdoc:literal>
-                    <xqdoc:literal>{$hello}</xqdoc:literal>
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
             <xqdoc:signature>declare function hello7($hello as xs:string*)</xqdoc:signature>
@@ -226,11 +226,11 @@ function test:hello7($hello as xs:string*) {
             <xqdoc:annotations>
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
-                    <xqdoc:literal>/test8</xqdoc:literal>
+                    <xqdoc:literal>"/test8"</xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
-                    <xqdoc:literal>hello</xqdoc:literal>
-                    <xqdoc:literal>{$hello}</xqdoc:literal>
+                    <xqdoc:literal>"hello"</xqdoc:literal>
+                    <xqdoc:literal>"{$hello}"</xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
             <xqdoc:signature>declare function hello8($hello)</xqdoc:signature>

@@ -329,9 +329,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                         int b = annotationParam.stop.getStopIndex();
                         Interval interval = new Interval(a,b);
                         String literalText = annotationParam.start.getInputStream().getText(interval);
-                        String literalTrimText = literalText.substring(1).substring(0, literalText.length() - 2);
-                        buffer.append(literalTrimText);
-                        //buffer.append(annotationParam.literal().getText());
+                        buffer.append(literalText);
                         buffer.append("</xqdoc:literal>").append("\n");
                     }
                 }

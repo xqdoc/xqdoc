@@ -16,7 +16,7 @@ options {
 
 // MODULE HEADER ///////////////////////////////////////////////////////////////
 
-module: xqDocComment? versionDecl? xqDocComment? (libraryModule | (mainModule (SEMICOLON versionDecl? mainModule)* )) ;
+module : xqDocComment? versionDecl? xqDocComment? (libraryModule | (mainModule (SEMICOLON versionDecl? mainModule)* )) ;
 
 xqDocComment: XQDocComment ;
 
@@ -51,7 +51,7 @@ setter: boundarySpaceDecl
       | copyNamespacesDecl
       | decimalFormatDecl ;
 
-boundarySpaceDecl: 'declare' 'boundary-space' type=('preserve' | 'strip') ;
+boundarySpaceDecl: KW_DECLARE KW_BOUNDARY_SPACE type=(KW_PRESERVE | KW_STRIP) ;
 defaultCollationDecl: 'declare' 'default' 'collation' uriLiteral ;
 baseURIDecl: 'declare' 'base-uri' uriLiteral ;
 constructionDecl: 'declare' 'construction' type=('strip' | 'preserve') ;
@@ -239,7 +239,6 @@ existInsertExpr: 'insert' exprSingle ('into' | 'preceding' | 'following') exprSi
 existDeleteExpr: 'delete' exprSingle;
 existRenameExpr: 'rename' exprSingle 'as' exprSingle;
 
-
 orExpr: andExpr ('or' andExpr)* ;
 
 andExpr: comparisonExpr ('and' comparisonExpr)* ;
@@ -353,7 +352,7 @@ primaryExpr: literal
            | functionItemExpr
            | mapConstructor
            | arrayConstructor
-//           | stringConstructor
+           | stringConstructor
            | unaryLookup
            ;
 
@@ -492,15 +491,16 @@ squareArrayConstructor: '[' (exprSingle (',' exprSingle)*)? ']' ;
 
 curlyArrayConstructor: 'array' enclosedExpression ;
 
-/*
-stringConstructor: '`' '`' '[' stringConstructorContent ']' '`' '`' ;
+stringConstructor: ENTER_STRING stringConstructorContent EXIT_STRING;
 
 stringConstructorContent: stringConstructorChars (stringConstructorInterpolation stringConstructorChars)* ;
 
-stringConstructorChars: (CHAR* ~ (CHAR* ('`' '{' | ']' '`' '`') CHAR*)) ;
+charNoGrave           : BASIC_CHAR | LBRACE | RBRACKET;
+charNoLBrace          : BASIC_CHAR | GRAVE | RBRACKET;
+charNoRBrack          : BASIC_CHAR | GRAVE | LBRACE;
+stringConstructorChars: (BASIC_CHAR | charNoGrave charNoLBrace | charNoRBrack charNoGrave charNoGrave)* ;
 
-stringConstructorInterpolation: '`' '{' expr '}' '`' ;
-*/
+stringConstructorInterpolation: ENTER_INTERPOLATION expr EXIT_INTERPOLATION ;
 
 unaryLookup: '?' keySpecifier ;
 
