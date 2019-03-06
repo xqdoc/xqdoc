@@ -210,7 +210,7 @@ Run the command: ```mvn package```
 
 ## Command Line Call
 
-```java -jar xqdoc-1.9-jar-with-dependencies.jar -Dprefix=uri -Dprefix=uri -f filepath```
+```java -jar xqdoc-1.9-8-jar-with-dependencies.jar -Dprefix=uri -Dprefix=uri -f filepath```
 
 The prefix/uri combination is for the prefixes that are not needed in an import module namespace for the implementation.
 
@@ -276,7 +276,7 @@ buildscript {
     }
 
     dependencies {
-        classpath files('lib/xqdoc-1.9-jar-with-dependencies.jar')
+        classpath "org.xqdoc:xqdoc:1.9.8"
     }
 }
 
