@@ -20,9 +20,9 @@ module : xqDocComment? versionDecl? xqDocComment? (libraryModule | (mainModule (
 
 xqDocComment: XQDocComment ;
 
-versionDecl: 'xquery' 'version' version=stringLiteral
-             ('encoding' encoding=stringLiteral)?
-             ';' ;
+versionDecl: KW_XQUERY KW_VERSION version=stringLiteral
+             (KW_ENCODING encoding=stringLiteral)?
+             SEMICOLON ;
 
 mainModule: prolog queryBody;
 
@@ -30,16 +30,16 @@ queryBody: expr ;
 
 libraryModule: moduleDecl prolog;
 
-moduleDecl: 'module' 'namespace' ncName '=' uri=stringLiteral ';' ;
+moduleDecl: KW_MODULE KW_NAMESPACE ncName EQUAL uri=stringLiteral SEMICOLON ;
 
 // MODULE PROLOG ///////////////////////////////////////////////////////////////
 
-prolog: ((defaultNamespaceDecl | setter | namespaceDecl | schemaImport | moduleImport) ';')*
-        ( xqDocComment? (varDecl | functionDecl | contextItemDecl | optionDecl) ';')* ;
+prolog: ((defaultNamespaceDecl | setter | namespaceDecl | schemaImport | moduleImport) SEMICOLON)*
+        ( xqDocComment? (varDecl | functionDecl | contextItemDecl | optionDecl) SEMICOLON)* ;
 
-defaultNamespaceDecl: 'declare' 'default'
-                      type=('element' | 'function')
-                      'namespace'
+defaultNamespaceDecl: KW_DECLARE KW_DEFAULT
+                      type=(KW_ELEMENT | KW_FUNCTION)
+                      KW_NAMESPACE
                       uri=stringLiteral ;
 
 setter: boundarySpaceDecl
@@ -52,60 +52,60 @@ setter: boundarySpaceDecl
       | decimalFormatDecl ;
 
 boundarySpaceDecl: KW_DECLARE KW_BOUNDARY_SPACE type=(KW_PRESERVE | KW_STRIP) ;
-defaultCollationDecl: 'declare' 'default' 'collation' uriLiteral ;
-baseURIDecl: 'declare' 'base-uri' uriLiteral ;
-constructionDecl: 'declare' 'construction' type=('strip' | 'preserve') ;
-orderingModeDecl: 'declare' 'ordering' type=('ordered' | 'unordered') ;
-emptyOrderDecl: 'declare' 'default' 'order' 'empty' type=('greatest' | 'least') ;
-copyNamespacesDecl: 'declare' 'copy-namespaces' preserveMode COMMA inheritMode ;
-preserveMode: 'preserve' | 'no-preserve' ;
-inheritMode: 'inherit' | 'no-inherit' ;
-decimalFormatDecl: 'declare' (
-                      ('decimal-format' eqName)
-                    | ('default' 'decimal-format')
+defaultCollationDecl: KW_DECLARE KW_DEFAULT KW_COLLATION uriLiteral ;
+baseURIDecl: KW_DECLARE KW_BASE_URI uriLiteral ;
+constructionDecl: KW_DECLARE KW_CONSTRUCTION type=(KW_STRIP | KW_PRESERVE) ;
+orderingModeDecl: KW_DECLARE KW_ORDERING type=(KW_ORDERED | KW_UNORDERED) ;
+emptyOrderDecl: KW_DECLARE KW_DEFAULT KW_ORDER KW_EMPTY type=(KW_GREATEST | KW_LEAST) ;
+copyNamespacesDecl: KW_DECLARE KW_COPY_NS preserveMode COMMA inheritMode ;
+preserveMode: KW_PRESERVE | KW_NO_PRESERVE ;
+inheritMode: KW_INHERIT | KW_NO_INHERIT ;
+decimalFormatDecl: KW_DECLARE (
+                      (KW_DECIMAL_FORMAT eqName)
+                    | (KW_DEFAULT KW_DECIMAL_FORMAT)
                    )
-                   (DFPropertyName '=' stringLiteral)*;
+                   (DFPropertyName EQUAL stringLiteral)*;
 
 
-schemaImport: 'import' 'schema'
+schemaImport: KW_IMPORT KW_SCHEMA
               schemaPrefix?
               nsURI=uriLiteral
-              ('at' locations+=uriLiteral (',' locations+=uriLiteral)*)? ;
+              (KW_AT locations+=uriLiteral (COMMA locations+=uriLiteral)*)? ;
 
-schemaPrefix: ('namespace' ncName '=' | 'default' 'element' 'namespace') ;
+schemaPrefix: (KW_NAMESPACE ncName EQUAL | KW_DEFAULT KW_ELEMENT KW_NAMESPACE) ;
 
-moduleImport: 'import' 'module'
-              ('namespace' ncName '=')?
+moduleImport: KW_IMPORT KW_MODULE
+              (KW_NAMESPACE ncName EQUAL)?
               nsURI=uriLiteral
-              ('at' locations+=uriLiteral (',' locations+=uriLiteral)*)? ;
+              (KW_AT locations+=uriLiteral (COMMA locations+=uriLiteral)*)? ;
 
 
-namespaceDecl: 'declare' 'namespace' ncName '=' uriLiteral ;
+namespaceDecl: KW_DECLARE KW_NAMESPACE ncName EQUAL uriLiteral ;
 
-varDecl: 'declare' annotations 'variable' '$' varName typeDeclaration?
+varDecl: KW_DECLARE annotations KW_VARIABLE DOLLAR varName typeDeclaration?
          (
-            (':=' varValue)
-          | ('external'(':=' varDefaultValue)?)
-          | ('{' varValue '}')
-          | ('external'('{' varDefaultValue '}')?)
+            (COLON_EQ varValue)
+          | (KW_EXTERNAL (COLON_EQ varDefaultValue)?)
+          | (LBRACE varValue RBRACE)
+          | (KW_EXTERNAL(LBRACE varDefaultValue RBRACE)?)
          ) ;
 
 varValue: expr ;
 
 varDefaultValue: expr ;
 
-contextItemDecl: 'declare' 'context' 'item'
-                 ('as' itemType)?
+contextItemDecl: KW_DECLARE KW_CONTEXT KW_ITEM
+                 (KW_AS itemType)?
                  ((COLON_EQ value=exprSingle)
-                 | ('external' (COLON_EQ defaultValue=exprSingle)?)) ;
+                 | (KW_EXTERNAL (COLON_EQ defaultValue=exprSingle)?)) ;
 
-functionDecl: 'declare' annotations 'function' name=eqName '(' functionParams? ')'
+functionDecl: KW_DECLARE annotations KW_FUNCTION name=eqName LPAREN functionParams? RPAREN
               functionReturn?
-              ( functionBody | 'external') ;
+              ( functionBody | KW_EXTERNAL) ;
 
 functionParams: functionParam (COMMA functionParam)* ;
 
-functionParam: '$' name=qName type=typeDeclaration? ;
+functionParam: DOLLAR name=qName type=typeDeclaration? ;
 
 annotations: annotation* ;
 
@@ -115,14 +115,14 @@ annotList: annotationParam ( COMMA annotationParam )* ;
 
 annotationParam: literal ;
 
-functionReturn: 'as' sequenceType ;
+functionReturn: KW_AS sequenceType ;
 
-optionDecl: 'declare' 'option' name=qName value=stringLiteral ;
+optionDecl: KW_DECLARE KW_OPTION name=qName value=stringLiteral ;
 
 
 // EXPRESSIONS /////////////////////////////////////////////////////////////////
 
-expr: exprSingle (',' exprSingle)* ;
+expr: exprSingle (COMMA exprSingle)* ;
 
 exprSingle: flworExpr
           | quantifiedExpr
@@ -143,153 +143,153 @@ intermediateClause: initialClause
                   | countClause
                   ;
 
-forClause: 'for' vars+=forBinding (',' vars+=forBinding)* ;
+forClause: KW_FOR vars+=forBinding (COMMA vars+=forBinding)* ;
 
-forBinding: '$' name=varName type=typeDeclaration? allowingEmpty? positionalVar?
-        'in' in=exprSingle ;
+forBinding: DOLLAR name=varName type=typeDeclaration? allowingEmpty? positionalVar?
+        KW_IN in=exprSingle ;
 
-allowingEmpty: 'allowing' 'empty';
+allowingEmpty: KW_ALLOWING KW_EMPTY;
 
-positionalVar: 'at' '$' pvar=varName ;
+positionalVar: KW_AT DOLLAR pvar=varName ;
 
-letClause: 'let'  vars+=letBinding (',' vars+=letBinding)* ;
+letClause: KW_LET  vars+=letBinding (COMMA vars+=letBinding)* ;
 
-letBinding: '$' varName typeDeclaration? ':=' exprSingle ;
+letBinding: DOLLAR varName typeDeclaration? COLON_EQ exprSingle ;
 
-windowClause: 'for' (tumblingWindowClause | slidingWindowClause) ;
+windowClause: KW_FOR (tumblingWindowClause | slidingWindowClause) ;
 
-tumblingWindowClause: 'tumbling' 'window' '$' name=qName
-                          type=typeDeclaration? 'in' exprSingle
+tumblingWindowClause: KW_TUMBLING KW_WINDOW DOLLAR name=qName
+                          type=typeDeclaration? KW_IN exprSingle
                           windowStartCondition windowEndCondition? ;
 
-slidingWindowClause: 'sliding' 'window' '$' name=qName
-                          type=typeDeclaration? 'in' exprSingle
+slidingWindowClause: KW_SLIDING KW_WINDOW DOLLAR name=qName
+                          type=typeDeclaration? KW_IN exprSingle
                           windowStartCondition windowEndCondition ;
 
-windowStartCondition: 'start' windowVars 'when' exprSingle ;
+windowStartCondition: KW_START windowVars KW_WHEN exprSingle ;
 
-windowEndCondition: 'only'? 'end' windowVars 'when' exprSingle ;
+windowEndCondition: KW_ONLY? KW_END windowVars KW_WHEN exprSingle ;
 
-windowVars: ('$' currentItem=eqName)? positionalVar?
-                          ('previous' '$' previousItem=eqName)?
-                          ('next' '$' nextItem=eqName)?;
+windowVars: (DOLLAR currentItem=eqName)? positionalVar?
+                          (KW_PREVIOUS DOLLAR previousItem=eqName)?
+                          (KW_NEXT DOLLAR nextItem=eqName)?;
 
-countClause: 'count' '$' varName ;
+countClause: KW_COUNT DOLLAR varName ;
 
-whereClause: 'where' whereExpr=exprSingle ;
+whereClause: KW_WHERE whereExpr=exprSingle ;
 
-groupByClause: 'group' 'by' groupingSpecList ;
+groupByClause: KW_GROUP KW_BY groupingSpecList ;
 
 groupingSpecList: groupingSpec (COMMA groupingSpec)* ;
 
-groupingSpec: '$' name=varName
+groupingSpec: DOLLAR name=varName
                     (type=typeDeclaration? COLON_EQ exprSingle)?
-                    ('collation' uri=uriLiteral)? ;
+                    (KW_COLLATION uri=uriLiteral)? ;
 
-orderByClause: 'stable'? 'order' 'by' specs+=orderSpec (',' specs+=orderSpec)* ;
+orderByClause: KW_STABLE? KW_ORDER KW_BY specs+=orderSpec (COMMA specs+=orderSpec)* ;
 
 orderSpec: value=exprSingle
-           order=('ascending' | 'descending')?
-           ('empty' empty=('greatest'|'least'))?
-           ('collation' collation=uriLiteral)?
+           order=(KW_ASCENDING | KW_DESCENDING)?
+           (KW_EMPTY empty=(KW_GREATEST|KW_LEAST))?
+           (KW_COLLATION collation=uriLiteral)?
          ;
 
-returnClause: 'return' exprSingle ;
+returnClause: KW_RETURN exprSingle ;
 
-quantifiedExpr: quantifier=('some' | 'every') quantifiedVar (',' quantifiedVar)*
-                'satisfies' value=exprSingle ;
+quantifiedExpr: quantifier=(KW_SOME | KW_EVERY) quantifiedVar (COMMA quantifiedVar)*
+                KW_SATISFIES value=exprSingle ;
 
-quantifiedVar: '$' varName typeDeclaration? 'in' exprSingle ;
+quantifiedVar: DOLLAR varName typeDeclaration? KW_IN exprSingle ;
 
-switchExpr: 'switch' '(' expr ')'
+switchExpr: KW_SWITCH LPAREN expr RPAREN
                 switchCaseClause+
-                'default' 'return' returnExpr=exprSingle ;
+                KW_DEFAULT KW_RETURN returnExpr=exprSingle ;
 
-switchCaseClause: ('case' switchCaseOperand)+ 'return' exprSingle ;
+switchCaseClause: (KW_CASE switchCaseOperand)+ KW_RETURN exprSingle ;
 
 switchCaseOperand: exprSingle ;
 
-typeswitchExpr: 'typeswitch' '(' expr ')'
+typeswitchExpr: KW_TYPESWITCH LPAREN expr RPAREN
                 clauses=caseClause+
-                'default' ('$' var=varName)? 'return' returnExpr=exprSingle ;
+                KW_DEFAULT (DOLLAR var=varName)? KW_RETURN returnExpr=exprSingle ;
 
-caseClause: 'case' ('$' var=varName 'as')? type=sequenceUnionType 'return'
+caseClause: KW_CASE (DOLLAR var=varName KW_AS)? type=sequenceUnionType KW_RETURN
             returnExpr=exprSingle ;
 
-sequenceUnionType: sequenceType ( '|' sequenceType )* ;
+sequenceUnionType: sequenceType ( VBAR sequenceType )* ;
 
-ifExpr: 'if' '(' conditionExpr=expr ')'
-        'then' thenExpr=exprSingle
-        'else' elseExpr=exprSingle ;
+ifExpr: KW_IF LPAREN conditionExpr=expr RPAREN
+        KW_THEN thenExpr=exprSingle
+        KW_ELSE elseExpr=exprSingle ;
 
 tryCatchExpr: tryClause catchClause+ ;
-tryClause: 'try' enclosedTryTargetExpression ;
+tryClause: KW_TRY enclosedTryTargetExpression ;
 enclosedTryTargetExpression: enclosedExpression ;
-catchClause: 'catch' (catchErrorList | ('(' '$' varName ')'))  enclosedExpression ;
-enclosedExpression: '{' expr? '}' ;
+catchClause: KW_CATCH (catchErrorList | (LPAREN DOLLAR varName RPAREN))  enclosedExpression ;
+enclosedExpression: LBRACE  expr? RBRACE ;
 
-catchErrorList: nameTest ('|' nameTest)* ;
+catchErrorList: nameTest (VBAR nameTest)* ;
 
 
-existUpdateExpr: 'update' ( existReplaceExpr | existValueExpr | existInsertExpr | existDeleteExpr | existRenameExpr ) ;
+existUpdateExpr: KW_UPDATE ( existReplaceExpr | existValueExpr | existInsertExpr | existDeleteExpr | existRenameExpr ) ;
 
-existReplaceExpr: 'replace' expr 'with' exprSingle ;
-existValueExpr: 'value' expr 'with' exprSingle ;
-existInsertExpr: 'insert' exprSingle ('into' | 'preceding' | 'following') exprSingle;
-existDeleteExpr: 'delete' exprSingle;
-existRenameExpr: 'rename' exprSingle 'as' exprSingle;
+existReplaceExpr: KW_REPLACE expr KW_WITH exprSingle ;
+existValueExpr: KW_VALUE expr KW_WITH exprSingle ;
+existInsertExpr: KW_INSERT exprSingle (KW_INTO | KW_PRECEDING | KW_FOLLOWING) exprSingle;
+existDeleteExpr: KW_DELETE exprSingle;
+existRenameExpr: KW_RENAME exprSingle KW_AS exprSingle;
 
-orExpr: andExpr ('or' andExpr)* ;
+orExpr: andExpr (KW_OR andExpr)* ;
 
-andExpr: comparisonExpr ('and' comparisonExpr)* ;
+andExpr: comparisonExpr (KW_AND comparisonExpr)* ;
 
 comparisonExpr: stringConcatExpr ( (valueComp | generalComp | nodeComp) stringConcatExpr )? ;
 
 stringConcatExpr: rangeExpr (CONCATENATION rangeExpr)* ;
 
-rangeExpr: additiveExpr ('to' additiveExpr)? ;
+rangeExpr: additiveExpr (KW_TO additiveExpr)? ;
 
-additiveExpr: multiplicativeExpr ( ('+' | '-') multiplicativeExpr )* ;
+additiveExpr: multiplicativeExpr ( (PLUS | MINUS) multiplicativeExpr )* ;
 
-multiplicativeExpr: unionExpr ( ('*' | 'div' | 'idiv' | 'mod') unionExpr )* ;
+multiplicativeExpr: unionExpr ( (STAR | KW_DIV | KW_IDIV | KW_MOD) unionExpr )* ;
 
-unionExpr: intersectExceptExpr ( (KW_UNION | '|') intersectExceptExpr)* ;
+unionExpr: intersectExceptExpr ( (KW_UNION | VBAR) intersectExceptExpr)* ;
 
-intersectExceptExpr: instanceOfExpr ( ('intersect' | 'except') instanceOfExpr)* ;
+intersectExceptExpr: instanceOfExpr ( (KW_INTERSECT | KW_EXCEPT) instanceOfExpr)* ;
 
-instanceOfExpr: treatExpr ( 'instance' 'of' sequenceType)? ;
+instanceOfExpr: treatExpr ( KW_INSTANCE KW_OF sequenceType)? ;
 
-treatExpr: castableExpr ( 'treat' 'as' sequenceType)? ;
+treatExpr: castableExpr ( KW_TREAT KW_AS sequenceType)? ;
 
-castableExpr: castExpr ('castable' 'as' singleType)?;
+castableExpr: castExpr ( KW_CASTABLE KW_AS singleType)?;
 
-castExpr: arrowExpr ('cast' 'as' singleType)? ;
+castExpr: arrowExpr (KW_CAST KW_AS singleType)? ;
 
 arrowExpr: unaryExpression (ARROW arrowFunctionSpecifier argumentList)* ;
 
-unaryExpression: ('-' | '+')* valueExpr ;
+unaryExpression: (MINUS | PLUS)* valueExpr ;
 
 valueExpr: validateExpr | extensionExpr | simpleMapExpr ;
 
-generalComp: '=' | '!=' | '<' | ('<' '=') | '>' | ('>' '=') ;
+generalComp: EQUAL | NOT_EQUAL | LANGLE| (LANGLE EQUAL) | RANGLE | (RANGLE EQUAL) ;
 
-valueComp: 'eq' | 'ne' | 'lt' | 'le' | 'gt' | 'ge' ;
+valueComp: KW_EQ | KW_NE | KW_LT | KW_LE | KW_GT | KW_GE ;
 
-nodeComp: 'is' | ('<' '<') | ('>' '>') ;
+nodeComp: KW_IS | (LANGLE LANGLE) | (RANGLE RANGLE) ;
 
-validateExpr: 'validate' ( validationMode | ( ( 'type' | 'as' ) typeName) )? enclosedExpression ;
+validateExpr: KW_VALIDATE ( validationMode | ( ( KW_TYPE | KW_AS ) typeName) )? enclosedExpression ;
 
-validationMode: 'lax' | 'strict' ;
+validationMode: KW_LAX | KW_STRICT ;
 
-extensionExpr: PRAGMA+ '{' expr '}' ;
+extensionExpr: PRAGMA+ LBRACE expr RBRACE ;
 
-simpleMapExpr: pathExpr ('!' pathExpr)* ;
+simpleMapExpr: pathExpr (BANG pathExpr)* ;
 
 // PATHS ///////////////////////////////////////////////////////////////////////
 
-pathExpr: ('/' relativePathExpr?) | ('//' relativePathExpr) | relativePathExpr ;
+pathExpr: (SLASH relativePathExpr?) | (DSLASH relativePathExpr) | relativePathExpr ;
 
-relativePathExpr: stepExpr (sep=('/'|'//') stepExpr)* ;
+relativePathExpr: stepExpr (sep=(SLASH|DSLASH) stepExpr)* ;
 
 stepExpr: postfixExpr | axisStep ;
 
@@ -297,31 +297,31 @@ axisStep: (reverseStep | forwardStep) predicateList ;
 
 forwardStep: forwardAxis nodeTest | abbrevForwardStep ;
 
-forwardAxis: ( 'child'
-             | 'descendant'
-             | 'attribute'
-             | 'self'
-             | 'descendant-or-self'
-             | 'following-sibling'
-             | 'following' ) ':' ':' ;
+forwardAxis: ( KW_CHILD
+             | KW_DESCENDANT
+             | KW_ATTRIBUTE
+             | KW_SELF
+             | KW_DESCENDANT_OR_SELF
+             | KW_FOLLOWING_SIBLING
+             | KW_FOLLOWING ) COLON COLON ;
 
-abbrevForwardStep: '@'? nodeTest ;
+abbrevForwardStep: AT? nodeTest ;
 
 reverseStep: reverseAxis nodeTest | abbrevReverseStep ;
 
-reverseAxis: ( 'parent'
-             | 'ancestor'
-             | 'preceding-sibling'
-             | 'preceding'
-             | 'ancestor-or-self' ) ':' ':';
+reverseAxis: ( KW_PARENT
+             | KW_ANCESTOR
+             | KW_PRECEDING_SIBLING
+             | KW_PRECEDING
+             | KW_ANCESTOR_OR_SELF ) COLON COLON;
 
-abbrevReverseStep: '..' ;
+abbrevReverseStep: DDOT ;
 
 nodeTest: nameTest | kindTest ;
 
 nameTest: eqName | wildcard ;
 
-wildcard: '*'            # allNames
+wildcard: STAR            # allNames
         | NCNameWithLocalWildcard  # allWithNS    // walkers must strip out the trailing :*
         | NCNameWithPrefixWildcard # allWithLocal // walkers must strip out the leading *:
         ;
@@ -329,15 +329,15 @@ wildcard: '*'            # allNames
 
 postfixExpr: primaryExpr (predicate | argumentList | lookup)* ;
 
-argumentList: '(' (argument (COMMA argument)*)? ')' ;
+argumentList: LPAREN (argument (COMMA argument)*)? RPAREN ;
 
 predicateList: predicate*;
 
-predicate: '[' expr ']' ;
+predicate: LBRACKET expr RBRACKET ;
 
-lookup: '?' keySpecifier ;
+lookup: QUESTION keySpecifier ;
 
-keySpecifier: ncName | IntegerLiteral | parenthesizedExpr | '*' ;
+keySpecifier: ncName | IntegerLiteral | parenthesizedExpr | STAR ;
 
 arrowFunctionSpecifier: eqName | varRef | parenthesizedExpr ;
 
@@ -360,21 +360,21 @@ literal: numericLiteral | stringLiteral ;
 
 numericLiteral: IntegerLiteral | DecimalLiteral | DoubleLiteral ;
 
-varRef: '$' eqName;
+varRef: DOLLAR eqName;
 
 varName: eqName ;
 
-parenthesizedExpr: '(' expr? ')' ;
+parenthesizedExpr: LPAREN expr? RPAREN ;
 
-contextItemExpr: '.' ;
+contextItemExpr: DOT ;
 
-orderedExpr: 'ordered' enclosedExpression ;
+orderedExpr: KW_ORDERED enclosedExpression ;
 
-unorderedExpr: 'unordered' enclosedExpression ;
+unorderedExpr: KW_UNORDERED enclosedExpression ;
 
 functionCall: eqName argumentList  ;
 
-argument: exprSingle | '?' ;
+argument: exprSingle | QUESTION ;
 
 // CONSTRUCTORS ////////////////////////////////////////////////////////////////
 
@@ -388,30 +388,50 @@ directConstructor: dirElemConstructorOpenClose
 // [96]: we don't check that the closing tag is the same here. It should be
 // done elsewhere, if we really want to know. We've also simplified the rule
 // by removing the S? bits from ws:explicit. Tree walkers could handle this.
-dirElemConstructorOpenClose: '<' openName=qName dirAttributeList endOpen='>'
+dirElemConstructorOpenClose: LANGLE openName=qName dirAttributeList endOpen=RANGLE
                              dirElemContent*
-                             startClose='<' slashClose='/' closeName=qName '>' ;
+                             startClose=LANGLE slashClose=SLASH closeName=qName RANGLE ;
 
-dirElemConstructorSingleTag: '<' openName=qName dirAttributeList slashClose='/' '>' ;
+dirElemConstructorSingleTag: LANGLE openName=qName dirAttributeList slashClose=SLASH RANGLE ;
 
 // [97]: again, ws:explicit is better handled through the walker.
-dirAttributeList: (qName '=' dirAttributeValue)* ;
+dirAttributeList: (qName EQUAL dirAttributeValue)* ;
 
-dirAttributeValue: '"'  ( commonContent
-                        | '"' '"'
+dirAttributeValueApos : Quot (PredefinedEntityRef | CharRef | Quot Quot | dirAttributeContentQuot )* Quot ;
+dirAttributeValueQuot : Apos (PredefinedEntityRef | CharRef | Apos Apos | dirAttributeContentApos )* Apos ; 
+
+dirAttributeValue    : dirAttributeValueApos
+                     | dirAttributeValueQuot
+                     ;
+
+dirAttributeContentQuot : ContentChar+                     
+                        | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
+                        | dirAttributeValueApos
+                        | LBRACE expr? RBRACE
+                        ;
+
+dirAttributeContentApos : ContentChar+                     
+                        | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
+                        | dirAttributeValueQuot
+                        | LBRACE expr? RBRACE
+                        ;                     
+
+
+/*dirAttributeValue: Quot  ( commonContent
+                        | Quot Quot
                         // ~["{}<&] = ' + ~['"{}<&]
                         | Apos 
                         | noQuotesNoBracesNoAmpNoLAng
                         )*
-                   '"'
-                 | '\'' (commonContent
-                        | '\'' '\''
+                   Quot
+                 | Apos (commonContent
+                        | EscapeApos
                         // ~['{}<&] = " + ~['"{}<&"]
                         | Quot
                         | noQuotesNoBracesNoAmpNoLAng
                         )*
-                   '\''
-                 ;
+                   Apos
+                 ;*/
 
 dirElemContent: directConstructor
               | commonContent
@@ -422,7 +442,7 @@ dirElemContent: directConstructor
               | noQuotesNoBracesNoAmpNoLAng
               ;
 
-commonContent: (PredefinedEntityRef | CharRef) | '{' '{' | '}' '}' | '{' expr '}' ;
+commonContent: (PredefinedEntityRef | CharRef) | LBRACE LBRACE | RBRACE RBRACE | LBRACE expr RBRACE ;
 
 computedConstructor: compDocConstructor
                    | compElemConstructor
@@ -442,24 +462,24 @@ compMLJSONConstructor: compMLJSONArrayConstructor
                      | compBinaryConstructor
                      ;
 
-compMLJSONArrayConstructor: 'array-node' enclosedContentExpr ;
-compMLJSONObjectConstructor: 'object-node' '{' (exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)*)? '}' ;
-compMLJSONNumberConstructor: 'number-node' enclosedContentExpr ;
-compMLJSONBooleanConstructor: 'boolean-node' '{' exprSingle '}' ;
-compMLJSONNullConstructor: 'null-node' '{' '}' ;
+compMLJSONArrayConstructor: KW_ARRAY_NODE enclosedContentExpr ;
+compMLJSONObjectConstructor: KW_OBJECT_NODE LBRACE (exprSingle COLON exprSingle (COMMA exprSingle COLON exprSingle)*)? RBRACE ;
+compMLJSONNumberConstructor: KW_NUMBER_NODE enclosedContentExpr ;
+compMLJSONBooleanConstructor: KW_BOOLEAN_NODE LBRACE exprSingle RBRACE ;
+compMLJSONNullConstructor: KW_NULL_NODE LBRACE RBRACE ;
 
-compBinaryConstructor: 'binary' enclosedContentExpr ;
+compBinaryConstructor: KW_BINARY enclosedContentExpr ;
 
 
-compDocConstructor: 'document' enclosedExpression ;
+compDocConstructor: KW_DOCUMENT enclosedExpression ;
 
-compElemConstructor: 'element' ( eqName |('{' expr '}')) enclosedContentExpr ;
+compElemConstructor: KW_ELEMENT ( eqName |(LBRACE expr RBRACE)) enclosedContentExpr ;
 
 enclosedContentExpr: enclosedExpression ;
 
-compAttrConstructor: 'attribute' (eqName | ('{' expr '}')) enclosedExpression ;
+compAttrConstructor: KW_ATTRIBUTE (eqName | (LBRACE expr RBRACE)) enclosedExpression ;
 
-compNamespaceConstructor: 'namespace' (prefix | enclosedPrefixExpr) enclosedURIExpr ;
+compNamespaceConstructor: KW_NAMESPACE (prefix | enclosedPrefixExpr) enclosedURIExpr ;
 
 prefix: ncName ;
 
@@ -467,29 +487,29 @@ enclosedPrefixExpr: enclosedExpression ;
 
 enclosedURIExpr: enclosedExpression ;
 
-compTextConstructor: 'text' enclosedExpression ;
+compTextConstructor: KW_TEXT enclosedExpression ;
 
-compCommentConstructor: 'comment' enclosedExpression ;
+compCommentConstructor: KW_COMMENT enclosedExpression ;
 
-compPIConstructor: 'processing-instruction' (ncName | ('{' expr '}')) enclosedExpression ;
+compPIConstructor: KW_PI (ncName | (LBRACE expr RBRACE)) enclosedExpression ;
 
 functionItemExpr: namedFunctionRef | inlineFunctionRef ;
 
-namedFunctionRef: eqName '#' IntegerLiteral ;
+namedFunctionRef: eqName HASH IntegerLiteral ;
 
-inlineFunctionRef: annotations 'function' '(' functionParams? ')' ('as' sequenceType)? functionBody ;
+inlineFunctionRef: annotations KW_FUNCTION LPAREN functionParams? RPAREN (KW_AS sequenceType)? functionBody ;
 
 functionBody: enclosedExpression ;
 
-mapConstructor: 'map' '{' (mapConstructorEntry (',' mapConstructorEntry)*)? '}' ;
+mapConstructor: KW_MAP LBRACE (mapConstructorEntry (COMMA mapConstructorEntry)*)? RBRACE ;
 
 mapConstructorEntry: mapKey=exprSingle (COLON | COLON_EQ) mapValue=exprSingle ;
 
 arrayConstructor: squareArrayConstructor | curlyArrayConstructor ;
 
-squareArrayConstructor: '[' (exprSingle (',' exprSingle)*)? ']' ;
+squareArrayConstructor: LBRACKET (exprSingle (COMMA exprSingle)*)? RBRACKET ;
 
-curlyArrayConstructor: 'array' enclosedExpression ;
+curlyArrayConstructor: KW_ARRAY enclosedExpression ;
 
 stringConstructor: ENTER_STRING stringConstructorContent EXIT_STRING;
 
@@ -498,22 +518,27 @@ stringConstructorContent: stringConstructorChars (stringConstructorInterpolation
 charNoGrave           : BASIC_CHAR | LBRACE | RBRACKET;
 charNoLBrace          : BASIC_CHAR | GRAVE | RBRACKET;
 charNoRBrack          : BASIC_CHAR | GRAVE | LBRACE;
-stringConstructorChars: (BASIC_CHAR | charNoGrave charNoLBrace | charNoRBrack charNoGrave charNoGrave)* ;
+stringConstructorChars: (BASIC_CHAR 
+                            | charNoGrave charNoLBrace
+                            | charNoRBrack charNoGrave charNoGrave
+                            | charNoGrave
+                            | LBRACE                                                      
+                            )* ;
 
 stringConstructorInterpolation: ENTER_INTERPOLATION expr EXIT_INTERPOLATION ;
 
-unaryLookup: '?' keySpecifier ;
+unaryLookup: QUESTION keySpecifier ;
 
 // TYPES AND TYPE TESTS ////////////////////////////////////////////////////////
 
-singleType: simpleTypeName '?'? ;
+singleType: simpleTypeName QUESTION? ;
 
-typeDeclaration: 'as' sequenceType ;
+typeDeclaration: KW_AS sequenceType ;
 
-sequenceType: ('empty-sequence' '(' ')') | (itemType occurrence=('?'|'*'|'+')? );
+sequenceType: (KW_EMPTY_SEQUENCE LPAREN RPAREN) | (itemType occurrence=(QUESTION|STAR|PLUS)? );
 
 itemType: kindTest
-        | ('item' '(' ')')
+        | (KW_ITEM LPAREN RPAREN)
         | functionTest
         | mapTest
         | arrayTest
@@ -536,31 +561,31 @@ kindTest: documentTest
         | anyKindTest
         ;
 
-anyKindTest: 'node' '(' '*'? ')' ;
+anyKindTest: KW_NODE LPAREN STAR? RPAREN ;
 
-binaryNodeTest: 'binary' '(' ')' ;
+binaryNodeTest: KW_BINARY LPAREN RPAREN ;
 
-documentTest: 'document-node' '(' (elementTest | schemaElementTest)? ')' ;
+documentTest: KW_DOCUMENT_NODE LPAREN (elementTest | schemaElementTest)? RPAREN ;
 
-textTest: 'text' '(' ')' ;
+textTest: KW_TEXT LPAREN RPAREN ;
 
-commentTest: 'comment' '(' ')' ;
+commentTest: KW_COMMENT LPAREN RPAREN ;
 
-namespaceNodeTest: 'namespace-node' '(' ')' ;
+namespaceNodeTest: KW_NAMESPACE_NODE LPAREN RPAREN ;
 
-piTest: 'processing-instruction' '(' (ncName | stringLiteral)? ')' ;
+piTest: KW_PI LPAREN (ncName | stringLiteral)? RPAREN ;
 
-attributeTest: 'attribute' '(' (attributeNameOrWildcard (',' type=typeName)?)? ')' ;
+attributeTest: KW_ATTRIBUTE LPAREN (attributeNameOrWildcard (COMMA type=typeName)?)? RPAREN ;
 
-attributeNameOrWildcard: attributeName | '*' ;
+attributeNameOrWildcard: attributeName | STAR ;
 
-schemaAttributeTest: 'schema-attribute' '(' attributeDeclaration ')' ;
+schemaAttributeTest: KW_SCHEMA_ATTR LPAREN attributeDeclaration RPAREN ;
 
-elementTest: 'element' '(' (elementNameOrWildcard (',' typeName optional='?'?)?)? ')' ;
+elementTest: KW_ELEMENT LPAREN (elementNameOrWildcard (COMMA typeName optional=QUESTION?)?)? RPAREN ;
 
-elementNameOrWildcard: elementName | '*' ;
+elementNameOrWildcard: elementName | STAR ;
 
-schemaElementTest: 'schema-element' '(' elementDeclaration ')' ;
+schemaElementTest: KW_SCHEMA_ELEM LPAREN elementDeclaration RPAREN ;
 
 elementDeclaration: elementName ;
 
@@ -574,23 +599,23 @@ typeName: eqName;
 
 functionTest: annotation* (anyFunctionTest | typedFunctionTest) ;
 
-anyFunctionTest: 'function' '(' '*' ')' ;
+anyFunctionTest: KW_FUNCTION LPAREN STAR RPAREN ;
 
-typedFunctionTest: 'function' '(' (sequenceType (COMMA sequenceType)*)? ')' 'as' sequenceType ;
+typedFunctionTest: KW_FUNCTION LPAREN (sequenceType (COMMA sequenceType)*)? RPAREN KW_AS sequenceType ;
 
 mapTest: anyMapTest | typedMapTest ;
 
-anyMapTest: 'map' '(' '*' ')' ;
+anyMapTest: KW_MAP LPAREN STAR RPAREN ;
 
-typedMapTest: 'map' '(' eqName COMMA sequenceType ')' ;
+typedMapTest: KW_MAP LPAREN eqName COMMA sequenceType RPAREN ;
 
 arrayTest: anyArrayTest | typedArrayTest ;
 
-anyArrayTest: 'array' '(' '*' ')' ;
+anyArrayTest: KW_ARRAY LPAREN STAR RPAREN ;
 
-typedArrayTest: 'array' '(' sequenceType ')' ;
+typedArrayTest: KW_ARRAY LPAREN sequenceType RPAREN ;
 
-parenthesizedItemTest: '(' itemType ')' ;
+parenthesizedItemTest: LPAREN itemType RPAREN ;
 
 attributeDeclaration: attributeName ;
 
@@ -604,15 +629,15 @@ mlNodeTest: mlArrayNodeTest
           | mlNullNodeTest
           ;
 
-mlArrayNodeTest: 'array-node' '(' stringLiteral? ')' ;
+mlArrayNodeTest: KW_ARRAY_NODE LPAREN stringLiteral? RPAREN ;
 
-mlObjectNodeTest: 'object-node' '(' stringLiteral? ')' ;
+mlObjectNodeTest: KW_OBJECT_NODE LPAREN stringLiteral? RPAREN ;
 
-mlNumberNodeTest: 'number-node' '(' stringLiteral? ')' ;
+mlNumberNodeTest: KW_NUMBER_NODE LPAREN stringLiteral? RPAREN ;
 
-mlBooleanNodeTest: 'boolean-node' '(' stringLiteral? ')' ;
+mlBooleanNodeTest: KW_BOOLEAN_NODE LPAREN stringLiteral? RPAREN ;
 
-mlNullNodeTest: 'null-node' '(' stringLiteral? ')' ;
+mlNullNodeTest: KW_NULL_NODE LPAREN stringLiteral? RPAREN ;
 
 // NAMES ///////////////////////////////////////////////////////////////////////
 
@@ -770,9 +795,31 @@ keywordOKForFunction: KW_ANCESTOR
 
 uriLiteral: stringLiteral ;
 
-stringLiteral: '"' ('"' '"'
+stringLiteralQuot : Quot (PredefinedEntityRef | CharRef | Quot Quot | stringContentQuot )* Quot ;
+stringLiteralApos : Apos (PredefinedEntityRef | CharRef | Apos Apos | stringContentApos )* Apos ;
+
+stringLiteral : stringLiteralQuot
+              | stringLiteralApos
+              ;
+
+stringContentQuot : ContentChar+
+                  | LBRACE | RBRACE
+                  | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
+                  | noQuotesNoBracesNoAmpNoLAng
+                  | stringLiteralApos
+                  ;
+
+stringContentApos : ContentChar+
+                  | LBRACE | RBRACE
+                  | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
+                  | noQuotesNoBracesNoAmpNoLAng
+                  | stringLiteralQuot
+                  ;
+
+/*stringLiteral: Quot (Quot Quot
                    | PredefinedEntityRef
                    | CharRef
+                   //| ContentChar                   
                    // ~["&] = '{}< + ~['"{}<&]
                    | Apos
                    | LBRACE
@@ -781,10 +828,11 @@ stringLiteral: '"' ('"' '"'
                    | noQuotesNoBracesNoAmpNoLAng
                    // WS and XQComment are in the HIDDEN channel
                    )*
-               '"'
-             | '\'' ('\'' '\''
+               Quot
+             | Apos (EscapeApos
                     | PredefinedEntityRef
                     | CharRef
+                    //| ContentChar
                     // ~['&] = "{}< + ~['"{}<&]
                     | Quot
                     | LBRACE
@@ -792,8 +840,8 @@ stringLiteral: '"' ('"' '"'
                     | LANGLE
                     | noQuotesNoBracesNoAmpNoLAng
                     // WS and XQComment are in the HIDDEN channel
-                    )* '\''
-             ;
+                    )* Apos
+             ;*/
 
 // ~['"{}<&]: a very common (and long!) subexpression in the W3C EBNF grammar //
 
@@ -802,6 +850,7 @@ noQuotesNoBracesNoAmpNoLAng:
                    | ( IntegerLiteral
                      | DecimalLiteral
                      | DoubleLiteral
+                     //| stringLiteral
                      | PRAGMA
                      | EQUAL
                      | HASH
