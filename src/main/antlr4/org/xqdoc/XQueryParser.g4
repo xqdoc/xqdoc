@@ -152,7 +152,7 @@ allowingEmpty: KW_ALLOWING KW_EMPTY;
 
 positionalVar: KW_AT DOLLAR pvar=varName ;
 
-letClause: KW_LET  vars+=letBinding (COMMA vars+=letBinding)* ;
+letClause: KW_LET vars+=letBinding (COMMA vars+=letBinding)* ;
 
 letBinding: DOLLAR varName typeDeclaration? COLON_EQ exprSingle ;
 
@@ -415,23 +415,6 @@ dirAttributeContentApos : ContentChar+
                         | dirAttributeValueQuot
                         | LBRACE expr? RBRACE
                         ;                     
-
-
-/*dirAttributeValue: Quot  ( commonContent
-                        | Quot Quot
-                        // ~["{}<&] = ' + ~['"{}<&]
-                        | Apos 
-                        | noQuotesNoBracesNoAmpNoLAng
-                        )*
-                   Quot
-                 | Apos (commonContent
-                        | EscapeApos
-                        // ~['{}<&] = " + ~['"{}<&"]
-                        | Quot
-                        | noQuotesNoBracesNoAmpNoLAng
-                        )*
-                   Apos
-                 ;*/
 
 dirElemContent: directConstructor
               | commonContent
@@ -815,33 +798,6 @@ stringContentApos : ContentChar+
                   | noQuotesNoBracesNoAmpNoLAng
                   | stringLiteralQuot
                   ;
-
-/*stringLiteral: Quot (Quot Quot
-                   | PredefinedEntityRef
-                   | CharRef
-                   //| ContentChar                   
-                   // ~["&] = '{}< + ~['"{}<&]
-                   | Apos
-                   | LBRACE
-                   | RBRACE
-                   | LANGLE
-                   | noQuotesNoBracesNoAmpNoLAng
-                   // WS and XQComment are in the HIDDEN channel
-                   )*
-               Quot
-             | Apos (EscapeApos
-                    | PredefinedEntityRef
-                    | CharRef
-                    //| ContentChar
-                    // ~['&] = "{}< + ~['"{}<&]
-                    | Quot
-                    | LBRACE
-                    | RBRACE
-                    | LANGLE
-                    | noQuotesNoBracesNoAmpNoLAng
-                    // WS and XQComment are in the HIDDEN channel
-                    )* Apos
-             ;*/
 
 // ~['"{}<&]: a very common (and long!) subexpression in the W3C EBNF grammar //
 
