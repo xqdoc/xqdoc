@@ -19,10 +19,9 @@
 
 package org.xqdoc;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class has the responsibility for generating xqDoc XML. It contains
@@ -38,6 +37,8 @@ import java.util.LinkedList;
  * @version 1.0
  */
 public class XQDocXML {
+
+	private static final Logger LOGGER = Logger.getLogger(XQDocXML.class.getName());
 
 	// xqDoc tags used during output of xqDoc XML
 	private static final String XQDOC_PREFIX = "xqdoc:";
@@ -96,22 +97,22 @@ public class XQDocXML {
 	private String xqDocNamespace;
 
 	// Buffer for holding the xml control section
-	private StringBuffer xmlControl = new StringBuffer();
+	private StringBuilder xmlControl = new StringBuilder();
 
 	// Buffer for holding the xml module section
-	private StringBuffer xmlModule = new StringBuffer();
+	private StringBuilder xmlModule = new StringBuilder();
 
 	// Buffer for holding the xml import section
-	private StringBuffer xmlImport = new StringBuffer();
+	private StringBuilder xmlImport = new StringBuilder();
 
 	// Buffer for holding the xml namespace section
-	private StringBuffer xmlNamespace = new StringBuffer();
+	private StringBuilder xmlNamespace = new StringBuilder();
 
 	// Buffer for holding the xml variable section
-	private StringBuffer xmlVariable = new StringBuffer();
+	private StringBuilder xmlVariable = new StringBuilder();
 
 	// Buffer for holding the xml function section
-	private StringBuffer xmlFunction = new StringBuffer();
+	private StringBuilder xmlFunction = new StringBuilder();
 
 	/**
 	 * Constructor.
@@ -298,24 +299,29 @@ public class XQDocXML {
      *       The XQDocComment associated with the function
 	 * @param functionBody
      *       The source code for the function
+     * @param functionReturnType
+	 * 		 The return type of the function
+	 * @param functionReturnOccurrence
+	 *       The number of occurrences of the returned item(s)
 	 * @param invokedFunctions
      *       The list of functions invoked by this function
 	 * @param referencedVariables
-     *       The linked list of annotations
+     *       The linked list of variables referenced by this function
 	 * @param annotationList
+	 *       The linked list of annotations
 	 */
 	public void buildFunctionSection(String functionName,
 									 String functionSignature, XQDocComment comment,
 									 String functionBody, String functionReturnType,
-									 String functionReturnOccurrence, HashSet invokedFunctions,
-									 HashSet referencedVariables, LinkedList annotationList) {
+									 String functionReturnOccurrence, Set invokedFunctions,
+									 Set referencedVariables, List annotationList) {
 
 		xmlFunction.append(buildBeginTag(XQDOC_FUNCTION_TAG));
 		xmlFunction.append(comment.getXML());
 		xmlFunction.append(buildBeginTag(XQDOC_NAME_TAG));
 		xmlFunction.append(functionName);
 		xmlFunction.append(buildEndTag(XQDOC_NAME_TAG));
-		if (annotationList.size() > 0) {
+		if (!annotationList.isEmpty()) {
 			xmlFunction.append(buildBeginTag(XQDOC_ANNOTATIONS_TAG));
 			for (Object o:annotationList) {
 				LinkedList l = (LinkedList)o;
@@ -329,17 +335,13 @@ public class XQDocXML {
                                     + " name='" + item + "'>");
                         } else {
                             xmlFunction.append(buildBeginTag(XQDOC_LITERAL_TAG));
-                            try {
-                                xmlFunction.append(item);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+							xmlFunction.append(item);
                             xmlFunction.append(buildEndTag(XQDOC_LITERAL_TAG));
                         }
                     }
                     xmlFunction.append(buildEndTag(XQDOC_ANNOTATION_TAG));
                 } catch (Exception e) {
-				    e.printStackTrace();
+					LOGGER.log(Level.SEVERE, "Failure in building an annotation tag", e);
                 }
 			}
 			xmlFunction.append(buildEndTag(XQDOC_ANNOTATIONS_TAG));
@@ -386,9 +388,9 @@ public class XQDocXML {
 	 * @return The snippet of serialized xqDoc XML pertaining to the referenced
 	 *         variables section (for the given function).
 	 */
-	private String buildReferencedVariables(HashSet referencedVariables) {
-		StringBuffer rsp = new StringBuffer();
-		if (referencedVariables.size() > 0) {
+	private String buildReferencedVariables(Set referencedVariables) {
+		StringBuilder rsp = new StringBuilder();
+		if (!referencedVariables.isEmpty()) {
 			Iterator it = referencedVariables.iterator();
 			while (it.hasNext()) {
 				String entry = (String) it.next();
@@ -420,9 +422,9 @@ public class XQDocXML {
 	 * @return The snippet of serialized xqDoc XML pertaining to the invoked
 	 *         functions section (for the given function).
 	 */
-	private String buildInvokedFunctions(HashSet invokedFunctions) {
-		StringBuffer rsp = new StringBuffer();
-		if (invokedFunctions.size() > 0) {
+	private String buildInvokedFunctions(Set invokedFunctions) {
+		StringBuilder rsp = new StringBuilder();
+		if (!invokedFunctions.isEmpty()) {
 			Iterator it = invokedFunctions.iterator();
 			while (it.hasNext()) {
 				String entry = (String) it.next();
@@ -458,7 +460,7 @@ public class XQDocXML {
 	 * @return Serialized string of xqDoc XML
 	 */
 	public String getXML() {
-		StringBuffer rsp = new StringBuffer();
+		StringBuilder rsp = new StringBuilder();
 		rsp.append(buildBeginTagWithNamespace(XQDOC_TAG, xqDocNamespace));
 		rsp.append(xmlControl);
 		rsp.append(xmlModule);
@@ -518,6 +520,8 @@ public class XQDocXML {
 	 *
 	 * @param name
 	 *            XML Element name
+	 * @param tag
+	 *            Value for the tag attribute of the XML element
 	 * @return Begin XML tag for the specified element name
 	 */
 	public static String buildBeginTagWithTagAttribute(String name, String tag) {

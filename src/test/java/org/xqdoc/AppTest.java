@@ -124,7 +124,7 @@ public class AppTest
         XQueryParser markupParser = new XQueryParser(commonTokenStream);
 
         XQueryParser.ModuleContext fileContext = markupParser.module();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
 
         XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);

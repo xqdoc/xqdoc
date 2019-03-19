@@ -11,13 +11,13 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
-    private StringBuffer stream;
+    private StringBuilder stream;
     private org.xqdoc.XQueryParser.XqDocCommentContext xqDocCommentContext = null;
     DateTimeFormatter isoFormat = ISODateTimeFormat.dateTime();
 
     // HashMap of predefined function namespaces (set by XQDocController via
     // init())
-    private HashMap predefinedFunctionNamespaces;
+    private Map predefinedFunctionNamespaces;
 
     // Default function namespace (set by XQDocController via init())
     private String defaultFunctionNamespace = "http://www.w3.org/2003/05/xpath-functions";
@@ -30,27 +30,27 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     private String defaultModuleFunctionNamespace;
 
     // Hash for holding the imported schemas and libraries
-    private HashMap<String, ImportDeclaration> imports = new HashMap<String, ImportDeclaration>();
+    private HashMap<String, ImportDeclaration> imports = new HashMap<>();
 
     // Hash for holding the declared namespaces
-    private HashMap<String,String> declaredNamespaces = new HashMap<String,String>();
+    private HashMap<String,String> declaredNamespaces = new HashMap<>();
 
-    private HashMap<String,String> importedModuleNamespaces = new HashMap<String,String>();
+    private HashMap<String,String> importedModuleNamespaces = new HashMap<>();
 
     private StringBuffer declaredVariables = new StringBuffer();
 
     private StringBuffer declaredFunctions = new StringBuffer();
 
     // Hash for holding the invoked functions for the current function
-    private HashSet<String> invokedFunctions = new HashSet<String>();
+    private HashSet<String> invokedFunctions = new HashSet<>();
 
     // Hash for holding the referenced variables for the current function
-    private HashSet<String> referencedVariables = new HashSet<String>();
+    private HashSet<String> referencedVariables = new HashSet<>();
 
     // Flag to indicate whether document URIs should be encoded
     private boolean encodeURIs = false;
 
-    public XQueryVisitor(StringBuffer stream, HashMap uriMap)
+    public XQueryVisitor(StringBuilder stream, Map uriMap)
     {
         this.stream = stream;
         this.predefinedFunctionNamespaces = uriMap;
@@ -80,7 +80,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     {
         if (xqDocCommentContext != null)
         {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             int a = xqDocCommentContext.start.getStartIndex();
             int b = xqDocCommentContext.stop.getStopIndex();
             Interval interval = new Interval(a,b);
@@ -413,8 +413,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         String functionName = context.name.getText();
         String[] nameParts = functionName.split(":");
         String localName = nameParts[nameParts.length - 1];
-        invokedFunctions = new HashSet<String>();
-        referencedVariables = new HashSet<String>();
+        invokedFunctions = new HashSet<>();
+        referencedVariables = new HashSet<>();
 
         declaredFunctions.append("<xqdoc:function>").append("\n");
         declaredFunctions.append(printXQDocumentation());
@@ -524,8 +524,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
 
     @Override
     public String visitQueryBody(org.xqdoc.XQueryParser.QueryBodyContext context) {
-        invokedFunctions = new HashSet<String>();
-        referencedVariables = new HashSet<String>();
+        invokedFunctions = new HashSet<>();
+        referencedVariables = new HashSet<>();
         visitChildren(context);
         return null;
     }

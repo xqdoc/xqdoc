@@ -45,7 +45,7 @@ public class XQDocComment {
     private int xqDocDescriptionLeadingSpaces = 0;
 
     // String of current xqDoc comment
-    private String xqDocComment;
+    private String xqDocCommentString;
 
     // xqDoc XML tag for comments
     private static final String XQDOC_COMMENT_TAG = "comment";
@@ -107,7 +107,7 @@ public class XQDocComment {
      *
      */
     public void clear() {
-        xqDocComment = null;
+        xqDocCommentString = null;
         xqDocDescriptionLeadingSpaces = 0;
         xqDocCommentState = -1;
         for (int i = 0; i < xqDocCommentBlock.length; i++) {
@@ -124,7 +124,7 @@ public class XQDocComment {
      *            A xqDoc comment block
      */
     public void setComment(String comment) {
-        xqDocComment = comment;
+        xqDocCommentString = comment;
         xqDocDescriptionLeadingSpaces = 0;
     }
 
@@ -134,9 +134,9 @@ public class XQDocComment {
      *
      * @return The serialized xqDoc XML for the current xqDoc comment block
      */
-    public StringBuffer getXML() {
-        StringBuffer sb = new StringBuffer(1024);
-        if (xqDocComment != null) {
+    public StringBuilder getXML() {
+        StringBuilder sb = new StringBuilder(1024);
+        if (xqDocCommentString != null) {
             buildXQDocCommentSection();
             sb.append(XQDocXML.buildBeginTag(XQDOC_COMMENT_TAG));
             for (int i = 0; i < xqDocCommentBlock.length; i++) {
@@ -178,7 +178,7 @@ public class XQDocComment {
                 }
                 xqDocCommentBlock[xqDocCommentState].append(trimmedLine);
             } else if (line.matches("^\\s*:.*")) {
-                i = line.indexOf(":");
+                i = line.indexOf(':');
                 if (i < last) {
                     String trimmedLine = line.substring(i + 1, last);
                     int compareSize = XQDOC_STATE_TAG[xqDocCommentState].length() + 8;
@@ -251,13 +251,13 @@ public class XQDocComment {
      * @throws XQDocRuntimeException
      *             Problems processing the xqDoc comment
      */
-    private void buildXQDocCommentSection() throws XQDocRuntimeException {
+    private void buildXQDocCommentSection()  {
         try {
-            if (xqDocComment == null)
+            if (xqDocCommentString == null)
                 return;
 
             BufferedReader br = new BufferedReader(new StringReader(
-                    xqDocComment));
+                    xqDocCommentString));
             String line = null;
             ArrayList lines = new ArrayList();
             while ((line = br.readLine()) != null) {
@@ -326,7 +326,7 @@ public class XQDocComment {
                 offset++;
                 customString = customString.substring(1);
                 if (customString.contains(" ")) {
-                    tag = customString.substring(0, customString.indexOf(" "));
+                    tag = customString.substring(0, customString.indexOf(' '));
                 } else {
                     tag = customString;
                 }

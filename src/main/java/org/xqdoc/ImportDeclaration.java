@@ -15,7 +15,7 @@ public class ImportDeclaration {
 
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         buffer.append("<xqdoc:import type=\"");
         buffer.append(this.importType);

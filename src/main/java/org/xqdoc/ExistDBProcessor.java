@@ -1,6 +1,7 @@
 package org.xqdoc;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.xml.sax.SAXException;
 
@@ -11,7 +12,7 @@ import java.util.HashMap;
 public class ExistDBProcessor
 {
 
-    public String process(String txt) throws XQDocException, ParserConfigurationException, IOException, SAXException {
+    public String process(String txt) throws ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();
         uriMap.put("lucene", "http://exist-db.org/xquery/lucene");
         uriMap.put("ngram", "http://exist-db.org/xquery/ngram");
@@ -20,7 +21,6 @@ public class ExistDBProcessor
         uriMap.put("spatial", "http://exist-db.org/xquery/spatial");
         uriMap.put("inspection", "http://exist-db.org/xquery/inspection");
         uriMap.put("mail", "http://exist-db.org/xquery/mail");
-        uriMap.put("math", "http://exist-db.org/xquery/math");
         uriMap.put("request", "http://exist-db.org/xquery/request");
         uriMap.put("response", "http://exist-db.org/xquery/response");
         uriMap.put("sm", "http://exist-db.org/xquery/securitymanager");
@@ -35,13 +35,13 @@ public class ExistDBProcessor
         uriMap.put("array", "http://www.w3.org/2005/xpath-functions/array");
         uriMap.put("process", "http://exist-db.org/xquery/process");
         uriMap.put("xs", "http://www.w3.org/2001/XMLSchema"); // XML Schema namespace
-        ANTLRInputStream inputStream = new ANTLRInputStream(txt);
+        CharStream inputStream = CharStreams.fromString(txt);
         org.xqdoc.XQueryLexer markupLexer = new org.xqdoc.XQueryLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
         org.xqdoc.XQueryParser markupParser = new org.xqdoc.XQueryParser(commonTokenStream);
 
         org.xqdoc.XQueryParser.ModuleContext fileContext = markupParser.module();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
 
         XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);

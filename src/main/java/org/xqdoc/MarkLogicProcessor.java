@@ -1,6 +1,7 @@
 package org.xqdoc;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.xml.sax.SAXException;
 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 
 public class MarkLogicProcessor {
 
-    public String process(String txt) throws XQDocException, ParserConfigurationException, IOException, SAXException {
+    public String process(String txt) throws ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();
         uriMap.put("fn", "http://www.w3.org/2003/05/xpath-functions");
         uriMap.put("cts", "http://marklogic.com/cts"); // MarkLogic Server search functions (Core Text Services)
@@ -34,13 +35,13 @@ public class MarkLogicProcessor {
         uriMap.put("xqe", "http://marklogic.com/xqe"); // deprecated MarkLogic Server xqe namespace
         uriMap.put("xqterr", "http://www.w3.org/2005/xqt-errors"); // XQuery test suite errors (same as err)
         uriMap.put("xs", "http://www.w3.org/2001/XMLSchema"); // XML Schema namespace
-        ANTLRInputStream inputStream = new ANTLRInputStream(txt);
+        CharStream inputStream = CharStreams.fromString(txt);
         org.xqdoc.XQueryLexer markupLexer = new org.xqdoc.XQueryLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
         org.xqdoc.XQueryParser markupParser = new org.xqdoc.XQueryParser(commonTokenStream);
 
         org.xqdoc.XQueryParser.ModuleContext fileContext = markupParser.module();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
 
         XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);

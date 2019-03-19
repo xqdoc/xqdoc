@@ -17,6 +17,10 @@ import java.io.Writer;
 
 public class DocumentUtility
 {
+    private DocumentUtility() {
+
+    }
+
     public static String getStringFromDoc(Document doc)    {
         DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
         LSSerializer lsSerializer = domImplementation.createLSSerializer();
@@ -26,12 +30,10 @@ public class DocumentUtility
         Writer stringWriter = new StringWriter();
         lsOutput.setCharacterStream(stringWriter);
         lsSerializer.write(doc, lsOutput);
-        String result = stringWriter.toString();
-
-        return result;
+        return stringWriter.toString();
     }
 
-    public static Document getDocumentFromBuffer(StringBuffer buffer) throws ParserConfigurationException, IOException, SAXException {
+    public static Document getDocumentFromBuffer(StringBuilder buffer) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf =
                 DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();

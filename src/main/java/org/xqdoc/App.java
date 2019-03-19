@@ -1,6 +1,7 @@
 package org.xqdoc;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.cli.*;
 import org.xml.sax.SAXException;
@@ -75,35 +76,19 @@ public class App
 
         if (cmd.hasOption("f")) {
             InputStream is = Files.newInputStream(Paths.get(cmd.getOptionValue("f")));
-            ANTLRInputStream inputStream = new ANTLRInputStream(is);
+            CharStream inputStream = CharStreams.fromStream(is);
             org.xqdoc.XQueryLexer markupLexer = new org.xqdoc.XQueryLexer(inputStream);
             CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
             org.xqdoc.XQueryParser markupParser = new org.xqdoc.XQueryParser(commonTokenStream);
 
             org.xqdoc.XQueryParser.ModuleContext fileContext = markupParser.module();
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
 
 
             XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);
             visitor.visit(fileContext);
-//            System.out.println(buffer);
             System.out.println(DocumentUtility.getStringFromDoc(DocumentUtility.getDocumentFromBuffer(buffer)));
         }
-        } else {
-            String filePath = "/Users/lcahlander/IdeaProjects/exist/test/src/xquery/namespaces.xql";
-            InputStream is = Files.newInputStream(Paths.get(filePath));
-            ANTLRInputStream inputStream = new ANTLRInputStream(is);
-            org.xqdoc.XQueryLexer markupLexer = new org.xqdoc.XQueryLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(markupLexer);
-            org.xqdoc.XQueryParser markupParser = new org.xqdoc.XQueryParser(commonTokenStream);
-
-            org.xqdoc.XQueryParser.ModuleContext fileContext = markupParser.module();
-            StringBuffer buffer = new StringBuffer();
-
-
-            XQueryVisitor visitor = new XQueryVisitor(buffer, uriMap);
-            visitor.visit(fileContext);
-            System.out.println(DocumentUtility.getStringFromDoc(DocumentUtility.getDocumentFromBuffer(buffer)));
         }
 
     }
