@@ -7,3 +7,4 @@
 .classpath
 .project
 .settings/
+/src/main/antlr4/org/xqdoc/.antlr/

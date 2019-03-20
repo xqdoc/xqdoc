@@ -397,21 +397,21 @@ dirElemConstructorSingleTag: LANGLE openName=qName dirAttributeList slashClose=S
 // [97]: again, ws:explicit is better handled through the walker.
 dirAttributeList: (qName EQUAL dirAttributeValue)* ;
 
-dirAttributeValueApos : Quot (PredefinedEntityRef | CharRef | Quot Quot | dirAttributeContentQuot )* Quot ;
-dirAttributeValueQuot : Apos (PredefinedEntityRef | CharRef | Apos Apos | dirAttributeContentApos )* Apos ; 
+dirAttributeValueApos : Quot (PredefinedEntityRef | CharRef | EscapeQuot | dirAttributeContentQuot )* Quot ;
+dirAttributeValueQuot : Apos (PredefinedEntityRef | CharRef | EscapeApos | dirAttributeContentApos )* Apos ; 
 
 dirAttributeValue    : dirAttributeValueApos
                      | dirAttributeValueQuot
                      ;
 
 dirAttributeContentQuot : ContentChar+                     
-                        | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
+                        | DOUBLE_LBRACE | DOUBLE_RBRACE
                         | dirAttributeValueApos
                         | LBRACE expr? RBRACE
                         ;
 
 dirAttributeContentApos : ContentChar+                     
-                        | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
+                        | DOUBLE_LBRACE | DOUBLE_RBRACE
                         | dirAttributeValueQuot
                         | LBRACE expr? RBRACE
                         ;                     
@@ -778,24 +778,28 @@ keywordOKForFunction: KW_ANCESTOR
 
 uriLiteral: stringLiteral ;
 
-stringLiteralQuot : Quot (PredefinedEntityRef | CharRef | Quot Quot | stringContentQuot )* Quot ;
-stringLiteralApos : Apos (PredefinedEntityRef | CharRef | Apos Apos | stringContentApos )* Apos ;
+stringLiteralQuot : Quot (PredefinedEntityRef | CharRef | EscapeQuot | stringContentQuot )* Quot ;
+stringLiteralApos : Apos (PredefinedEntityRef | CharRef | EscapeApos | stringContentApos )* Apos ;
 
 stringLiteral : stringLiteralQuot
               | stringLiteralApos
               ;
 
 stringContentQuot : ContentChar+
-                  | LBRACE | RBRACE
-                  | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
-                  | noQuotesNoBracesNoAmpNoLAng
+                  | LBRACE expr? RBRACE?
+                  | RBRACE
+                  | DOUBLE_LBRACE
+                  | DOUBLE_RBRACE
+                  | noQuotesNoBracesNoAmpNoLAng                  
                   | stringLiteralApos
                   ;
 
 stringContentApos : ContentChar+
-                  | LBRACE | RBRACE
-                  | DOUBLE_LBRACE_QuotString | DOUBLE_RBRACE_QuotString | DOUBLE_LBRACE_AposString | DOUBLE_RBRACE_AposString
-                  | noQuotesNoBracesNoAmpNoLAng
+                  | LBRACE expr? RBRACE?
+                  | RBRACE
+                  | DOUBLE_LBRACE
+                  | DOUBLE_RBRACE
+                  | noQuotesNoBracesNoAmpNoLAng                  
                   | stringLiteralQuot
                   ;
 

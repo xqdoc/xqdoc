@@ -3,7 +3,17 @@ lexer grammar XQueryLexer;
 // Note: string syntax depends on syntactic context, so they are
 // handled by the parser and not the lexer.
 
-// NUMBERS
+// Tokens declared but not defined
+tokens {EscapeQuot, EscapeApos, DOUBLE_LBRACE, DOUBLE_RBRACE}
+
+@members {
+    ///
+    /// FIELDS
+    ///
+
+    // for counting braces inside string literals
+    private int bracesInside = 0;
+}
 
 IntegerLiteral: Digits ;
 DecimalLiteral: '.' Digits | Digits '.' [0-9]* ;
@@ -33,8 +43,8 @@ CharRef: '&#' [0-9]+ ';' | '&#x' [0-9a-fA-F]+ ';' ;
 
 // Escapes are handled as two Quot or two Apos tokens, to avoid maximal
 // munch lexer ambiguity.
-Quot: '"'  -> pushMode(QUOT_LITERAL_STRING);
-Apos: '\'' -> pushMode(APOS_LITERAL_STRING);
+Quot        : '"' -> pushMode(QUOT_LITERAL_STRING);
+Apos        : '\'' -> pushMode(APOS_LITERAL_STRING);
 
 // XML-SPECIFIC
 
@@ -335,10 +345,11 @@ EXIT_STRING         : RBRACKET GRAVE GRAVE -> popMode;
 
 mode QUOT_LITERAL_STRING;
 
+EscapeQuot_QuotString           : '""' -> type(EscapeQuot);
 Quot_QuotString                 : '"' -> type(Quot), popMode;
 
-DOUBLE_LBRACE_QuotString        : '{{' ;
-DOUBLE_RBRACE_QuotString        : '}}' ;
+DOUBLE_LBRACE_QuotString        : '{{' -> type(DOUBLE_LBRACE);
+DOUBLE_RBRACE_QuotString        : '}}' -> type(DOUBLE_RBRACE);
 LBRACE_QuotString               : '{' -> type(LBRACE), pushMode(STRING_INTERPOLATION_MODE_QUOT);
 RBRACE_QuotString               : '}' -> type(RBRACE);
 PredefinedEntityRef_QuotString  : '&' ('lt'|'gt'|'amp'|'quot'|'apos') ';'  -> type(PredefinedEntityRef);
@@ -347,10 +358,11 @@ ContentChar_QuotString          : ~["&{}] -> type(ContentChar);
 
 mode APOS_LITERAL_STRING;
 
+EscapeApos_AposString           : '\'\'' -> type(EscapeApos);
 Apos_AposString                 : '\'' -> type(Apos), popMode;
 
-DOUBLE_LBRACE_AposString        : '{{' ;
-DOUBLE_RBRACE_AposString        : '}}' ;
+DOUBLE_LBRACE_AposString        : '{{' -> type(DOUBLE_LBRACE);
+DOUBLE_RBRACE_AposString        : '}}' -> type(DOUBLE_RBRACE) ;
 LBRACE_AposString               : '{' -> type(LBRACE), pushMode(STRING_INTERPOLATION_MODE_APOS);
 RBRACE_AposString               : '}' -> type(RBRACE);
 PredefinedEntityRef_AposString  : '&' ('lt'|'gt'|'amp'|'quot'|'apos') ';'  -> type(PredefinedEntityRef);
@@ -382,6 +394,8 @@ INT_QUOT_PredefinedEntityRef: '&' ('lt'|'gt'|'amp'|'quot'|'apos') ';' -> type(Pr
 // CharRef is additionally limited by http://www.w3.org/TR/REC-xml/#NT-Char,
 INT_QUOT_CharRef: ('&#' [0-9]+ ';' | '&#x' [0-9a-fA-F]+ ';') -> type(CharRef);
 
+INT_QUOT_EscapeQuot  : '""' -> type(EscapeQuot);
+
 // Escapes are handled as two Quot or two Apos tokens, to avoid maximal
 // munch lexer ambiguity.
 INT_QUOT_Apos: '\'' -> pushMode(APOS_LITERAL_STRING), type(Apos);
@@ -410,8 +424,9 @@ INT_QUOT_LPAREN          : '(' -> type(LPAREN);
 INT_QUOT_RPAREN          : ')' -> type(RPAREN);
 INT_QUOT_LBRACKET        : '[' -> type(LBRACKET);
 INT_QUOT_RBRACKET        : ']' -> type(RBRACKET);
-INT_QUOT_LBRACE          : '{' -> type(LBRACE);
-INT_QUOT_RBRACE          : '}' -> type(RBRACE), popMode ;
+INT_QUOT_LBRACE          : '{' {this.bracesInside++;} -> type(LBRACE);
+INT_QUOT_RBRACE_EXIT     : {this.bracesInside == 0}? '}' -> type(RBRACE), popMode ;
+INT_QUOT_RBRACE          : {this.bracesInside > 0}? '}' {this.bracesInside--;} -> type(RBRACE) ;
 
 INT_QUOT_STAR            : '*' -> type(STAR);
 INT_QUOT_PLUS            : '+' -> type(PLUS);
@@ -637,6 +652,8 @@ INT_APOS_PredefinedEntityRef: '&' ('lt'|'gt'|'amp'|'quot'|'apos') ';' -> type(Pr
 // CharRef is additionally limited by http://www.w3.org/TR/REC-xml/#NT-Char,
 INT_APOS_CharRef: ('&#' [0-9]+ ';' | '&#x' [0-9a-fA-F]+ ';') -> type(CharRef);
 
+INT_APOS_EscapeApos  : '\'\'' -> type(EscapeApos);
+
 // Escapes are handled as two Quot or two Apos tokens, to avoid maximal
 // munch lexer ambiguity.
 INT_APOS_Quot: '"'  -> pushMode(QUOT_LITERAL_STRING), type(Quot);
@@ -665,8 +682,11 @@ INT_APOS_LPAREN          : '(' -> type(LPAREN);
 INT_APOS_RPAREN          : ')' -> type(RPAREN);
 INT_APOS_LBRACKET        : '[' -> type(LBRACKET);
 INT_APOS_RBRACKET        : ']' -> type(RBRACKET);
-INT_APOS_LBRACE          : '{' -> type(LBRACE);
-INT_APOS_RBRACE          : '}' -> type(RBRACE), popMode ;
+//INT_APOS_LBRACE          : '{' -> type(LBRACE);
+INT_APOS_LBRACE          : '{' {this.bracesInside++;} -> type(LBRACE);
+INT_APOS_RBRACE_EXIT     : {this.bracesInside == 0}? '}' -> type(RBRACE), popMode ;
+INT_APOS_RBRACE          : {this.bracesInside > 0}? '}' {this.bracesInside--;} -> type(RBRACE) ;
+//INT_APOS_RBRACE          : '}' -> type(RBRACE), popMode ;
 
 INT_APOS_STAR            : '*' -> type(STAR);
 INT_APOS_PLUS            : '+' -> type(PLUS);
