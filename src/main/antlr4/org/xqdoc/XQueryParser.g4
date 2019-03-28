@@ -82,7 +82,7 @@ moduleImport: KW_IMPORT KW_MODULE
 
 namespaceDecl: KW_DECLARE KW_NAMESPACE ncName EQUAL uriLiteral ;
 
-varDecl: KW_DECLARE annotations KW_VARIABLE DOLLAR varName typeDeclaration?
+varDecl: KW_DECLARE (annotations|ncName) KW_VARIABLE DOLLAR varName typeDeclaration?
          (
             (COLON_EQ varValue)
           | (KW_EXTERNAL (COLON_EQ varDefaultValue)?)
@@ -99,7 +99,7 @@ contextItemDecl: KW_DECLARE KW_CONTEXT KW_ITEM
                  ((COLON_EQ value=exprSingle)
                  | (KW_EXTERNAL (COLON_EQ defaultValue=exprSingle)?)) ;
 
-functionDecl: KW_DECLARE annotations KW_FUNCTION name=eqName LPAREN functionParams? RPAREN
+functionDecl: KW_DECLARE (annotations|ncName) KW_FUNCTION name=eqName LPAREN functionParams? RPAREN
               functionReturn?
               ( functionBody | KW_EXTERNAL) ;
 
@@ -131,7 +131,8 @@ exprSingle: flworExpr
           | existUpdateExpr
           | ifExpr
           | tryCatchExpr
-          | orExpr ;
+          | orExpr
+          ;
 
 flworExpr: initialClause intermediateClause* returnClause ;
 
@@ -225,8 +226,8 @@ ifExpr: KW_IF LPAREN conditionExpr=expr RPAREN
 tryCatchExpr: tryClause catchClause+ ;
 tryClause: KW_TRY enclosedTryTargetExpression ;
 enclosedTryTargetExpression: enclosedExpression ;
-catchClause: KW_CATCH (catchErrorList | (LPAREN DOLLAR varName RPAREN))  enclosedExpression ;
-enclosedExpression: LBRACE  expr? RBRACE ;
+catchClause: KW_CATCH (catchErrorList | (LPAREN DOLLAR varName RPAREN)) enclosedExpression ;
+enclosedExpression: LBRACE expr? RBRACE ;
 
 catchErrorList: nameTest (VBAR nameTest)* ;
 
