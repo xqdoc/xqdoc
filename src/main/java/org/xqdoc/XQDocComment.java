@@ -32,7 +32,8 @@ import java.util.ArrayList;
  * that a xqDoc comment is separated into 'lines'.
  *
  * @author Darin McBeath
- * @version 1.0
+ * @author Loren Cahlander
+ * @version 2.0.0
  */
 public class XQDocComment {
 

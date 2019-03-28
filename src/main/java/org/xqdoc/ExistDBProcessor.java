@@ -9,9 +9,19 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ *
+ */
 public class ExistDBProcessor
 {
-
+    /**
+     *
+     * @param txt
+     * @return
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public String process(String txt) throws ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();
         uriMap.put("lucene", "http://exist-db.org/xquery/lucene");

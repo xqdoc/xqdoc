@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ *
+ */
 public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     private StringBuilder stream;
     private org.xqdoc.XQueryParser.XqDocCommentContext xqDocCommentContext = null;
@@ -50,6 +53,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     // Flag to indicate whether document URIs should be encoded
     private boolean encodeURIs = false;
 
+    /**
+     *
+     * @param stream
+     * @param uriMap
+     */
     public XQueryVisitor(StringBuilder stream, Map uriMap)
     {
         this.stream = stream;
@@ -76,6 +84,10 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return encodeURIs;
     }
 
+    /**
+     *
+     * @return
+     */
     private String printXQDocumentation()
     {
         if (xqDocCommentContext != null)
@@ -96,6 +108,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return "";
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitModule(org.xqdoc.XQueryParser.ModuleContext context)
     {
@@ -192,6 +209,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitProlog(org.xqdoc.XQueryParser.PrologContext context)
     {
@@ -200,6 +222,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     */
     private void buildImports()
     {
         if (!imports.isEmpty())
@@ -213,6 +238,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         }
     }
 
+    /**
+     *
+     */
     private void buildNamespaces()
     {
         if (!declaredNamespaces.isEmpty())
@@ -230,6 +258,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         }
     }
 
+    /**
+     *
+     */
     private void buildVariables()
     {
         if (declaredVariables.length() > 0)
@@ -240,6 +271,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         }
     }
 
+    /**
+     *
+     */
     private void buildFunctions()
     {
         if (declaredFunctions.length() > 0)
@@ -250,6 +284,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         }
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitSchemaImport(org.xqdoc.XQueryParser.SchemaImportContext context)
     {
@@ -270,6 +309,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitModuleImport(org.xqdoc.XQueryParser.ModuleImportContext context)
     {
@@ -294,6 +338,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitNamespaceDecl(org.xqdoc.XQueryParser.NamespaceDeclContext context)
     {
@@ -311,6 +360,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param annotations
+     * @return
+     */
     private StringBuffer processAnnotations(org.xqdoc.XQueryParser.AnnotationsContext annotations)
     {
         StringBuffer buffer = new StringBuffer();
@@ -340,6 +394,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return buffer;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     private StringBuffer processTypeDeclaration(org.xqdoc.XQueryParser.TypeDeclarationContext context)
     {
         StringBuffer buffer = new StringBuffer();
@@ -358,6 +417,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return buffer;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitVarDecl(org.xqdoc.XQueryParser.VarDeclContext context)
     {
@@ -405,6 +469,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitFunctionDecl(org.xqdoc.XQueryParser.FunctionDeclContext context)
     {
@@ -516,12 +585,22 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitFunctionBody(org.xqdoc.XQueryParser.FunctionBodyContext context) {
         visitChildren(context);
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitQueryBody(org.xqdoc.XQueryParser.QueryBodyContext context) {
         invokedFunctions = new HashSet<>();
@@ -530,6 +609,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     private StringBuffer printBody(ParserRuleContext context) {
         StringBuffer bodyBuffer = new StringBuffer();
         bodyBuffer.append("<xqdoc:body xml:space=\"preserve\"><![CDATA[");
@@ -541,6 +625,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return bodyBuffer;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitXqDocComment(org.xqdoc.XQueryParser.XqDocCommentContext context)
     {
@@ -548,6 +637,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitFunctionCall(org.xqdoc.XQueryParser.FunctionCallContext context)
     {
@@ -597,6 +691,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     */
     @Override
     public String visitVarRef(org.xqdoc.XQueryParser.VarRefContext context)
     {

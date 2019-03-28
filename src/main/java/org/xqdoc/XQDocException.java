@@ -29,17 +29,33 @@ package org.xqdoc;
  */
 public class XQDocException extends Exception {
 
+	/**
+	 *
+	 */
 	public XQDocException() {
 	}
 
+	/**
+	 *
+	 * @param message
+	 */
 	public XQDocException(String message) {
 		super(message);
 	}
 
+	/**
+	 *
+	 * @param message
+	 * @param cause
+	 */
 	public XQDocException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
+	/**
+	 *
+	 * @param cause
+	 */
 	public XQDocException(Throwable cause) {
 		super(cause);
 	}

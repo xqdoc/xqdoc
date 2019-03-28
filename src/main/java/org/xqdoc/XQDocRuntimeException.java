@@ -33,17 +33,33 @@ package org.xqdoc;
  */
 public class XQDocRuntimeException extends RuntimeException {
 
+	/**
+	 *
+	 */
 	public XQDocRuntimeException() {
 	}
 
+	/**
+	 *
+	 * @param message
+	 */
 	public XQDocRuntimeException(String message) {
 		super(message);
 	}
 
+	/**
+	 *
+	 * @param message
+	 * @param cause
+	 */
 	public XQDocRuntimeException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
+	/**
+	 *
+	 * @param cause
+	 */
 	public XQDocRuntimeException(Throwable cause) {
 		super(cause);
 	}

@@ -9,8 +9,19 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ *
+ */
 public class MarkLogicProcessor {
 
+    /**
+     *
+     * @param txt
+     * @return
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public String process(String txt) throws ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();
         uriMap.put("fn", "http://www.w3.org/2003/05/xpath-functions");

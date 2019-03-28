@@ -15,12 +15,20 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
+/**
+ *
+ */
 public class DocumentUtility
 {
     private DocumentUtility() {
 
     }
 
+    /**
+     *
+     * @param doc
+     * @return
+     */
     public static String getStringFromDoc(Document doc)    {
         DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
         LSSerializer lsSerializer = domImplementation.createLSSerializer();
@@ -33,6 +41,14 @@ public class DocumentUtility
         return stringWriter.toString();
     }
 
+    /**
+     *
+     * @param buffer
+     * @return
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public static Document getDocumentFromBuffer(StringBuilder buffer) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf =
                 DocumentBuilderFactory.newInstance();

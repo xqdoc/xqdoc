@@ -1,11 +1,20 @@
 package org.xqdoc;
 
+/**
+ *
+ */
 public class ImportDeclaration {
 
     private String uri = null;
     private String importType = null;
     private String comment = null;
 
+    /**
+     *
+     * @param uri
+     * @param importType
+     * @param comment
+     */
     public ImportDeclaration(String uri, String importType, String comment)
     {
         this.uri = uri;
@@ -13,6 +22,10 @@ public class ImportDeclaration {
         this.comment = comment;
     }
 
+    /**
+     *
+     * @return
+     */
     public String toString()
     {
         StringBuilder buffer = new StringBuilder();

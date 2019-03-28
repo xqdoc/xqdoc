@@ -21,6 +21,14 @@ import java.util.Properties;
  */
 public class App 
 {
+    /**
+     *
+     * @param args
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParseException
+     */
     public static void main( String[] args ) throws ParserConfigurationException, IOException, SAXException, ParseException {
         HashMap uriMap = new HashMap();
         uriMap.put("fn", "http://www.w3.org/2003/05/xpath-functions");

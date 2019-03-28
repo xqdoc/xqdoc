@@ -276,7 +276,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.xqdoc:xqdoc:1.9.8"
+        classpath "org.xqdoc:xqdoc:1.9.9.1"
     }
 }
 
