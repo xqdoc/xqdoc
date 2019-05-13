@@ -8,6 +8,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -294,17 +295,37 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     {
         String prefix = context.schemaPrefix().ncName().getText();
         String uri = context.nsURI.getText();
+        String location = null;
         String uriTrimText;
         if (uri.startsWith("\"")) {
             uriTrimText = uri.substring(1).substring(0, uri.length() - 2);
         } else {
             uriTrimText = uri;
         }
+
+        Iterator<XQueryParser.UriLiteralContext> iterator = context.locations.iterator();
+
+        while (iterator.hasNext()) {
+            String text = iterator.next().getText();
+            String trimmedText;
+            if (text.startsWith("\"")) {
+                trimmedText = text.substring(1).substring(0, text.length() - 2);
+            } else {
+                trimmedText = text;
+            }
+            if (location == null) {
+                location = trimmedText;
+            } else {
+                location += ",";
+                location += trimmedText;
+            }
+        }
+
         String xqDoc = printXQDocumentation();
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uriTrimText, "schema", xqDoc));
+            imports.put(prefix, new ImportDeclaration(uriTrimText, "schema", location, xqDoc));
         }
         return null;
     }
@@ -319,17 +340,37 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     {
         String prefix = context.ncName().getText();
         String uri = context.nsURI.getText();
+        String location = null;
         String uriTrimText;
         if (uri.startsWith("\"")) {
             uriTrimText = uri.substring(1).substring(0, uri.length() - 2);
         } else {
             uriTrimText = uri;
         }
+
+        Iterator<XQueryParser.UriLiteralContext> iterator = context.locations.iterator();
+
+        while (iterator.hasNext()) {
+            String text = iterator.next().getText();
+            String trimmedText;
+            if (text.startsWith("\"")) {
+                trimmedText = text.substring(1).substring(0, text.length() - 2);
+            } else {
+                trimmedText = text;
+            }
+            if (location == null) {
+                location = trimmedText;
+            } else {
+                location += ",";
+                location += trimmedText;
+            }
+        }
+
         String xqDoc = printXQDocumentation();
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uriTrimText, "library", xqDoc));
+            imports.put(prefix, new ImportDeclaration(uriTrimText, "library", location, xqDoc));
         }
         if (!importedModuleNamespaces.containsKey(prefix))
         {
