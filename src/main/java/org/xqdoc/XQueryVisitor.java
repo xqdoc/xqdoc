@@ -109,6 +109,15 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return "";
     }
 
+    private String trimQuotes(String text) {
+        if (text.startsWith("\"")) {
+            return text.substring(1).substring(0, text.length() - 2);
+        } else {
+            return text;
+        }
+
+    }
+
     /**
      *
      * @param context
@@ -135,7 +144,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             org.xqdoc.XQueryParser.ModuleDeclContext moduleDeclContext = context.libraryModule().moduleDecl();
             String prefixText = moduleDeclContext.ncName().getText();
             String uriText = moduleDeclContext.uri.getText();
-            String uriTrimText = uriText.substring(1).substring(0, uriText.length() - 2);
+            String uriTrimText = trimQuotes(uriText);
             uriModuleMap.put(prefixText, uriTrimText);
             stream.append("<xqdoc:module type=\"library\">").append("\n");
             stream.append("<xqdoc:uri>").append(uriTrimText).append("</xqdoc:uri>").append("\n");
@@ -161,19 +170,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                 namespace = tmp[0];
                 refLocalName = tmp[1];
 
-                String uriTrimText;
-                if (namespace.startsWith("\"")) {
-                    uriTrimText = namespace.substring(1).substring(0, namespace.length() - 2);
-                } else {
-                    uriTrimText = namespace;
-                }
                 stream.append("<xqdoc:invoked>").append("\n");
-                stream.append("<xqdoc:uri>");
-                stream.append(uriTrimText);
-                stream.append("</xqdoc:uri>").append("\n");
-                stream.append("<xqdoc:name>");
-                stream.append(refLocalName);
-                stream.append("</xqdoc:name>").append("\n");
+                stream.append("<xqdoc:uri>").append(trimQuotes(namespace)).append("</xqdoc:uri>").append("\n");
+                stream.append("<xqdoc:name>").append(refLocalName).append("</xqdoc:name>").append("\n");
                 stream.append("</xqdoc:invoked>").append("\n");
             }
 
@@ -184,19 +183,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                 String[] tmp = entry.split(" ", 2);
                 namespace = tmp[0];
                 refLocalName = tmp[1];
-                String uriTrimText;
-                if (namespace.startsWith("\"")) {
-                    uriTrimText = namespace.substring(1).substring(0, namespace.length() - 2);
-                } else {
-                    uriTrimText = namespace;
-                }
                 stream.append("<xqdoc:ref-variable>").append("\n");
-                stream.append("<xqdoc:uri>");
-                stream.append(uriTrimText);
-                stream.append("</xqdoc:uri>").append("\n");
-                stream.append("<xqdoc:name>");
-                stream.append(refLocalName);
-                stream.append("</xqdoc:name>").append("\n");
+                stream.append("<xqdoc:uri>").append(trimQuotes(namespace)).append("</xqdoc:uri>").append("\n");
+                stream.append("<xqdoc:name>").append(refLocalName).append("</xqdoc:name>").append("\n");
                 stream.append("</xqdoc:ref-variable>").append("\n");
             }
             stream.append(printBody(context));
@@ -501,7 +490,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             namespace = encodeURI(namespace);
         }
         declaredVariables.append("<xqdoc:variable>").append("\n");
-        declaredVariables.append("<xqdoc:uri>").append(namespace).append("</xqdoc:uri>").append("\n");
+        declaredVariables.append("<xqdoc:uri>").append(trimQuotes(namespace)).append("</xqdoc:uri>").append("\n");
         declaredVariables.append("<xqdoc:name>").append(localName).append("</xqdoc:name>").append("\n");
         declaredVariables.append(printXQDocumentation());
         declaredVariables.append(processAnnotations(context.annotations()));
@@ -594,12 +583,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             namespace = tmp[0];
             refLocalName = tmp[1];
             declaredFunctions.append("<xqdoc:invoked>").append("\n");
-            declaredFunctions.append("<xqdoc:uri>");
-            declaredFunctions.append(namespace);
-            declaredFunctions.append("</xqdoc:uri>").append("\n");
-            declaredFunctions.append("<xqdoc:name>");
-            declaredFunctions.append(refLocalName);
-            declaredFunctions.append("</xqdoc:name>").append("\n");
+            declaredFunctions.append("<xqdoc:uri>").append(trimQuotes(namespace)).append("</xqdoc:uri>").append("\n");
+            declaredFunctions.append("<xqdoc:name>").append(refLocalName).append("</xqdoc:name>").append("\n");
             declaredFunctions.append("</xqdoc:invoked>").append("\n");
         }
 
@@ -611,12 +596,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             namespace = tmp[0];
             refLocalName = tmp[1];
             declaredFunctions.append("<xqdoc:ref-variable>").append("\n");
-            declaredFunctions.append("<xqdoc:uri>");
-            declaredFunctions.append(namespace);
-            declaredFunctions.append("</xqdoc:uri>").append("\n");
-            declaredFunctions.append("<xqdoc:name>");
-            declaredFunctions.append(refLocalName);
-            declaredFunctions.append("</xqdoc:name>").append("\n");
+            declaredFunctions.append("<xqdoc:uri>").append(trimQuotes(namespace)).append("</xqdoc:uri>").append("\n");
+            declaredFunctions.append("<xqdoc:name>").append(refLocalName).append("</xqdoc:name>").append("\n");
             declaredFunctions.append("</xqdoc:ref-variable>").append("\n");
         }
 
