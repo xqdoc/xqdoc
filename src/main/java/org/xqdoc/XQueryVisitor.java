@@ -100,7 +100,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             String xqDocBody = xqDocCommentContext.start.getInputStream().getText(interval);
             XQDocComment xqDocComment = new XQDocComment();
             xqDocComment.clear();
-            xqDocComment.setComment(xqDocBody);
+            xqDocComment.setComment(xqDocBody, a, b);
             String comment = xqDocComment.getXML().toString();
             buffer.append(comment).append("\n");
             xqDocCommentContext = null;
@@ -242,7 +242,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                 stream.append(namespaceEntry.getKey());
                 stream.append("\" uri=\"");
                 stream.append(namespaceEntry.getValue());
-                stream.append("\"/>\n");
+                stream.append("\">\n");
+                stream.append("</xqdoc:namespace>").append("\n");
             }
             stream.append("</xqdoc:namespaces>").append("\n");
         }
@@ -314,7 +315,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uriTrimText, "schema", location, xqDoc));
+            imports.put(prefix, new ImportDeclaration(uriTrimText, "schema", location, xqDoc, printBody(context).toString()));
         }
         return null;
     }
@@ -359,7 +360,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uriTrimText, "library", location, xqDoc));
+            imports.put(prefix, new ImportDeclaration(uriTrimText, "library", location, xqDoc, printBody(context).toString()));
         }
         if (!importedModuleNamespaces.containsKey(prefix))
         {
@@ -495,6 +496,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         declaredVariables.append(printXQDocumentation());
         declaredVariables.append(processAnnotations(context.annotations()));
         declaredVariables.append(processTypeDeclaration(context.typeDeclaration()));
+        declaredVariables.append(printBody(context));
         declaredVariables.append("</xqdoc:variable>").append("\n");
         return null;
     }
@@ -638,10 +640,15 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
      */
     private StringBuffer printBody(ParserRuleContext context) {
         StringBuffer bodyBuffer = new StringBuffer();
-        bodyBuffer.append("<xqdoc:body xml:space=\"preserve\"><![CDATA[");
         int a = context.start.getStartIndex();
         int b = context.stop.getStopIndex();
         Interval interval = new Interval(a,b);
+
+        bodyBuffer.append("<xqdoc:body start=\"");
+        bodyBuffer.append(a + 1);
+        bodyBuffer.append("\" end=\"");
+        bodyBuffer.append(b + 1);
+        bodyBuffer.append("\" xml:space=\"preserve\"><![CDATA[");
         bodyBuffer.append(context.start.getInputStream().getText(interval));
         bodyBuffer.append("]]></xqdoc:body>").append("\n");
         return bodyBuffer;

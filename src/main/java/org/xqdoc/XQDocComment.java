@@ -48,6 +48,9 @@ public class XQDocComment {
     // String of current xqDoc comment
     private String xqDocCommentString;
 
+    private int xqDocCommentStart = 0;
+    private int xqDocCommentEnd = 0;
+
     // xqDoc XML tag for comments
     private static final String XQDOC_COMMENT_TAG = "comment";
 
@@ -86,11 +89,15 @@ public class XQDocComment {
 
     private static final String XQDOC_COMMENT_SINCE = "@since";
 
-    private static final int XQDOC_STATE_CUSTOM = 9;
+    private static final int XQDOC_STATE_FORMAT = 9;
+
+    private static final String XQDOC_COMMENT_FORMAT = "@format";
+
+    private static final int XQDOC_STATE_CUSTOM = 10;
 
     private static final String XQDOC_COMMENT_CUSTOM = "@custom";
 
-    private static final int XQDOC_STATE_LAST = 10;
+    private static final int XQDOC_STATE_LAST = 11;
 
     private static final String BEGIN_XQDOC_COMMENT = "(:~";
 
@@ -99,7 +106,7 @@ public class XQDocComment {
     // The order of the following tags must match the order of the values
     // assigned to the various xqDoc comment states.
     private static final String[] XQDOC_STATE_TAG = { "description", "author",
-            "version", "param", "return", "error", "deprecated", "see", "since", "custom" };
+            "version", "param", "return", "error", "deprecated", "see", "since", "format", "custom" };
 
     /**
      * Initailize the XQDocComment object for processing of a xqDoc comment
@@ -123,9 +130,13 @@ public class XQDocComment {
      *
      * @param comment
      *            A xqDoc comment block
+     * @param start
+     * @param end
      */
-    public void setComment(String comment) {
+    public void setComment(String comment, int start, int end) {
         xqDocCommentString = comment;
+        xqDocCommentStart = start +1;
+        xqDocCommentEnd = end +1;
         xqDocDescriptionLeadingSpaces = 0;
     }
 
@@ -139,7 +150,7 @@ public class XQDocComment {
         StringBuilder sb = new StringBuilder(1024);
         if (xqDocCommentString != null) {
             buildXQDocCommentSection();
-            sb.append(XQDocXML.buildBeginTag(XQDOC_COMMENT_TAG));
+            sb.append(XQDocXML.buildBeginTagWithStartAndEndAttributes(XQDOC_COMMENT_TAG, xqDocCommentStart, xqDocCommentEnd));
             for (int i = 0; i < xqDocCommentBlock.length; i++) {
                 sb.append(xqDocCommentBlock[i]);
             }
@@ -317,6 +328,11 @@ public class XQDocComment {
             xqDocCommentState = XQDOC_STATE_SINCE;
             xqDocCommentStateBegin(null);
             xqDocCommentStateConcat(line, index + XQDOC_COMMENT_SINCE.length());
+        } else if ((index = line.indexOf(XQDOC_COMMENT_FORMAT)) > -1) {
+            xqDocCommentStateClose();
+            xqDocCommentState = XQDOC_STATE_FORMAT;
+            xqDocCommentStateBegin(null);
+            xqDocCommentStateConcat(line, index + XQDOC_COMMENT_FORMAT.length());
         } else if ((index = line.indexOf(XQDOC_COMMENT_CUSTOM)) > -1) {
             xqDocCommentStateClose();
             xqDocCommentState = XQDOC_STATE_CUSTOM;

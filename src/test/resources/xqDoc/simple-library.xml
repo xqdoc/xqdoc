@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xqdoc:xqdoc xmlns:xqdoc="http://www.xqdoc.org/1.0">
+<?xml version="1.0" encoding="UTF-8"?><xqdoc:xqdoc xmlns:xqdoc="http://www.xqdoc.org/1.0">
     <xqdoc:control>
-        <xqdoc:date>2018-12-06T06:25:02.476-05:00</xqdoc:date>
+        <xqdoc:date>2020-03-11T10:05:22.686-04:00</xqdoc:date>
         <xqdoc:version>1.1</xqdoc:version>
     </xqdoc:control>
     <xqdoc:module type="library">
         <xqdoc:uri>http://example.com/s</xqdoc:uri>
         <xqdoc:name>s</xqdoc:name>
-        <xqdoc:body xml:space="preserve"><![CDATA[xquery version "3.1";
+        <xqdoc:body end="206" start="1" xml:space="preserve"><![CDATA[xquery version "3.1";
 
 module namespace s="http://example.com/s";
 
@@ -24,20 +23,26 @@ declare function s:hello() as xs:string {
     </xqdoc:module>
     <xqdoc:functions>
         <xqdoc:function>
-            <xqdoc:comment>
-                <xqdoc:description>Say Hello world</xqdoc:description>
-                <xqdoc:author>Samuel Smiley</xqdoc:author>
-                <xqdoc:version>1.0</xqdoc:version>
+            <xqdoc:comment end="141" start="68">
+                <xqdoc:description>
+                    <![CDATA[
+ Say Hello world]]>
+                </xqdoc:description>
+                <xqdoc:author>
+                    <![CDATA[Samuel Smiley]]>
+                </xqdoc:author>
+                <xqdoc:version>
+                    <![CDATA[1.0]]>
+                </xqdoc:version>
             </xqdoc:comment>
             <xqdoc:name>hello</xqdoc:name>
             <xqdoc:signature>declare function hello() as xs:string</xqdoc:signature>
             <xqdoc:return>
                 <xqdoc:type>xs:string</xqdoc:type>
             </xqdoc:return>
-            <xqdoc:body xml:space="preserve"><![CDATA[declare function s:hello() as xs:string {
+            <xqdoc:body end="205" start="145" xml:space="preserve"><![CDATA[declare function s:hello() as xs:string {
     "hello world"
 }]]></xqdoc:body>
         </xqdoc:function>
     </xqdoc:functions>
 </xqdoc:xqdoc>
-

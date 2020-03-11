@@ -9,6 +9,7 @@ public class ImportDeclaration {
     private String importType = null;
     private String comment = null;
     private String location = null;
+    private String body = null;
 
     /**
      *
@@ -17,12 +18,13 @@ public class ImportDeclaration {
      * @param location
      * @param comment
      */
-    public ImportDeclaration(String uri, String importType, String location, String comment)
+    public ImportDeclaration(String uri, String importType, String location, String comment, String body)
     {
         this.uri = uri;
         this.importType = importType;
         this.location = location;
         this.comment = comment;
+        this.body = body;
     }
 
     /**
@@ -48,6 +50,10 @@ public class ImportDeclaration {
         if (this.comment != null)
         {
             buffer.append(this.comment);
+        }
+        if (this.body != null)
+        {
+            buffer.append(this.body);
         }
         buffer.append("</xqdoc:import>\n");
         return buffer.toString();

@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xqdoc:xqdoc xmlns:xqdoc="http://www.xqdoc.org/1.0">
+<?xml version="1.0" encoding="UTF-8"?><xqdoc:xqdoc xmlns:xqdoc="http://www.xqdoc.org/1.0">
     <xqdoc:control>
-        <xqdoc:date>2018-12-06T06:25:10.824-05:00</xqdoc:date>
+        <xqdoc:date>2020-03-11T10:05:22.597-04:00</xqdoc:date>
         <xqdoc:version>1.1</xqdoc:version>
     </xqdoc:control>
     <xqdoc:module type="main">
-        <xqdoc:body xml:space="preserve"><![CDATA[<foo/>]]></xqdoc:body>
+        <xqdoc:body end="6" start="1" xml:space="preserve"><![CDATA[<foo/>]]></xqdoc:body>
     </xqdoc:module>
 </xqdoc:xqdoc>
-

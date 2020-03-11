@@ -529,6 +529,20 @@ public class XQDocXML {
 	}
 
 	/**
+	 *
+	 * @param name
+	 *            XML Element name
+	 * @param start
+	 *            start attribute
+	 * @param end
+	 *            end attribute
+	 * @return Begin XML tag for the specified element name
+	 */
+	public static String buildBeginTagWithStartAndEndAttributes(String name, int start, int end) {
+		return "<" + XQDOC_PREFIX + name + " start='" + start + "' end='" + end + "'>";
+	}
+
+	/**
 	 * Helper method to build an end XML tag name for the specified name.
 	 * 
 	 * @param name
