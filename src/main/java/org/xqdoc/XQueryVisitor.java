@@ -51,6 +51,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     // Hash for holding the referenced variables for the current function
     private HashSet<String> referencedVariables = new HashSet<>();
 
+    private StringBuffer queryBody = new StringBuffer();
+
     // Flag to indicate whether document URIs should be encoded
     private boolean encodeURIs = false;
 
@@ -195,8 +197,13 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         buildNamespaces();
         buildVariables();
         buildFunctions();
+        buildQueryBody();
         stream.append("</xqdoc:xqdoc>").append("\n");
         return null;
+    }
+
+    private void buildQueryBody() {
+        stream.append(queryBody);
     }
 
     /**
@@ -630,6 +637,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         invokedFunctions = new HashSet<>();
         referencedVariables = new HashSet<>();
         visitChildren(context);
+        queryBody.append("<xqdoc:queryBody>").append("\n");
+        queryBody.append(printBody(context));
+        queryBody.append("</xqdoc:queryBody>").append("\n");
         return null;
     }
 
