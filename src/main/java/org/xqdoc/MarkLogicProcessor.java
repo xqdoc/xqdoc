@@ -16,11 +16,11 @@ public class MarkLogicProcessor {
 
     /**
      *
-     * @param txt
-     * @return
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
+     * @param txt The XQuery source as a String
+     * @return The xqDoc XML Document as a String
+     * @throws ParserConfigurationException TODO
+     * @throws IOException TODO
+     * @throws SAXException TODO
      */
     public String process(String txt) throws ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();

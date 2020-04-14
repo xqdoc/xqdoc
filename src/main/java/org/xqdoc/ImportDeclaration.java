@@ -14,10 +14,12 @@ public class ImportDeclaration {
 
     /**
      *
-     * @param uri
-     * @param importType
-     * @param location
-     * @param comment
+     * @param prefix The optional prefix in the import declaration
+     * @param uri The namespace in the import declaration
+     * @param importType The type of an import (schema|library)
+     * @param location The optional location for the imported source
+     * @param comment The optional xqDoc comment for the import
+     * @param body The body of the import string
      */
     public ImportDeclaration(String prefix, String uri, String importType, String location, String comment, String body)
     {
@@ -31,7 +33,7 @@ public class ImportDeclaration {
 
     /**
      *
-     * @return
+     * @return The xqDoc import element as a String
      */
     public String toString()
     {

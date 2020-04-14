@@ -23,7 +23,7 @@ package org.xqdoc;
 /**
  * The base xqDoc exception that will be used by various
  * xqDoc drivers and the XQDocController.
- * 
+ *
  * @author Darin McBeath
  * @version 1.0
  */
@@ -37,7 +37,7 @@ public class XQDocException extends Exception {
 
 	/**
 	 *
-	 * @param message
+	 * @param message The message string returned with this exception
 	 */
 	public XQDocException(String message) {
 		super(message);
@@ -45,8 +45,8 @@ public class XQDocException extends Exception {
 
 	/**
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message The message string returned with this exception
+	 * @param cause  The throwable error that has caused this exception
 	 */
 	public XQDocException(String message, Throwable cause) {
 		super(message, cause);
@@ -54,7 +54,7 @@ public class XQDocException extends Exception {
 
 	/**
 	 *
-	 * @param cause
+	 * @param cause  The throwable error that has caused this exception
 	 */
 	public XQDocException(Throwable cause) {
 		super(cause);

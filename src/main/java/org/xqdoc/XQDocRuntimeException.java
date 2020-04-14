@@ -27,7 +27,7 @@ package org.xqdoc;
  * meant to be a short-term solution since the longer term plan is to move the
  * xqDoc Comment block processing into the antlr grammar and eliminating the
  * need for the XQDocComment class and this runtime exception.
- * 
+ *
  * @author Darin McBeath
  * @version 1.0
  */
@@ -41,7 +41,7 @@ public class XQDocRuntimeException extends RuntimeException {
 
 	/**
 	 *
-	 * @param message
+	 * @param message The message string returned with this exception
 	 */
 	public XQDocRuntimeException(String message) {
 		super(message);
@@ -49,8 +49,8 @@ public class XQDocRuntimeException extends RuntimeException {
 
 	/**
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message The message string returned with this exception
+	 * @param cause  The throwable error that has caused this exception
 	 */
 	public XQDocRuntimeException(String message, Throwable cause) {
 		super(message, cause);
@@ -58,7 +58,7 @@ public class XQDocRuntimeException extends RuntimeException {
 
 	/**
 	 *
-	 * @param cause
+	 * @param cause  The throwable error that has caused this exception
 	 */
 	public XQDocRuntimeException(Throwable cause) {
 		super(cause);

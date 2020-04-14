@@ -59,7 +59,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param stream
+     *              The StringBuffer that is used to build the full xqDoc XML document
      * @param uriMap
+     *              The predefined function namespaces
      */
     public XQueryVisitor(StringBuilder stream, Map uriMap)
     {
@@ -90,6 +92,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @return
+     *          The xqDoc XML comment block as a String
      */
     private String printXQDocumentation()
     {
@@ -111,6 +114,11 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return "";
     }
 
+    /**
+     *
+     * @param text The String to trim doublequotes from
+     * @return The cleaned string
+     */
     private String trimQuotes(String text) {
         if (text.startsWith("\"")) {
             return text.substring(1).substring(0, text.length() - 2);
@@ -123,7 +131,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for an XQuery module
      * @return
+     *                  The xqDoc XML Document as a String
      */
     @Override
     public String visitModule(org.xqdoc.XQueryParser.ModuleContext context)
@@ -202,6 +212,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
+    /**
+     *
+     */
     private void buildQueryBody() {
         stream.append(queryBody);
     }
@@ -209,7 +222,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the prolog of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the prolog as a String
      */
     @Override
     public String visitProlog(org.xqdoc.XQueryParser.PrologContext context)
@@ -285,7 +300,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the schema import of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the schema import as a String
      */
     @Override
     public String visitSchemaImport(org.xqdoc.XQueryParser.SchemaImportContext context)
@@ -330,7 +347,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the module import of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the module import as a String
      */
     @Override
     public String visitModuleImport(org.xqdoc.XQueryParser.ModuleImportContext context)
@@ -379,7 +398,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the namespace declaration of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the namespace declaration as a String
      */
     @Override
     public String visitNamespaceDecl(org.xqdoc.XQueryParser.NamespaceDeclContext context)
@@ -401,7 +422,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param annotations
+     *                  The Antlr4 parser context for the annotation of an XQuery function
      * @return
+     *                  The xqDoc XML fragment for the annotation as a String
      */
     private StringBuffer processAnnotations(org.xqdoc.XQueryParser.AnnotationsContext annotations)
     {
@@ -435,7 +458,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the type declaration of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the type declaration as a String
      */
     private StringBuffer processTypeDeclaration(org.xqdoc.XQueryParser.TypeDeclarationContext context)
     {
@@ -458,7 +483,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the variable declaration of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the variable declaration as a String
      */
     @Override
     public String visitVarDecl(org.xqdoc.XQueryParser.VarDeclContext context)
@@ -511,7 +538,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for a function declaration of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for a function declaration as a String
      */
     @Override
     public String visitFunctionDecl(org.xqdoc.XQueryParser.FunctionDeclContext context)
@@ -619,7 +648,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for a function body of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for a function body as a String
      */
     @Override
     public String visitFunctionBody(org.xqdoc.XQueryParser.FunctionBodyContext context) {
@@ -630,7 +661,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the query body of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the query body as a String
      */
     @Override
     public String visitQueryBody(org.xqdoc.XQueryParser.QueryBodyContext context) {
@@ -646,7 +679,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for the body of a section of an XQuery module
      * @return
+     *                  The xqDoc XML fragment for the body of a section as a String
      */
     private StringBuffer printBody(ParserRuleContext context) {
         StringBuffer bodyBuffer = new StringBuffer();
@@ -667,7 +702,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for an xqDoc comment of an XQuery module
      * @return
+     *                  null
      */
     @Override
     public String visitXqDocComment(org.xqdoc.XQueryParser.XqDocCommentContext context)
@@ -679,7 +716,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for function call of an XQuery module
      * @return
+     *                  null
      */
     @Override
     public String visitFunctionCall(org.xqdoc.XQueryParser.FunctionCallContext context)
@@ -733,7 +772,9 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     /**
      *
      * @param context
+     *                  The Antlr4 parser context for a variable reference of an XQuery module
      * @return
+     *                  null
      */
     @Override
     public String visitVarRef(org.xqdoc.XQueryParser.VarRefContext context)

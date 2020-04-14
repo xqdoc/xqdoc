@@ -26,8 +26,8 @@ public class DocumentUtility
 
     /**
      *
-     * @param doc
-     * @return
+     * @param doc The XML Document that is to be returned as a String
+     * @return The XML Document as a String
      */
     public static String getStringFromDoc(Document doc)    {
         DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
@@ -42,12 +42,12 @@ public class DocumentUtility
     }
 
     /**
-     *
-     * @param buffer
-     * @return
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
+     * Generate an XML Document from a StringBuffer containing the XML as a String
+     * @param buffer The StringBuffer used to build the XML String
+     * @return The XML Document object
+     * @throws ParserConfigurationException TODO
+     * @throws IOException TODO
+     * @throws SAXException TODO
      */
     public static Document getDocumentFromBuffer(StringBuilder buffer) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf =

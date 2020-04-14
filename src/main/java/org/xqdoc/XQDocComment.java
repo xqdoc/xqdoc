@@ -131,7 +131,9 @@ public class XQDocComment {
      * @param comment
      *            A xqDoc comment block
      * @param start
+     *            The character location of the start of the comment
      * @param end
+     *            The character location of the end of the comment
      */
     public void setComment(String comment, int start, int end) {
         xqDocCommentString = comment;
@@ -144,7 +146,8 @@ public class XQDocComment {
      * Loop through the array of string buffers for the xqDoc comment block and
      * construct a complete comment block.
      *
-     * @return The serialized xqDoc XML for the current xqDoc comment block
+     * @return
+     *            The serialized xqDoc XML for the current xqDoc comment block
      */
     public StringBuilder getXML() {
         StringBuilder sb = new StringBuilder(1024);
@@ -159,6 +162,13 @@ public class XQDocComment {
         return sb;
     }
 
+    /**
+     *
+     * @param text
+     *            The String to test
+     * @return
+     *            The number of leading spaces of the text
+     */
     private int leadingSpacesCount(String text) {
         String regex = "^\\s+";
         String trimmedString1 = text.replaceAll(regex, "");
@@ -229,6 +239,8 @@ public class XQDocComment {
      * this comment to the buffer associated with the current xqDoc comment
      * state.
      *
+     * @param tag
+     *              The tag following the @ in the comment block
      */
     private void xqDocCommentStateBegin(String tag) {
         if (tag != null) {
