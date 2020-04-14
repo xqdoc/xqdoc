@@ -322,7 +322,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uriTrimText, "schema", location, xqDoc, printBody(context).toString()));
+            imports.put(prefix, new ImportDeclaration(prefix, uriTrimText, "schema", location, xqDoc, printBody(context).toString()));
         }
         return null;
     }
@@ -367,7 +367,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
 
         if (!imports.containsKey(prefix))
         {
-            imports.put(prefix, new ImportDeclaration(uriTrimText, "library", location, xqDoc, printBody(context).toString()));
+            imports.put(prefix, new ImportDeclaration(prefix, uriTrimText, "library", location, xqDoc, printBody(context).toString()));
         }
         if (!importedModuleNamespaces.containsKey(prefix))
         {

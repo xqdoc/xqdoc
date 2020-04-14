@@ -26,9 +26,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/lcahlander/xqdoc</connection>
-    <developerConnection>scm:git:https://lcahlander@github.com/lcahlander/xqdoc</developerConnection>
-    <url>https://github.com/lcahlander/xqdoc</url>
+    <connection>scm:git:https://github.com/xqdoc/xqdoc</connection>
+    <developerConnection>scm:git:https://lcahlander@github.com/xqdoc/xqdoc</developerConnection>
+    <url>https://github.com/xqdoc/xqdoc</url>
     <tag>HEAD</tag>
   </scm>
 

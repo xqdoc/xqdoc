@@ -5,6 +5,7 @@ package org.xqdoc;
  */
 public class ImportDeclaration {
 
+    private String prefix = null;
     private String uri = null;
     private String importType = null;
     private String comment = null;
@@ -18,8 +19,9 @@ public class ImportDeclaration {
      * @param location
      * @param comment
      */
-    public ImportDeclaration(String uri, String importType, String location, String comment, String body)
+    public ImportDeclaration(String prefix, String uri, String importType, String location, String comment, String body)
     {
+        this.prefix = prefix;
         this.uri = uri;
         this.importType = importType;
         this.location = location;
@@ -38,6 +40,11 @@ public class ImportDeclaration {
         buffer.append("<xqdoc:import type=\"");
         buffer.append(this.importType);
         buffer.append("\"");
+        if (this.prefix != null) {
+            buffer.append(" prefix=\"");
+            buffer.append(this.prefix);
+            buffer.append("\"");
+        }
         if (this.location != null) {
             buffer.append(" location=\"");
             buffer.append(this.location);
