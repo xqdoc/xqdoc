@@ -18,16 +18,19 @@ import java.util.Properties;
 /**
  * Hello world!
  *
+ * @author lcahlander
+ * @version $Id: $Id
  */
 public class App
 {
     /**
+     * <p>main.</p>
      *
      * @param args  The command line arguments
-     * @throws ParserConfigurationException TODO
-     * @throws IOException TODO
-     * @throws SAXException TODO
-     * @throws ParseException TODO
+     * @throws javax.xml.parsers.ParserConfigurationException a
+     * @throws java.io.IOException a
+     * @throws org.xml.sax.SAXException a
+     * @throws org.apache.commons.cli.ParseException a
      */
     public static void main( String[] args ) throws ParserConfigurationException, IOException, SAXException, ParseException {
         HashMap uriMap = new HashMap();

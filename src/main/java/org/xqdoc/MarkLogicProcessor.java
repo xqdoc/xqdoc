@@ -10,17 +10,21 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
+ * <p>MarkLogicProcessor class.</p>
  *
+ * @author lcahlander
+ * @version $Id: $Id
  */
 public class MarkLogicProcessor {
 
     /**
+     * <p>process.</p>
      *
      * @param txt The XQuery source as a String
      * @return The xqDoc XML Document as a String
-     * @throws ParserConfigurationException TODO
-     * @throws IOException TODO
-     * @throws SAXException TODO
+     * @throws javax.xml.parsers.ParserConfigurationException a
+     * @throws java.io.IOException a
+     * @throws org.xml.sax.SAXException a
      */
     public String process(String txt) throws ParserConfigurationException, IOException, SAXException {
         HashMap uriMap = new HashMap();

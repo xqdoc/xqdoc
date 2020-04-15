@@ -34,12 +34,13 @@ package org.xqdoc;
 public class XQDocRuntimeException extends RuntimeException {
 
 	/**
-	 *
+	 * <p>Constructor for XQDocRuntimeException.</p>
 	 */
 	public XQDocRuntimeException() {
 	}
 
 	/**
+	 * <p>Constructor for XQDocRuntimeException.</p>
 	 *
 	 * @param message The message string returned with this exception
 	 */
@@ -48,6 +49,7 @@ public class XQDocRuntimeException extends RuntimeException {
 	}
 
 	/**
+	 * <p>Constructor for XQDocRuntimeException.</p>
 	 *
 	 * @param message The message string returned with this exception
 	 * @param cause  The throwable error that has caused this exception
@@ -57,6 +59,7 @@ public class XQDocRuntimeException extends RuntimeException {
 	}
 
 	/**
+	 * <p>Constructor for XQDocRuntimeException.</p>
 	 *
 	 * @param cause  The throwable error that has caused this exception
 	 */

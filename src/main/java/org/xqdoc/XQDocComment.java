@@ -112,7 +112,6 @@ public class XQDocComment {
      * Initailize the XQDocComment object for processing of a xqDoc comment
      * block. This includes clearing the various buffers and setting the current
      * comment state to 'unknown'.
-     *
      */
     public void clear() {
         xqDocCommentString = null;
@@ -146,8 +145,7 @@ public class XQDocComment {
      * Loop through the array of string buffers for the xqDoc comment block and
      * construct a complete comment block.
      *
-     * @return
-     *            The serialized xqDoc XML for the current xqDoc comment block
+     * @return a {@link java.lang.StringBuilder} object.
      */
     public StringBuilder getXML() {
         StringBuilder sb = new StringBuilder(1024);

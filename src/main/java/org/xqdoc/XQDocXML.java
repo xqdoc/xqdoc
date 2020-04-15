@@ -28,11 +28,11 @@ import java.util.logging.Logger;
  * member variables that hold the main sections of the xqDoc XML. Then, when the
  * xqDoc XML is requested, it combines all of the sections into the final xqDoc
  * XML output.
- * 
+ *
  * Since a namespace can be specified when this object is created, it should be
  * easy to support different versions of xqDoc XML without necessarily adjusting
  * the xqDoc conversion programs.
- * 
+ *
  * @author Darin McBeath
  * @version 1.0
  */
@@ -116,7 +116,7 @@ public class XQDocXML {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param xqDocNamespace
 	 *            Namespace of xqDoc XML to create
 	 */
@@ -129,7 +129,7 @@ public class XQDocXML {
 	 * when the xqDoc conversion package generated the XML as well as the
 	 * version of the xqDoc conversion package used to generate the XML. This
 	 * method will be invoked once for each module processed.
-	 * 
+	 *
 	 * @param version
 	 *            The xqDoc conversion program version
 	 */
@@ -150,7 +150,7 @@ public class XQDocXML {
 	 * block, and the source code for the entire library module. Either this
 	 * method (or the one for main modules) will be invoked once for each module
 	 * processed.
-	 * 
+	 *
 	 * @param uri
 	 *            The library module uri.
 	 * @param commonName
@@ -188,7 +188,7 @@ public class XQDocXML {
 	 * comment block, and the source code for the entire main module. Either
 	 * this method (or the one for library modules) will be invoked once for
 	 * each module processed.
-	 * 
+	 *
 	 * @param uri
 	 *            The main module uri.
 	 * @param commonName
@@ -269,7 +269,7 @@ public class XQDocXML {
 	 * the xqDoc comment block associated with the global variable. This method
 	 * will be called once for each global variable declared by either a library
 	 * or main module.
-	 * 
+	 *
 	 * @param uri
 	 *            The uri for the global variable.
 	 * @param comment
@@ -291,22 +291,23 @@ public class XQDocXML {
 	 * this function, and functions invoked from within this function. This
 	 * method will be called once for each function declared in a library or
 	 * main module.
+	 *
 	 * @param functionName
 	 *       The local name for the current function
 	 * @param functionSignature
 	 *       The signature for the function
 	 * @param comment
-     *       The XQDocComment associated with the function
+	 *       The XQDocComment associated with the function
 	 * @param functionBody
-     *       The source code for the function
-     * @param functionReturnType
+	 *       The source code for the function
+	 * @param functionReturnType
 	 * 		 The return type of the function
 	 * @param functionReturnOccurrence
 	 *       The number of occurrences of the returned item(s)
 	 * @param invokedFunctions
-     *       The list of functions invoked by this function
+	 *       The list of functions invoked by this function
 	 * @param referencedVariables
-     *       The linked list of variables referenced by this function
+	 *       The linked list of variables referenced by this function
 	 * @param annotationList
 	 *       The linked list of annotations
 	 */
@@ -456,7 +457,7 @@ public class XQDocXML {
 	 * <li>declared variables</li>
 	 * <li>declared functions</li>
 	 * </ul>
-	 * 
+	 *
 	 * @return Serialized string of xqDoc XML
 	 */
 	public String getXML() {
@@ -496,7 +497,6 @@ public class XQDocXML {
 	 *            XML Element name
 	 * @param namespace
 	 *            The namespace for this element and it's descendants
-	 *
 	 * @return Begin XML tag for the specified element name
 	 */
 	public static String buildBeginTagWithNamespace(String name,
@@ -529,6 +529,7 @@ public class XQDocXML {
 	}
 
 	/**
+	 * <p>buildBeginTagWithStartAndEndAttributes.</p>
 	 *
 	 * @param name
 	 *            XML Element name
@@ -544,7 +545,7 @@ public class XQDocXML {
 
 	/**
 	 * Helper method to build an end XML tag name for the specified name.
-	 * 
+	 *
 	 * @param name
 	 *            XML Element name
 	 * @return End XML tag for the specified element name
@@ -561,7 +562,8 @@ public class XQDocXML {
 	 * <li>&amp; with &amp;amp;</li>
 	 * <li>&lt; with &amp;lt;</li>
 	 * <li>&gt; with &amp;gt;</li>
-	 * </ul> 
+	 * </ul>
+	 *
 	 * @param input The string to encode
 	 * @return The encoded string
 	 */

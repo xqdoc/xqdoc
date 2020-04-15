@@ -16,7 +16,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 /**
+ * <p>DocumentUtility class.</p>
  *
+ * @author lcahlander
+ * @version $Id: $Id
  */
 public class DocumentUtility
 {
@@ -25,6 +28,7 @@ public class DocumentUtility
     }
 
     /**
+     * <p>getStringFromDoc.</p>
      *
      * @param doc The XML Document that is to be returned as a String
      * @return The XML Document as a String
@@ -43,11 +47,12 @@ public class DocumentUtility
 
     /**
      * Generate an XML Document from a StringBuffer containing the XML as a String
+     *
      * @param buffer The StringBuffer used to build the XML String
      * @return The XML Document object
-     * @throws ParserConfigurationException TODO
-     * @throws IOException TODO
-     * @throws SAXException TODO
+     * @throws javax.xml.parsers.ParserConfigurationException a
+     * @throws java.io.IOException a
+     * @throws org.xml.sax.SAXException a
      */
     public static Document getDocumentFromBuffer(StringBuilder buffer) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf =

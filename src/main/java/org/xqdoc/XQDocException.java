@@ -30,12 +30,13 @@ package org.xqdoc;
 public class XQDocException extends Exception {
 
 	/**
-	 *
+	 * <p>Constructor for XQDocException.</p>
 	 */
 	public XQDocException() {
 	}
 
 	/**
+	 * <p>Constructor for XQDocException.</p>
 	 *
 	 * @param message The message string returned with this exception
 	 */
@@ -44,6 +45,7 @@ public class XQDocException extends Exception {
 	}
 
 	/**
+	 * <p>Constructor for XQDocException.</p>
 	 *
 	 * @param message The message string returned with this exception
 	 * @param cause  The throwable error that has caused this exception
@@ -53,6 +55,7 @@ public class XQDocException extends Exception {
 	}
 
 	/**
+	 * <p>Constructor for XQDocException.</p>
 	 *
 	 * @param cause  The throwable error that has caused this exception
 	 */

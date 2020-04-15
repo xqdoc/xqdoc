@@ -1,7 +1,10 @@
 package org.xqdoc;
 
 /**
+ * <p>ImportDeclaration class.</p>
  *
+ * @author lcahlander
+ * @version $Id: $Id
  */
 public class ImportDeclaration {
 
@@ -13,6 +16,7 @@ public class ImportDeclaration {
     private String body = null;
 
     /**
+     * <p>Constructor for ImportDeclaration.</p>
      *
      * @param prefix The optional prefix in the import declaration
      * @param uri The namespace in the import declaration
@@ -32,6 +36,7 @@ public class ImportDeclaration {
     }
 
     /**
+     * <p>toString.</p>
      *
      * @return The xqDoc import element as a String
      */

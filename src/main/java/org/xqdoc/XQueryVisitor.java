@@ -12,7 +12,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * <p>XQueryVisitor class.</p>
  *
+ * @author lcahlander
+ * @version $Id: $Id
  */
 public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     private StringBuilder stream;
@@ -57,6 +60,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
     private boolean encodeURIs = false;
 
     /**
+     * <p>Constructor for XQueryVisitor.</p>
      *
      * @param stream
      *              The StringBuffer that is used to build the full xqDoc XML document
@@ -128,13 +132,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
 
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for an XQuery module
-     * @return
-     *                  The xqDoc XML Document as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitModule(org.xqdoc.XQueryParser.ModuleContext context)
     {
@@ -219,13 +217,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         stream.append(queryBody);
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for the prolog of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for the prolog as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitProlog(org.xqdoc.XQueryParser.PrologContext context)
     {
@@ -297,13 +289,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         }
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for the schema import of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for the schema import as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitSchemaImport(org.xqdoc.XQueryParser.SchemaImportContext context)
     {
@@ -344,13 +330,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for the module import of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for the module import as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitModuleImport(org.xqdoc.XQueryParser.ModuleImportContext context)
     {
@@ -395,13 +375,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for the namespace declaration of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for the namespace declaration as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitNamespaceDecl(org.xqdoc.XQueryParser.NamespaceDeclContext context)
     {
@@ -480,13 +454,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return buffer;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for the variable declaration of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for the variable declaration as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitVarDecl(org.xqdoc.XQueryParser.VarDeclContext context)
     {
@@ -535,13 +503,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for a function declaration of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for a function declaration as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitFunctionDecl(org.xqdoc.XQueryParser.FunctionDeclContext context)
     {
@@ -616,12 +578,22 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         for (String entry : invokedFunctions)
         {
             String namespace = null;
+            String refPrefixName = null;
             String refLocalName = null;
             String[] tmp = entry.split(" ", 2);
             namespace = tmp[0];
             refLocalName = tmp[1];
+
+            if (refLocalName.contains(":")) {
+                String[] tmp2 = refLocalName.split(":");
+                refPrefixName = tmp2[0];
+                refLocalName = tmp2[1];
+            }
             declaredFunctions.append("<xqdoc:invoked>").append("\n");
             declaredFunctions.append("<xqdoc:uri>").append(trimQuotes(namespace)).append("</xqdoc:uri>").append("\n");
+            if (refPrefixName != null) {
+                declaredFunctions.append("<xqdoc:prefix>").append(refPrefixName).append("</xqdoc:prefix>").append("\n");
+            }
             declaredFunctions.append("<xqdoc:name>").append(refLocalName).append("</xqdoc:name>").append("\n");
             declaredFunctions.append("</xqdoc:invoked>").append("\n");
         }
@@ -645,26 +617,14 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for a function body of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for a function body as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitFunctionBody(org.xqdoc.XQueryParser.FunctionBodyContext context) {
         visitChildren(context);
         return null;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for the query body of an XQuery module
-     * @return
-     *                  The xqDoc XML fragment for the query body as a String
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitQueryBody(org.xqdoc.XQueryParser.QueryBodyContext context) {
         invokedFunctions = new HashSet<>();
@@ -699,13 +659,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return bodyBuffer;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for an xqDoc comment of an XQuery module
-     * @return
-     *                  null
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitXqDocComment(org.xqdoc.XQueryParser.XqDocCommentContext context)
     {
@@ -713,13 +667,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         return null;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for function call of an XQuery module
-     * @return
-     *                  null
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitFunctionCall(org.xqdoc.XQueryParser.FunctionCallContext context)
     {
@@ -761,21 +709,17 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
             namespace = encodeURI(namespace);
         }
 
+        String invokedString = namespace + " " + ((namespacePrefix != null) ? (namespacePrefix + ":") : "") + localName;
+
         // Check the invokedFunctions (to see if it is already there)
-        if (!invokedFunctions.contains(namespace + " " + localName)) {
-            invokedFunctions.add(namespace + " " + localName);
+        if (!invokedFunctions.contains(invokedString)) {
+            invokedFunctions.add(invokedString);
         }
         visitChildren(context);
         return null;
     }
 
-    /**
-     *
-     * @param context
-     *                  The Antlr4 parser context for a variable reference of an XQuery module
-     * @return
-     *                  null
-     */
+    /** {@inheritDoc} */
     @Override
     public String visitVarRef(org.xqdoc.XQueryParser.VarRefContext context)
     {
