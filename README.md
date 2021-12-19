@@ -1,6 +1,14 @@
 # xqDoc
 An Antlr4 implementation of xqDoc for XQuery
 
+## Installation
+
+Install this in your local maven repository
+
+Run the command: ```mvn install```
+
+This allows the xqDoc transform to be run from ml-gradle.
+
 ## Comments
 
 xqDoc comments are used to document XQuery library and main modules in a manner similar to how Javadoc comments are used to document Java classes and packages. With the documentation close to the source, it increases the chances that the documentation will be kept current and with tools provided by xqDoc, useful documentation can be quickly and easily generated. It should be noted that a XQuery module does not need to contain xqDoc style comments in order for the xqDoc tools to produce useful output. Without any xqDoc documentation style comments, a very useful cross reference (for control, modules, imports, variables and functions) and XQuery code browser (for modules and functions) will be created by the xqDoc tools.
@@ -205,12 +213,12 @@ Run the command: ```mvn package```
 
 ### Results
 
-* target/xqdoc-1.9-jar-with-dependencies.jar
-* target/xqdoc-1.9.jar
+* target/xqdoc-1.9.9.3-SNAPSHOT-jar-with-dependencies.jar
+* target/xqdoc-1.9.9.3-SNAPSHOT.jar
 
 ## Command Line Call
 
-```java -jar xqdoc-1.9-8-jar-with-dependencies.jar -Dprefix=uri -Dprefix=uri -f filepath```
+```java -jar xqdoc-1.9.9.3-SNAPSHOT-jar-with-dependencies.jar -Dprefix=uri -Dprefix=uri -f filepath```
 
 The prefix/uri combination is for the prefixes that are not needed in an import module namespace for the implementation.
 
@@ -272,11 +280,12 @@ import org.apache.tools.ant.filters.BaseFilterReader
 
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
     }
 
     dependencies {
-        classpath "org.xqdoc:xqdoc:1.9.9.1"
+        classpath "org.xqdoc:xqdoc:1.9.9.3-SNAPSHOT"
     }
 }
 

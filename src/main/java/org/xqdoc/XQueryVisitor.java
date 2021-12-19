@@ -417,8 +417,8 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
                         int a = annotationParam.start.getStartIndex();
                         int b = annotationParam.stop.getStopIndex();
                         Interval interval = new Interval(a,b);
-                        String literalText = annotationParam.start.getInputStream().getText(interval);
-                        buffer.append(literalText);
+                        String literalText = annotationParam.start.getInputStream().getText(interval).replaceAll("]]>", "] ] >");
+                        buffer.append(trimQuotes(literalText));
                         buffer.append("]]></xqdoc:literal>").append("\n");
                     }
                 }
@@ -654,7 +654,7 @@ public class XQueryVisitor extends org.xqdoc.XQueryParserBaseVisitor<String> {
         bodyBuffer.append("\" end=\"");
         bodyBuffer.append(b + 1);
         bodyBuffer.append("\" xml:space=\"preserve\"><![CDATA[");
-        bodyBuffer.append(context.start.getInputStream().getText(interval));
+        bodyBuffer.append(context.start.getInputStream().getText(interval).replaceAll("]]>", "] ] >"));
         bodyBuffer.append("]]></xqdoc:body>").append("\n");
         return bodyBuffer;
     }

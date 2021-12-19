@@ -64,17 +64,19 @@ public class AppTest
         File[] files = directory.listFiles();
         //If this pathname does not denote a directory, then listFiles() returns null.
 
-        String[][] arrayOfArrays = new String[files.length][];
+        String[][] arrayOfArrays = new String[(files != null) ? files.length : 0][];
 
-        for(int i=0; i<files.length; i++)
-        {
-            if (files[i].isFile()) {
-                String filename = files[i].getName();
-                String[] parts = filename.split("\\.");
-                String file1 = "XQuery/" + filename;
-                String file2 = "xqDoc/" + parts[0] + ".xml";
-                String[] pair = new String[] { file1, file2 };
-                arrayOfArrays[i] = pair;
+        if (files != null) {
+            for(int i=0; i<files.length; i++)
+            {
+                if (files[i].isFile()) {
+                    String filename = files[i].getName();
+                    String[] parts = filename.split("\\.");
+                    String file1 = "XQuery/" + filename;
+                    String file2 = "xqDoc/" + parts[0] + ".xml";
+                    String[] pair = new String[] { file1, file2 };
+                    arrayOfArrays[i] = pair;
+                }
             }
         }
 

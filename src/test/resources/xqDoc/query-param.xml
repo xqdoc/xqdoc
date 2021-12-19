@@ -33,8 +33,8 @@ declare
     %rest:GET
     %rest:path("/test2")
     %rest:query-param("hello", "{$hello}", "")
-function test:hello2($hello as xs:string*) 
-as node() 
+function test:hello2($hello as xs:string*)
+as node()
 {
     <hello>{$hello}</hello>
 };
@@ -110,21 +110,21 @@ function test:hello8($hello) {
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
                     <xqdoc:literal>
-                        <![CDATA["/test"]]>
+                        <![CDATA[/test]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
                     <xqdoc:literal>
-                        <![CDATA["hello"]]>
+                        <![CDATA[hello]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA["{$hello}"]]>
+                        <![CDATA[{$hello}]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA["hello"]]>
+                        <![CDATA[hello]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA["again"]]>
+                        <![CDATA[again]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
@@ -148,18 +148,18 @@ function test:hello($hello) {
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
                     <xqdoc:literal>
-                        <![CDATA["/test1"]]>
+                        <![CDATA[/test1]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
                     <xqdoc:literal>
-                        <![CDATA["hello"]]>
+                        <![CDATA[hello]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA["{$hello}"]]>
+                        <![CDATA[{$hello}]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA[""]]>
+                        <![CDATA[]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
@@ -184,18 +184,18 @@ function test:hello1($hello as xs:string+) {
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
                     <xqdoc:literal>
-                        <![CDATA["/test2"]]>
+                        <![CDATA[/test2]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
                     <xqdoc:literal>
-                        <![CDATA["hello"]]>
+                        <![CDATA[hello]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA["{$hello}"]]>
+                        <![CDATA[{$hello}]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA[""]]>
+                        <![CDATA[]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
@@ -213,8 +213,8 @@ function test:hello1($hello as xs:string+) {
     %rest:GET
     %rest:path("/test2")
     %rest:query-param("hello", "{$hello}", "")
-function test:hello2($hello as xs:string*) 
-as node() 
+function test:hello2($hello as xs:string*)
+as node()
 {
     <hello>{$hello}</hello>
 }]]></xqdoc:body>
@@ -225,15 +225,15 @@ as node()
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
                     <xqdoc:literal>
-                        <![CDATA["/test7"]]>
+                        <![CDATA[/test7]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
                     <xqdoc:literal>
-                        <![CDATA["hello"]]>
+                        <![CDATA[hello]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA["{$hello}"]]>
+                        <![CDATA[{$hello}]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
@@ -258,15 +258,15 @@ function test:hello7($hello as xs:string*) {
                 <xqdoc:annotation name="rest:GET"/>
                 <xqdoc:annotation name="rest:path">
                     <xqdoc:literal>
-                        <![CDATA["/test8"]]>
+                        <![CDATA[/test8]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
                 <xqdoc:annotation name="rest:query-param">
                     <xqdoc:literal>
-                        <![CDATA["hello"]]>
+                        <![CDATA[hello]]>
                     </xqdoc:literal>
                     <xqdoc:literal>
-                        <![CDATA["{$hello}"]]>
+                        <![CDATA[{$hello}]]>
                     </xqdoc:literal>
                 </xqdoc:annotation>
             </xqdoc:annotations>
