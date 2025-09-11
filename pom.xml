@@ -5,7 +5,7 @@
 
   <groupId>org.xqdoc</groupId>
   <artifactId>xqdoc</artifactId>
-  <version>1.9.9.3-SNAPSHOT</version>
+  <version>1.10.0</version>
     <packaging>jar</packaging>
 
   <name>xqdoc</name>
@@ -36,13 +36,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr4.visitor>true</antlr4.visitor>
         <antlr4.listener>true</antlr4.listener>
+        <antlr4.version>4.13.2</antlr4.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.13.2</version>
+            <version>${antlr4.version}</version>
         </dependency>
       <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
       <dependency>
@@ -165,18 +166,22 @@
              mvn antlr4:antlr4
            In any case, Maven will invoke this plugin before the Java source is compiled
         -->
-      <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr4-maven-plugin</artifactId>
-        <version>4.13.2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>antlr4</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+        <plugin>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-maven-plugin</artifactId>
+            <version>${antlr4.version}</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>antlr4</goal>
+                    </goals>
+                    <phase>generate-sources</phase>
+                </execution>
+            </executions>
+            <configuration>
+                <outputDirectory>${project.build.directory}/generated-sources/antlr</outputDirectory>
+            </configuration>
+        </plugin>
       <!-- plugin to create a self-contained portable package
            This allows us to execute our application like this:
            java -cp target/array-init-1.0-jar-with-dependencies.jar org.abcd.examples.ArrayInit.ArrayInit
@@ -198,7 +203,7 @@
             <id>simple-command</id>
             <phase>package</phase>
             <goals>
-              <goal>attached</goal>
+              <goal>single</goal>
             </goals>
           </execution>
         </executions>
